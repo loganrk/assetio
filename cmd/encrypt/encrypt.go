@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/loganrk/go-cipher"
+	cipherAes "assetio/internal/adapters/cipher/aes"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 	fmt.Print("Enter the crypto key: ")
 	cryptoKey, _ := reader.ReadString('\n')
 	cryptoKey = strings.TrimSpace(cryptoKey)
-	cipherIns := cipher.New(cryptoKey)
+	cipherIns := cipherAes.New(cryptoKey)
 
 	for {
 		fmt.Print("Enter text to encrypt: ")
