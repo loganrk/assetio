@@ -1,0 +1,43 @@
+application:
+  port: 8001
+  name: assetio
+
+logger:
+  level:
+  encoding:
+    method:
+    caller:
+  path:
+  errPath:
+
+cipher:
+  cryptoKey: qf0ac7131xktkut8
+  
+middleware:
+  authorization:
+    enabled: true
+    token: c713-kut8-1xkt-qf0a
+
+api:
+   accountNew:
+    enabled: true
+    route: /account/new
+    method: POST
+  accountUpdate:
+    enabled: true
+    route: /account/update
+    method: POST
+
+store:
+  database:
+    host: #encrypted value
+    port:  #encrypted value
+    username:  #encrypted value
+    password:  #encrypted value
+    name: test
+    prefix: pm_
+  cache:
+    heap:
+      enabled: true
+      max_capacity: 2000
+      expiry: 3600

@@ -1,102 +1,68 @@
 package main
 
 import (
-	"assetio/pkg/config"
-	"assetio/pkg/http/v1/handler"
-	"assetio/pkg/lib/logger"
-	"assetio/pkg/middleware"
+	"assetio/config"
+	"assetio/internal/domain"
+	"assetio/internal/port"
 	"context"
 	"log"
 
-	"github.com/loganrk/go-db"
-	"github.com/loganrk/go-router"
+	cipherAes "assetio/internal/adapters/cipher/aes"
+	handler "assetio/internal/adapters/handler/http/v1"
+	loggerZap "assetio/internal/adapters/logger/zapLogger"
+	middlewareAuth "assetio/internal/adapters/middleware/auth"
+	repositoryMysql "assetio/internal/adapters/repository/mysql"
+	routerGin "assetio/internal/adapters/router/gin"
+	tokenEngineJwt "assetio/internal/adapters/tokenEngine/jwt"
 
-	cipher "github.com/loganrk/go-cipher"
+	accountSrv "assetio/internal/usecase/account"
 )
 
 const (
-	CONFIG_FILE_PATH = ``
+	CONFIG_FILE_PATH = `C:\xampp\htdocs\pro\assetio\config\yaml`
 	CONFIG_FILE_NAME = `app_config`
 	CONFIG_FILE_TYPE = `yaml`
 )
 
 func main() {
-
+	/* get the config instance */
 	appConfigIns, err := config.StartConfig(CONFIG_FILE_PATH, config.File{
 		Name: CONFIG_FILE_NAME,
 		Ext:  CONFIG_FILE_TYPE,
 	})
-
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	loggerIns, err := createLogger(appConfigIns.GetLogger())
-
+	/* get the logger instance */
+	loggerIns, err := getLogger(appConfigIns.GetLogger())
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	cipherCryptoKey := appConfigIns.GetCipherCryptoKey()
-	cipherIns := cipher.New(cipherCryptoKey)
-
-	encryptDbHost, encryptDbPort, encryptDbUsename, encryptDbPasword, dbName := appConfigIns.GetStoreDatabaseProperties()
-
-	decryptDbHost, decryptErr := cipherIns.Decrypt(encryptDbHost)
-	if decryptErr != nil {
-		log.Println(decryptErr)
-		return
-	}
-
-	decryptdbPort, decryptErr := cipherIns.Decrypt(encryptDbPort)
-	if decryptErr != nil {
-		log.Println(decryptErr)
-		return
-	}
-
-	decryptDbUsename, decryptErr := cipherIns.Decrypt(encryptDbUsename)
-	if decryptErr != nil {
-		log.Println(decryptErr)
-		return
-	}
-
-	decryptDbPasword, decryptErr := cipherIns.Decrypt(encryptDbPasword)
-	if decryptErr != nil {
-		log.Println(decryptErr)
-		return
-	}
-
-	_, err = db.New(db.Config{
-		Host:     decryptDbHost,
-		Port:     decryptdbPort,
-		Username: decryptDbUsename,
-		Password: decryptDbPasword,
-		Name:     dbName,
-	})
-
+	/* get the database instance */
+	mysqlIns, err := getDatabase(appConfigIns)
 	if err != nil {
 		log.Println(err)
 		return
 	}
+	mysqlIns.AutoMigrate()
 
-	routerIns := router.New()
+	/* get the user usecase instance */
 
-	authzMiddlewareEnabled, authzMiddlewareToken := appConfigIns.GetMiddlewareAuthorizationProperties()
-	if authzMiddlewareEnabled {
-		authzMiddlewareIns := middleware.NewAuthz(authzMiddlewareToken)
-		routerIns.UseBefore(authzMiddlewareIns.Use())
+	/* get the user service instance */
+	accountSrvIns := accountSrv.New(loggerIns, mysqlIns)
+
+	svcList := domain.List{
+		Account: accountSrvIns,
 	}
 
-	handlerIns := handler.New(loggerIns)
-	apiConfigIns := appConfigIns.GetApi()
+	/* get the router instance */
+	routerIns := getRouter(appConfigIns, loggerIns, svcList)
 
-	if apiConfigIns.GetInventoryNewEnabled() {
-		apiMethod, apiRoute := apiConfigIns.GetInventoryNewProperties()
-		routerIns.RegisterRoute(apiMethod, apiRoute, handlerIns.InventoryAdd)
-	}
-
+	/* start the app */
 	port := appConfigIns.GetAppPort()
 	loggerIns.Infow(context.Background(), "app started", "port", port)
 	loggerIns.Sync(context.Background())
@@ -112,13 +78,73 @@ func main() {
 	loggerIns.Sync(context.Background())
 }
 
-func createLogger(logConfigIns config.Logger) (logger.Logger, error) {
-	loggerConfig := logger.Config{
+func getLogger(logConfigIns config.Logger) (port.Logger, error) {
+	loggerConfig := loggerZap.Config{
 		Level:           logConfigIns.GetLoggerLevel(),
 		Encoding:        logConfigIns.GetLoggerEncodingMethod(),
 		EncodingCaller:  logConfigIns.GetLoggerEncodingCaller(),
 		OutputPath:      logConfigIns.GetLoggerPath(),
 		ErrorOutputPath: logConfigIns.GetLoggerErrorPath(),
 	}
-	return logger.New(loggerConfig)
+	return loggerZap.New(loggerConfig)
+}
+
+func getDatabase(appConfigIns config.App) (port.RepositoryMySQL, error) {
+	cipherCryptoKey := appConfigIns.GetCipherCryptoKey()
+	cipherIns := cipherAes.New(cipherCryptoKey)
+
+	encryptDbHost, encryptDbPort, encryptDbUsename, encryptDbPasword, dbName, prefix := appConfigIns.GetStoreDatabaseProperties()
+
+	decryptDbHost, decryptErr := cipherIns.Decrypt(encryptDbHost)
+	if decryptErr != nil {
+		return nil, decryptErr
+	}
+
+	decryptdbPort, decryptErr := cipherIns.Decrypt(encryptDbPort)
+	if decryptErr != nil {
+		return nil, decryptErr
+	}
+
+	decryptDbUsename, decryptErr := cipherIns.Decrypt(encryptDbUsename)
+	if decryptErr != nil {
+		return nil, decryptErr
+	}
+
+	decryptDbPasword, decryptErr := cipherIns.Decrypt(encryptDbPasword)
+	if decryptErr != nil {
+		return nil, decryptErr
+	}
+
+	return repositoryMysql.New(decryptDbHost, decryptdbPort, decryptDbUsename, decryptDbPasword, dbName, prefix)
+
+}
+
+func getRouter(appConfigIns config.App, loggerIns port.Logger, svcList domain.List) port.Router {
+	cipherCryptoKey := appConfigIns.GetCipherCryptoKey()
+	cipherIns := cipherAes.New(cipherCryptoKey)
+	apiKeys := appConfigIns.GetMiddlewareApiKeys()
+
+	tokenEngineIns := tokenEngineJwt.New(cipherIns)
+
+	middlewareAuthIns := middlewareAuth.New(apiKeys, tokenEngineIns)
+
+	handlerIns := handler.New(loggerIns, svcList)
+	apiConfigIns := appConfigIns.GetApi()
+
+	routerIns := routerGin.New()
+
+	accessTokenGr := routerIns.NewGroup("")
+	accessTokenGr.UseBefore(middlewareAuthIns.ValidateAccessToken())
+
+	if apiConfigIns.GetAccountNewEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetAccountNewProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.AccountAdd)
+	}
+
+	if apiConfigIns.GetAccountUpdateEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetAccountUpdateProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.AccountUpdate)
+	}
+
+	return routerIns
 }
