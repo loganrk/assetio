@@ -16,10 +16,11 @@ import (
 	tokenEngineJwt "assetio/internal/adapters/tokenEngine/jwt"
 
 	accountSrv "assetio/internal/usecase/account"
+	securitySrv "assetio/internal/usecase/security"
 )
 
 const (
-	CONFIG_FILE_PATH = `C:\xampp\htdocs\pro\assetio\config\yaml`
+	CONFIG_FILE_PATH = ``
 	CONFIG_FILE_NAME = `app_config`
 	CONFIG_FILE_TYPE = `yaml`
 )
@@ -50,13 +51,14 @@ func main() {
 	}
 	mysqlIns.AutoMigrate()
 
-	/* get the user usecase instance */
-
-	/* get the user service instance */
+	/* get the user account instance */
 	accountSrvIns := accountSrv.New(loggerIns, mysqlIns)
+	/* get the user account instance */
+	securitySrvIns := securitySrv.New(loggerIns, mysqlIns)
 
 	svcList := domain.List{
-		Account: accountSrvIns,
+		Account:  accountSrvIns,
+		Security: securitySrvIns,
 	}
 
 	/* get the router instance */
@@ -133,12 +135,31 @@ func getRouter(appConfigIns config.App, loggerIns port.Logger, svcList domain.Li
 
 	routerIns := routerGin.New()
 
+	generalGr := routerIns.NewGroup("")
+	generalGr.UseBefore(middlewareAuthIns.ValidateApiKey())
+
 	accessTokenGr := routerIns.NewGroup("")
 	accessTokenGr.UseBefore(middlewareAuthIns.ValidateAccessToken())
 
-	if apiConfigIns.GetAccountNewEnabled() {
-		apiMethod, apiRoute := apiConfigIns.GetAccountNewProperties()
-		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.AccountAdd)
+	updateAccountRouters(generalGr, accessTokenGr, apiConfigIns, handlerIns)
+
+	return routerIns
+}
+
+func updateAccountRouters(generalGr port.RouterGroup, accessTokenGr port.RouterGroup, apiConfigIns config.Api, handlerIns port.Handler) {
+	if apiConfigIns.GetAccountCreateEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetAccountCreateProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.AccountCreate)
+	}
+
+	if apiConfigIns.GetAccountAllEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetAccountAllProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.AccountAll)
+	}
+
+	if apiConfigIns.GetAccountGetEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetAccountGetProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.AccountGet)
 	}
 
 	if apiConfigIns.GetAccountUpdateEnabled() {
@@ -146,5 +167,23 @@ func getRouter(appConfigIns config.App, loggerIns port.Logger, svcList domain.Li
 		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.AccountUpdate)
 	}
 
-	return routerIns
+	if apiConfigIns.GetAccountActivateEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetAccountActivateProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.AccountActivate)
+	}
+
+	if apiConfigIns.GetAccountInactivateEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetAccountInactivateProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.AccountInactivate)
+	}
+
+	if apiConfigIns.GetSecurityCreateEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetSecurityCreateProperties()
+		generalGr.RegisterRoute(apiMethod, apiRoute, handlerIns.SecurityCreate)
+	}
+
+	if apiConfigIns.GetSecurityUpdateEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetSecurityUpdateProperties()
+		generalGr.RegisterRoute(apiMethod, apiRoute, handlerIns.SecurityUpdate)
+	}
 }
