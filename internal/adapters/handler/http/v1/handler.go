@@ -10,6 +10,8 @@ const (
 
 	ERROR_CODE_REQUEST_INVALID        = "RE01"
 	ERROR_CODE_REQUEST_PARAMS_INVALID = "RE02"
+
+	ERROR_CODE_NO_DATA = "DA01"
 )
 
 type handler struct {

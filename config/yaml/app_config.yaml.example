@@ -19,14 +19,30 @@ middleware:
     token: c713-kut8-1xkt-qf0a
 
 api:
-   accountNew:
+  accountCreate:
     enabled: true
-    route: /account/new
-    method: POST
+    route: /account/create
+    method: GET
+  accountAll:
+    enabled: true
+    route: /account/all
+    method: GET
+  accountGet:
+    enabled: true
+    route: /account/get
+    method: GET
   accountUpdate:
     enabled: true
     route: /account/update
-    method: POST
+    method: GET
+  accountActivate:
+    enabled: true
+    route: /account/activate
+    method: GET
+  accountInactivate:
+    enabled: true
+    route: /account/inactivate
+    method: GET
 
 store:
   database:

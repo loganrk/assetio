@@ -32,9 +32,9 @@ type Inventory struct {
 
 type Security struct {
 	Id        int       `gorm:"primarykey;size:16"`
-	Type      int       `gorm:"column:type;size:16"`
-	Exchange  string    `gorm:"column:exchange;size:50"`
-	Symbol    string    `gorm:"column:symbol;size:255"`
+	Type      int       `gorm:"index:idx_type_exchange_symbol,unique;column:type;size:16"`
+	Exchange  int       `gorm:"index:idx_type_exchange_symbol,unique;column:exchange;size:16"`
+	Symbol    string    `gorm:"index:idx_type_exchange_symbol,unique;column:symbol;size:255"`
 	Name      string    `gorm:"column:name;size:255"`
 	CreatedAt time.Time `gorm:"autoCreateTime,column:created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime,column:updated_at"`
