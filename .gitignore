@@ -9,3 +9,6 @@
 
 # ignore ALL .bin files
 *.bin
+
+# ignore ALL .log files
+*.log
