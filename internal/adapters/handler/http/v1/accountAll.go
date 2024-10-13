@@ -5,15 +5,15 @@ import (
 	"assetio/internal/adapters/handler/http/v1/response"
 	"assetio/internal/port"
 	"context"
+
 	"net/http"
 )
 
-func (h *handler) AccountUpdate(w http.ResponseWriter, r *http.Request) {
-
+func (h *handler) AccountAll(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	res := response.New()
 
-	req, err := request.NewAccountUpdate(r)
+	req, err := request.NewAccountAll(r)
 	if err != nil {
 		res.SetStatus(http.StatusBadRequest)
 		res.SetError(ERROR_CODE_REQUEST_INVALID, "invalid request parameters")
@@ -29,7 +29,8 @@ func (h *handler) AccountUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.usecases.Account.UpdateAccount(ctx, req.GetAccountId(), req.GetUserId(), req.GetName())
+	accounts, err := h.usecases.Account.GetAccounts(ctx, req.GetUserId())
+
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -37,9 +38,23 @@ func (h *handler) AccountUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resData := port.AccountUpdateClientResponse{
-		Message: "account updated successfully",
+	if len(accounts) == 0 {
+		res.SetData(nil)
+		res.Send(w)
+		return
+
 	}
+
+	var resData []port.AccountAllClientResponse
+	for _, account := range accounts {
+		resData = append(resData, port.AccountAllClientResponse{
+			Id:     account.Id,
+			Name:   account.Name,
+			Status: h.usecases.Account.GetStatusString(account.Status),
+		})
+	}
+
 	res.SetData(resData)
 	res.Send(w)
+
 }

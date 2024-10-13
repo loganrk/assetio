@@ -5,15 +5,15 @@ import (
 	"assetio/internal/adapters/handler/http/v1/response"
 	"assetio/internal/port"
 	"context"
+
 	"net/http"
 )
 
-func (h *handler) AccountUpdate(w http.ResponseWriter, r *http.Request) {
-
+func (h *handler) AccountCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	res := response.New()
 
-	req, err := request.NewAccountUpdate(r)
+	req, err := request.NewAccountCreate(r)
 	if err != nil {
 		res.SetStatus(http.StatusBadRequest)
 		res.SetError(ERROR_CODE_REQUEST_INVALID, "invalid request parameters")
@@ -29,7 +29,8 @@ func (h *handler) AccountUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.usecases.Account.UpdateAccount(ctx, req.GetAccountId(), req.GetUserId(), req.GetName())
+	err = h.usecases.Account.CreateAccount(ctx, req.GetUserId(), req.GetName())
+
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -37,9 +38,10 @@ func (h *handler) AccountUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resData := port.AccountUpdateClientResponse{
-		Message: "account updated successfully",
+	resData := port.AccountCreateClientResponse{
+		Message: "account created successfully",
 	}
 	res.SetData(resData)
 	res.Send(w)
+
 }

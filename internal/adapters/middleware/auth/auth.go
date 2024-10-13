@@ -3,6 +3,7 @@ package auth
 import (
 	"assetio/internal/port"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -64,9 +65,11 @@ func (a *auth) ValidateAccessToken() http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-	})
+		queryParams := r.URL.Query()
+		queryParams.Set("uid", strconv.Itoa(userid))
+		r.URL.RawQuery = queryParams.Encode()
 
+	})
 }
 
 func (a *auth) exactToken(token string) string {

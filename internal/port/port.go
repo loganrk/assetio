@@ -8,13 +8,27 @@ import (
 )
 
 type Handler interface {
-	AccountAdd(w http.ResponseWriter, r *http.Request)
+	AccountCreate(w http.ResponseWriter, r *http.Request)
+	AccountAll(w http.ResponseWriter, r *http.Request)
+	AccountGet(w http.ResponseWriter, r *http.Request)
 	AccountUpdate(w http.ResponseWriter, r *http.Request)
+	AccountActivate(w http.ResponseWriter, r *http.Request)
+	AccountInactivate(w http.ResponseWriter, r *http.Request)
+	SecurityCreate(w http.ResponseWriter, r *http.Request)
+	SecurityUpdate(w http.ResponseWriter, r *http.Request)
 }
 
 type RepositoryMySQL interface {
 	AutoMigrate()
 	CreateAccount(ctx context.Context, accountData domain.Account) (int, error)
+	GetAccounts(ctx context.Context, userId int) ([]domain.Account, error)
+	GetAccount(ctx context.Context, accountId, userId int) (domain.Account, error)
+	UpdateAccount(ctx context.Context, accountId, userId int, accountData domain.Account) error
+
+	CreateSecuriry(ctx context.Context, securityData domain.Security) (int, error)
+	GetSecuriry(ctx context.Context, types, exchange int, symbol string) (domain.Security, error)
+	GetSecuriryById(ctx context.Context, secruityId int) (domain.Security, error)
+	UpdateSecuriry(ctx context.Context, secruityId int, securityData domain.Security) error
 }
 
 type Router interface {

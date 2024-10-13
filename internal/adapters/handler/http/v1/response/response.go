@@ -22,7 +22,11 @@ func (r *response) SetStatus(status int) {
 }
 
 func (r *response) SetData(data any) {
-	r.Data = data
+	if data != nil {
+		r.Data = data
+	} else {
+		r.Data = struct{}{}
+	}
 }
 
 func (r *response) Send(w http.ResponseWriter) {

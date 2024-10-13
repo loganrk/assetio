@@ -43,8 +43,14 @@ type logger struct {
 }
 
 type api struct {
-	AccountNew    apiData `mapstructure:"accountNew"`
-	AccountUpdate apiData `mapstructure:"accountUpdate"`
+	AccountCreate     apiData `mapstructure:"accountCreate"`
+	AccountAll        apiData `mapstructure:"accountAll"`
+	AccountGet        apiData `mapstructure:"accountGet"`
+	AccountUpdate     apiData `mapstructure:"accountUpdate"`
+	AccountActivate   apiData `mapstructure:"accountActivate"`
+	AccountInactivate apiData `mapstructure:"accountInactivate"`
+	SecurityCreate    apiData `mapstructure:"securityCreate"`
+	SecurityUpdate    apiData `mapstructure:"securityUpdate"`
 }
 
 type apiData struct {

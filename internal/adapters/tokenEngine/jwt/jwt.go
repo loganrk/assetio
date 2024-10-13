@@ -3,8 +3,6 @@ package jwt
 import (
 	"assetio/internal/port"
 	"errors"
-	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -36,9 +34,6 @@ func (t *token) GetAccessTokenData(encryptedToken string) (int, time.Time, error
 
 		if tokenType, ok := claims["type"].(string); !ok || tokenType != "access" {
 			return 0, time.Time{}, errors.New("token type (`type`) not found or mismatch in token")
-		}
-		for key, value := range claims {
-			fmt.Printf("Key: %s, Type: %s, Value: %v\n", key, reflect.TypeOf(value), value)
 		}
 		if uid, ok := claims["uid"].(float64); ok {
 			if exp, ok := claims["exp"].(float64); ok {

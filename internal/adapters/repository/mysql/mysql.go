@@ -40,3 +40,63 @@ func (m *mysql) CreateAccount(ctx context.Context, accountData domain.Account) (
 	return accountData.Id, result.Error
 
 }
+
+func (m *mysql) GetAccount(ctx context.Context, accountId, userId int) (domain.Account, error) {
+	var accountData domain.Account
+	result := m.dialer.WithContext(ctx).Model(&domain.Account{}).Select("id", "name", "status").Where("id = ? and user_id = ? ", accountId, userId).First(&accountData)
+
+	if result.Error == gorm.ErrRecordNotFound {
+		result.Error = nil
+	}
+	return accountData, result.Error
+}
+
+func (m *mysql) GetAccounts(ctx context.Context, userId int) ([]domain.Account, error) {
+	var accountsData []domain.Account
+	result := m.dialer.WithContext(ctx).Model(&domain.Account{}).Select("id", "name", "status").Where("user_id = ? ", userId).Find(&accountsData)
+
+	if result.Error == gorm.ErrRecordNotFound {
+		result.Error = nil
+	}
+	return accountsData, result.Error
+}
+
+func (m *mysql) UpdateAccount(ctx context.Context, accountId, userId int, accountData domain.Account) error {
+	result := m.dialer.WithContext(ctx).Model(&domain.Account{}).Where("id = ? and user_id = ? ", accountId, userId).Updates(&accountData)
+	return result.Error
+
+}
+
+func (m *mysql) CreateSecuriry(ctx context.Context, securityData domain.Security) (int, error) {
+	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Create(&securityData)
+	return securityData.Id, result.Error
+
+}
+
+func (m *mysql) GetSecuriry(ctx context.Context, types, exchange int, symbol string) (domain.Security, error) {
+	var securityData domain.Security
+
+	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Select("id").Where("type = ? and exchange = ? and symbol =? ", types, exchange, symbol).First(&securityData)
+	if result.Error == gorm.ErrRecordNotFound {
+		result.Error = nil
+	}
+
+	return securityData, result.Error
+}
+
+func (m *mysql) GetSecuriryById(ctx context.Context, secruityId int) (domain.Security, error) {
+	var securityData domain.Security
+
+	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Select("id").Where("id = ?", secruityId).First(&securityData)
+	if result.Error == gorm.ErrRecordNotFound {
+		result.Error = nil
+	}
+
+	return securityData, result.Error
+}
+
+func (m *mysql) UpdateSecuriry(ctx context.Context, secruityId int, securityData domain.Security) error {
+	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Where("id = ?", secruityId).Updates(&securityData)
+	return result.Error
+
+}
