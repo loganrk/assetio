@@ -62,6 +62,7 @@ func (h *handler) SecurityAll(w http.ResponseWriter, r *http.Request) {
 	var resData []port.SecurityAllClientResponse
 	for _, security := range securities {
 		resData = append(resData, port.SecurityAllClientResponse{
+			Id:       security.Id,
 			Type:     h.usecases.Security.GetTypeString(security.Type),
 			Exchange: h.usecases.Security.GetExchangeString(security.Exchange),
 			Symbol:   security.Symbol,

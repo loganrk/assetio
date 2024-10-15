@@ -59,9 +59,10 @@ func (h *handler) SecuritySearch(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	var resData []port.SecurityAllClientResponse
+	var resData []port.SecuritySearchClientResponse
 	for _, security := range securities {
-		resData = append(resData, port.SecurityAllClientResponse{
+		resData = append(resData, port.SecuritySearchClientResponse{
+			Id:       security.Id,
 			Type:     h.usecases.Security.GetTypeString(security.Type),
 			Exchange: h.usecases.Security.GetExchangeString(security.Exchange),
 			Symbol:   security.Symbol,

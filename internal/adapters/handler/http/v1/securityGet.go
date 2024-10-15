@@ -45,6 +45,7 @@ func (h *handler) SecurityGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resData := port.SecurityGetClientResponse{
+		Id:       security.Id,
 		Type:     h.usecases.Security.GetTypeString(security.Type),
 		Exchange: h.usecases.Security.GetExchangeString(security.Exchange),
 		Symbol:   security.Symbol,
