@@ -57,3 +57,9 @@ type SecurityGetClientRequest interface {
 	Validate() error
 	GetSecuriryId() int
 }
+
+type SecurityAllClientRequest interface {
+	Validate() error
+	GetType() string
+	GetExchange() string
+}

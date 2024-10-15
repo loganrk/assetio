@@ -31,6 +31,20 @@ func (h *handler) SecurityCreate(w http.ResponseWriter, r *http.Request) {
 	securityType := h.usecases.Security.GetType(req.GetType())
 	securityExchange := h.usecases.Security.GetExchange(req.GetExchange())
 
+	if securityType == 0 {
+		res.SetStatus(http.StatusBadRequest)
+		res.SetError(ERROR_CODE_REQUEST_INVALID, "invalid type")
+		res.Send(w)
+		return
+	}
+
+	if securityExchange == 0 {
+		res.SetStatus(http.StatusBadRequest)
+		res.SetError(ERROR_CODE_REQUEST_INVALID, "invalid exchange")
+		res.Send(w)
+		return
+	}
+
 	security, err := h.usecases.Security.GetSecuriry(ctx, securityType, securityExchange, req.GetSymbol())
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)

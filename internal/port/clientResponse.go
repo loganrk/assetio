@@ -45,3 +45,10 @@ type SecurityGetClientResponse struct {
 	Symbol   string `json:"symbol"`
 	Name     string `json:"name"`
 }
+
+type SecurityAllClientResponse struct {
+	Type     string `json:"type"`
+	Exchange string `json:"exchange"`
+	Symbol   string `json:"symbol"`
+	Name     string `json:"name"`
+}

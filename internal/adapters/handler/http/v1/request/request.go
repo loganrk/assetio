@@ -47,3 +47,8 @@ type securityUpdate struct {
 type securityGet struct {
 	SecurityId int `json:"security_id"`
 }
+
+type securityAll struct {
+	Type     string `json:"type"`
+	Exchange string `json:"exchange"`
+}

@@ -85,3 +85,9 @@ func (s *securityUsecase) UpdateSecuriry(ctx context.Context, secruityId, types,
 
 	return err
 }
+
+func (s *securityUsecase) GetSecurities(ctx context.Context, types, exchange int) ([]domain.Security, error) {
+	securityData, err := s.mysql.GetSecurities(ctx, types, exchange)
+
+	return securityData, err
+}

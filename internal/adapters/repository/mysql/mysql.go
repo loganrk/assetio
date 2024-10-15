@@ -100,3 +100,14 @@ func (m *mysql) UpdateSecuriry(ctx context.Context, secruityId int, securityData
 	return result.Error
 
 }
+
+func (m *mysql) GetSecurities(ctx context.Context, types, exchange int) ([]domain.Security, error) {
+	var securitiesData []domain.Security
+
+	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Select("id").Where("type = ? and exchange = ?", types, exchange).Find(&securitiesData)
+	if result.Error == gorm.ErrRecordNotFound {
+		result.Error = nil
+	}
+
+	return securitiesData, result.Error
+}

@@ -29,4 +29,5 @@ type SecuritySvr interface {
 	GetSecuriry(ctx context.Context, types, exchange int, symbol string) (Security, error)
 	GetSecuriryById(ctx context.Context, secruityId int) (Security, error)
 	UpdateSecuriry(ctx context.Context, secruityId, types, exchange int, symbol string, name string) error
+	GetSecurities(ctx context.Context, types, exchange int) ([]Security, error)
 }
