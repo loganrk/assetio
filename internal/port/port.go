@@ -34,6 +34,7 @@ type RepositoryMySQL interface {
 	GetSecuriryById(ctx context.Context, secruityId int) (domain.Security, error)
 	UpdateSecuriry(ctx context.Context, secruityId int, securityData domain.Security) error
 	GetSecurities(ctx context.Context, types, exchange int) ([]domain.Security, error)
+	SearchSecurities(ctx context.Context, types, exchange int, search string) ([]domain.Security, error)
 }
 
 type Router interface {

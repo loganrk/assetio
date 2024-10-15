@@ -91,3 +91,9 @@ func (s *securityUsecase) GetSecurities(ctx context.Context, types, exchange int
 
 	return securityData, err
 }
+
+func (s *securityUsecase) SearchSecurities(ctx context.Context, types, exchange int, search string) ([]domain.Security, error) {
+	securityData, err := s.mysql.SearchSecurities(ctx, types, exchange, search)
+
+	return securityData, err
+}

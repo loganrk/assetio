@@ -111,3 +111,14 @@ func (m *mysql) GetSecurities(ctx context.Context, types, exchange int) ([]domai
 
 	return securitiesData, result.Error
 }
+
+func (m *mysql) SearchSecurities(ctx context.Context, types, exchange int, search string) ([]domain.Security, error) {
+	var securitiesData []domain.Security
+
+	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Select("id").Where("type = ? and exchange = ? and (name =? or symbol ?)", types, exchange, "%"+search+"%", "%"+search+"%").Find(&securitiesData)
+	if result.Error == gorm.ErrRecordNotFound {
+		result.Error = nil
+	}
+
+	return securitiesData, result.Error
+}

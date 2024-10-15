@@ -63,3 +63,10 @@ type SecurityAllClientRequest interface {
 	GetType() string
 	GetExchange() string
 }
+
+type SecuritySearchClientRequest interface {
+	Validate() error
+	GetType() string
+	GetExchange() string
+	GetSearch() string
+}

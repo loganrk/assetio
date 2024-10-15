@@ -52,3 +52,9 @@ type securityAll struct {
 	Type     string `json:"type"`
 	Exchange string `json:"exchange"`
 }
+
+type securitySearch struct {
+	Type     string `json:"type"`
+	Exchange string `json:"exchange"`
+	Search   string `json:"search"`
+}
