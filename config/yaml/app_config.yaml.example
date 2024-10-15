@@ -43,6 +43,26 @@ api:
     enabled: true
     route: /account/inactivate
     method: GET
+  securityCreate:
+    enabled: true
+    route: /security/create
+    method: GET
+  securityUpdate:
+    enabled: true
+    route: /security/update
+    method: GET
+  securityAll:
+    enabled: true
+    route: /security/all
+    method: GET
+  securitySearch:
+    enabled: true
+    route: /security/search
+    method: GET
+  securityGet:
+    enabled: true
+    route: /security/get
+    method: GET
 
 store:
   database:

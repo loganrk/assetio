@@ -35,6 +35,22 @@ func (s *securityUsecase) GetExchange(exchange string) int {
 	return 0
 }
 
+func (s *securityUsecase) GetTypeString(typeData int) string {
+	if typeData == constant.SECURITY_TYPE_STOCK {
+		return constant.SECURITY_TYPE_STOCK_STRING
+	}
+	return ""
+}
+
+func (s *securityUsecase) GetExchangeString(exchange int) string {
+	if exchange == constant.EXCHANGE_TYPE_NSE {
+		return constant.EXCHANGE_TYPE_NSE_STRING
+	} else if exchange == constant.EXCHANGE_TYPE_BSE {
+		return constant.EXCHANGE_TYPE_BSE_STRING
+	}
+	return ""
+}
+
 func (s *securityUsecase) CreateSecuriry(ctx context.Context, types, exchange int, symbol, name string) error {
 
 	_, err := s.mysql.CreateSecuriry(ctx, domain.Security{

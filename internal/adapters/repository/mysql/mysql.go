@@ -87,7 +87,7 @@ func (m *mysql) GetSecuriry(ctx context.Context, types, exchange int, symbol str
 func (m *mysql) GetSecuriryById(ctx context.Context, secruityId int) (domain.Security, error) {
 	var securityData domain.Security
 
-	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Select("id").Where("id = ?", secruityId).First(&securityData)
+	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Select("id", "type", "exchange", "symbol", "name").Where("id = ?", secruityId).First(&securityData)
 	if result.Error == gorm.ErrRecordNotFound {
 		result.Error = nil
 	}

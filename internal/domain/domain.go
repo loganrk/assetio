@@ -22,6 +22,8 @@ type AccountSvr interface {
 type SecuritySvr interface {
 	GetType(typeData string) int
 	GetExchange(exchange string) int
+	GetTypeString(typeData int) string
+	GetExchangeString(exchange int) string
 
 	CreateSecuriry(ctx context.Context, types, exchange int, symbol, name string) error
 	GetSecuriry(ctx context.Context, types, exchange int, symbol string) (Security, error)

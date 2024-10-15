@@ -43,3 +43,7 @@ type securityUpdate struct {
 	Symbol     string `json:"symbol"`
 	Name       string `json:"name"`
 }
+
+type securityGet struct {
+	SecurityId int `json:"security_id"`
+}

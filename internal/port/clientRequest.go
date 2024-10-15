@@ -52,3 +52,8 @@ type SecurityUpdateClientRequest interface {
 	GetSymbol() string
 	GetExchange() string
 }
+
+type SecurityGetClientRequest interface {
+	Validate() error
+	GetSecuriryId() int
+}
