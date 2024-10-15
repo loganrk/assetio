@@ -14,8 +14,12 @@ type Handler interface {
 	AccountUpdate(w http.ResponseWriter, r *http.Request)
 	AccountActivate(w http.ResponseWriter, r *http.Request)
 	AccountInactivate(w http.ResponseWriter, r *http.Request)
+
 	SecurityCreate(w http.ResponseWriter, r *http.Request)
 	SecurityUpdate(w http.ResponseWriter, r *http.Request)
+	SecurityAll(w http.ResponseWriter, r *http.Request)
+	SecurityGet(w http.ResponseWriter, r *http.Request)
+	SecuritySearch(w http.ResponseWriter, r *http.Request)
 }
 
 type RepositoryMySQL interface {
@@ -29,6 +33,8 @@ type RepositoryMySQL interface {
 	GetSecuriry(ctx context.Context, types, exchange int, symbol string) (domain.Security, error)
 	GetSecuriryById(ctx context.Context, secruityId int) (domain.Security, error)
 	UpdateSecuriry(ctx context.Context, secruityId int, securityData domain.Security) error
+	GetSecurities(ctx context.Context, types, exchange int) ([]domain.Security, error)
+	SearchSecurities(ctx context.Context, types, exchange int, search string) ([]domain.Security, error)
 }
 
 type Router interface {

@@ -35,6 +35,22 @@ func (s *securityUsecase) GetExchange(exchange string) int {
 	return 0
 }
 
+func (s *securityUsecase) GetTypeString(typeData int) string {
+	if typeData == constant.SECURITY_TYPE_STOCK {
+		return constant.SECURITY_TYPE_STOCK_STRING
+	}
+	return ""
+}
+
+func (s *securityUsecase) GetExchangeString(exchange int) string {
+	if exchange == constant.EXCHANGE_TYPE_NSE {
+		return constant.EXCHANGE_TYPE_NSE_STRING
+	} else if exchange == constant.EXCHANGE_TYPE_BSE {
+		return constant.EXCHANGE_TYPE_BSE_STRING
+	}
+	return ""
+}
+
 func (s *securityUsecase) CreateSecuriry(ctx context.Context, types, exchange int, symbol, name string) error {
 
 	_, err := s.mysql.CreateSecuriry(ctx, domain.Security{
@@ -68,4 +84,16 @@ func (s *securityUsecase) UpdateSecuriry(ctx context.Context, secruityId, types,
 	err := s.mysql.UpdateSecuriry(ctx, secruityId, securityData)
 
 	return err
+}
+
+func (s *securityUsecase) GetSecurities(ctx context.Context, types, exchange int) ([]domain.Security, error) {
+	securityData, err := s.mysql.GetSecurities(ctx, types, exchange)
+
+	return securityData, err
+}
+
+func (s *securityUsecase) SearchSecurities(ctx context.Context, types, exchange int, search string) ([]domain.Security, error) {
+	securityData, err := s.mysql.SearchSecurities(ctx, types, exchange, search)
+
+	return securityData, err
 }

@@ -24,6 +24,15 @@ type Api interface {
 
 	GetSecurityUpdateEnabled() bool
 	GetSecurityUpdateProperties() (string, string)
+
+	GetSecurityAllEnabled() bool
+	GetSecurityAllProperties() (string, string)
+
+	GetSecurityGetEnabled() bool
+	GetSecurityGetProperties() (string, string)
+
+	GetSecuritySearchEnabled() bool
+	GetSecuritySearchProperties() (string, string)
 }
 
 func (a api) GetAccountCreateEnabled() bool {
@@ -110,6 +119,39 @@ func (a api) GetSecurityUpdateEnabled() bool {
 
 func (a api) GetSecurityUpdateProperties() (string, string) {
 	apiData := a.SecurityUpdate
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetSecurityGetEnabled() bool {
+
+	return a.SecurityGet.Enabled
+}
+
+func (a api) GetSecurityGetProperties() (string, string) {
+	apiData := a.SecurityGet
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetSecurityAllEnabled() bool {
+
+	return a.SecurityAll.Enabled
+}
+
+func (a api) GetSecurityAllProperties() (string, string) {
+	apiData := a.SecurityAll
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetSecuritySearchEnabled() bool {
+
+	return a.SecuritySearch.Enabled
+}
+
+func (a api) GetSecuritySearchProperties() (string, string) {
+	apiData := a.SecuritySearch
 
 	return apiData.Method, apiData.Route
 }

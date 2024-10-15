@@ -8,11 +8,11 @@ import (
 	"net/http"
 )
 
-func (h *handler) SecurityCreate(w http.ResponseWriter, r *http.Request) {
+func (h *handler) SecurityAll(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	res := response.New()
 
-	req, err := request.NewSecurityCreate(r)
+	req, err := request.NewSecurityAll(r)
 	if err != nil {
 		res.SetStatus(http.StatusBadRequest)
 		res.SetError(ERROR_CODE_REQUEST_INVALID, "invalid request parameters")
@@ -27,7 +27,6 @@ func (h *handler) SecurityCreate(w http.ResponseWriter, r *http.Request) {
 		res.Send(w)
 		return
 	}
-
 	securityType := h.usecases.Security.GetType(req.GetType())
 	securityExchange := h.usecases.Security.GetExchange(req.GetExchange())
 
@@ -45,7 +44,7 @@ func (h *handler) SecurityCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	security, err := h.usecases.Security.GetSecuriry(ctx, securityType, securityExchange, req.GetSymbol())
+	securities, err := h.usecases.Security.GetSecurities(ctx, securityType, securityExchange)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -53,25 +52,24 @@ func (h *handler) SecurityCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if security.Id != 0 {
-		resData := port.SecurityCreateClientResponse{
-			Message: "security symbol already available",
-		}
-		res.SetData(resData)
-		res.Send(w)
-	}
-
-	err = h.usecases.Security.CreateSecuriry(ctx, securityType, securityExchange, req.GetSymbol(), req.GetName())
-	if err != nil {
-		res.SetStatus(http.StatusInternalServerError)
-		res.SetError(ERROR_CODE_INTERNAL_SERVER, "internal server error")
+	if len(securities) == 0 {
+		res.SetData(nil)
 		res.Send(w)
 		return
+
 	}
 
-	resData := port.SecurityCreateClientResponse{
-		Message: "security created successfully",
+	var resData []port.SecurityAllClientResponse
+	for _, security := range securities {
+		resData = append(resData, port.SecurityAllClientResponse{
+			Id:       security.Id,
+			Type:     h.usecases.Security.GetTypeString(security.Type),
+			Exchange: h.usecases.Security.GetExchangeString(security.Exchange),
+			Symbol:   security.Symbol,
+			Name:     security.Name,
+		})
 	}
+
 	res.SetData(resData)
 	res.Send(w)
 }

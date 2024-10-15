@@ -186,4 +186,19 @@ func updateAccountRouters(generalGr port.RouterGroup, accessTokenGr port.RouterG
 		apiMethod, apiRoute := apiConfigIns.GetSecurityUpdateProperties()
 		generalGr.RegisterRoute(apiMethod, apiRoute, handlerIns.SecurityUpdate)
 	}
+
+	if apiConfigIns.GetSecurityAllEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetSecurityAllProperties()
+		generalGr.RegisterRoute(apiMethod, apiRoute, handlerIns.SecurityAll)
+	}
+
+	if apiConfigIns.GetSecurityGetEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetSecurityGetProperties()
+		generalGr.RegisterRoute(apiMethod, apiRoute, handlerIns.SecurityGet)
+	}
+
+	if apiConfigIns.GetSecuritySearchEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetSecuritySearchProperties()
+		generalGr.RegisterRoute(apiMethod, apiRoute, handlerIns.SecuritySearch)
+	}
 }

@@ -51,6 +51,9 @@ type api struct {
 	AccountInactivate apiData `mapstructure:"accountInactivate"`
 	SecurityCreate    apiData `mapstructure:"securityCreate"`
 	SecurityUpdate    apiData `mapstructure:"securityUpdate"`
+	SecurityGet       apiData `mapstructure:"securityGet"`
+	SecurityAll       apiData `mapstructure:"securityAll"`
+	SecuritySearch    apiData `mapstructure:"securitySearch"`
 }
 
 type apiData struct {

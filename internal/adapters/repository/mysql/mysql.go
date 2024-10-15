@@ -87,7 +87,7 @@ func (m *mysql) GetSecuriry(ctx context.Context, types, exchange int, symbol str
 func (m *mysql) GetSecuriryById(ctx context.Context, secruityId int) (domain.Security, error) {
 	var securityData domain.Security
 
-	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Select("id").Where("id = ?", secruityId).First(&securityData)
+	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Select("id", "type", "exchange", "symbol", "name").Where("id = ?", secruityId).First(&securityData)
 	if result.Error == gorm.ErrRecordNotFound {
 		result.Error = nil
 	}
@@ -99,4 +99,26 @@ func (m *mysql) UpdateSecuriry(ctx context.Context, secruityId int, securityData
 	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Where("id = ?", secruityId).Updates(&securityData)
 	return result.Error
 
+}
+
+func (m *mysql) GetSecurities(ctx context.Context, types, exchange int) ([]domain.Security, error) {
+	var securitiesData []domain.Security
+
+	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Select("id", "type", "exchange", "symbol", "name").Where("type = ? and exchange = ?", types, exchange).Find(&securitiesData)
+	if result.Error == gorm.ErrRecordNotFound {
+		result.Error = nil
+	}
+
+	return securitiesData, result.Error
+}
+
+func (m *mysql) SearchSecurities(ctx context.Context, types, exchange int, search string) ([]domain.Security, error) {
+	var securitiesData []domain.Security
+
+	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Select("id", "type", "exchange", "symbol", "name").Where("type = ? and exchange = ? and (name LIKE ? or symbol LIKE ?)", types, exchange, "%"+search+"%", "%"+search+"%").Find(&securitiesData)
+	if result.Error == gorm.ErrRecordNotFound {
+		result.Error = nil
+	}
+
+	return securitiesData, result.Error
 }

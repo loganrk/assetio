@@ -38,3 +38,27 @@ type AccountInactivateClientResponse struct {
 type SecurityCreateClientResponse struct {
 	Message string `json:"message"`
 }
+
+type SecurityGetClientResponse struct {
+	Id       int    `json:"id"`
+	Type     string `json:"type"`
+	Exchange string `json:"exchange"`
+	Symbol   string `json:"symbol"`
+	Name     string `json:"name"`
+}
+
+type SecurityAllClientResponse struct {
+	Id       int    `json:"id"`
+	Type     string `json:"type"`
+	Exchange string `json:"exchange"`
+	Symbol   string `json:"symbol"`
+	Name     string `json:"name"`
+}
+
+type SecuritySearchClientResponse struct {
+	Id       int    `json:"id"`
+	Type     string `json:"type"`
+	Exchange string `json:"exchange"`
+	Symbol   string `json:"symbol"`
+	Name     string `json:"name"`
+}
