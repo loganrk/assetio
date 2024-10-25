@@ -30,7 +30,7 @@ func (h *handler) AccountActivate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	account, err := h.usecases.Account.GetAccount(ctx, req.GetAccountId(), req.GetUserId())
+	account, err := h.usecases.Account.GetAccount(ctx, req.AccountId, req.UserId)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(ERROR_CODE_REQUEST_INVALID, "internal server error")
@@ -53,7 +53,7 @@ func (h *handler) AccountActivate(w http.ResponseWriter, r *http.Request) {
 		res.Send(w)
 	}
 
-	err = h.usecases.Account.AccountActivate(ctx, req.GetAccountId(), req.GetUserId())
+	err = h.usecases.Account.AccountActivate(ctx, req.AccountId, req.UserId)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(ERROR_CODE_INTERNAL_SERVER, "internal server error")

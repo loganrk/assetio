@@ -24,7 +24,7 @@ type Account struct {
 type Inventory struct {
 	Id         int       `gorm:"primarykey;size:16"`
 	AccountId  int       `gorm:"column:account_id;size:16"`
-	SecruityId int       `gorm:"column:secruity_id;size:16"`
+	SecurityId int       `gorm:"column:security_id;size:16"`
 	State      int       `gorm:"column:state;size:11;"`
 	CreatedAt  time.Time `gorm:"autoCreateTime,column:created_at"`
 	UpdatedAt  time.Time `gorm:"autoUpdateTime,column:updated_at"`
@@ -46,8 +46,8 @@ type Transaction struct {
 	InventoryId int             `gorm:"column:inventory_id;size:16"`
 	Type        TransactionType `gorm:"type:enum('buy', 'sell', 'dividend');column:type;size:16"`
 	Quantity    int             `gorm:"column:quantity;size:16"`
-	Price       float64         `gorm:"type:type:decimal(10,4);column:price"`
-	Fee         float64         `gorm:"type:type:decimal(10,4);column:fee"`
+	Price       float64         `gorm:"type:decimal(10,4);column:price"`
+	Fee         float64         `gorm:"type:decimal(10,4);column:fee"`
 	Date        time.Time       `gorm:"column:created_at"`
 	CreatedAt   time.Time       `gorm:"autoCreateTime,column:created_at"`
 	UpdatedAt   time.Time       `gorm:"autoUpdateTime,column:updated_at"`

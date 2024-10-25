@@ -27,8 +27,8 @@ func (h *handler) SecuritySearch(w http.ResponseWriter, r *http.Request) {
 		res.Send(w)
 		return
 	}
-	securityType := h.usecases.Security.GetType(req.GetType())
-	securityExchange := h.usecases.Security.GetExchange(req.GetExchange())
+	securityType := h.usecases.Security.GetType(req.Type)
+	securityExchange := h.usecases.Security.GetExchange(req.Exchange)
 
 	if securityType == 0 {
 		res.SetStatus(http.StatusBadRequest)
@@ -44,7 +44,7 @@ func (h *handler) SecuritySearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	securities, err := h.usecases.Security.SearchSecurities(ctx, securityType, securityExchange, req.GetSearch())
+	securities, err := h.usecases.Security.SearchSecurities(ctx, securityType, securityExchange, req.Search)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(ERROR_CODE_INTERNAL_SERVER, "internal server error")

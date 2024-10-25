@@ -29,7 +29,7 @@ func (h *handler) AccountUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.usecases.Account.UpdateAccount(ctx, req.GetAccountId(), req.GetUserId(), req.GetName())
+	err = h.usecases.Account.UpdateAccount(ctx, req.AccountId, req.UserId, req.Name)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(ERROR_CODE_INTERNAL_SERVER, "internal server error")

@@ -27,8 +27,8 @@ func (h *handler) SecurityAll(w http.ResponseWriter, r *http.Request) {
 		res.Send(w)
 		return
 	}
-	securityType := h.usecases.Security.GetType(req.GetType())
-	securityExchange := h.usecases.Security.GetExchange(req.GetExchange())
+	securityType := h.usecases.Security.GetType(req.Type)
+	securityExchange := h.usecases.Security.GetExchange(req.Exchange)
 
 	if securityType == 0 {
 		res.SetStatus(http.StatusBadRequest)

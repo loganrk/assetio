@@ -33,6 +33,15 @@ type Api interface {
 
 	GetSecuritySearchEnabled() bool
 	GetSecuritySearchProperties() (string, string)
+
+	GetStockBuyEnabled() bool
+	GetStockBuyProperties() (string, string)
+
+	GetStockSellEnabled() bool
+	GetStockSellProperties() (string, string)
+
+	GetStockDividendAddEnabled() bool
+	GetStockDividendAddProperties() (string, string)
 }
 
 func (a api) GetAccountCreateEnabled() bool {
@@ -152,6 +161,39 @@ func (a api) GetSecuritySearchEnabled() bool {
 
 func (a api) GetSecuritySearchProperties() (string, string) {
 	apiData := a.SecuritySearch
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetStockBuyEnabled() bool {
+
+	return a.StockBuy.Enabled
+}
+
+func (a api) GetStockBuyProperties() (string, string) {
+	apiData := a.StockBuy
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetStockSellEnabled() bool {
+
+	return a.StockSell.Enabled
+}
+
+func (a api) GetStockSellProperties() (string, string) {
+	apiData := a.StockSell
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetStockDividendAddEnabled() bool {
+
+	return a.StockDividendAdd.Enabled
+}
+
+func (a api) GetStockDividendAddProperties() (string, string) {
+	apiData := a.StockDividendAdd
 
 	return apiData.Method, apiData.Route
 }

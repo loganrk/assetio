@@ -29,7 +29,7 @@ func (h *handler) SecurityGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	security, err := h.usecases.Security.GetSecuriryById(ctx, req.GetSecuriryId())
+	security, err := h.usecases.Security.GetSecuriryById(ctx, req.SecurityId)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(ERROR_CODE_INTERNAL_SERVER, "internal server error")

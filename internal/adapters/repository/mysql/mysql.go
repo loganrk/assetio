@@ -4,6 +4,7 @@ import (
 	"assetio/internal/domain"
 	"assetio/internal/port"
 	"context"
+	"fmt"
 
 	gormMysql "gorm.io/driver/mysql"
 
@@ -32,6 +33,7 @@ func New(hostname, port, username, password, name string, prefix string) (port.R
 }
 
 func (m *mysql) AutoMigrate() {
+	fmt.Println("Transaction")
 	m.dialer.AutoMigrate(&domain.Account{}, &domain.Inventory{}, &domain.Security{}, &domain.Transaction{})
 }
 
@@ -84,10 +86,10 @@ func (m *mysql) GetSecuriry(ctx context.Context, types, exchange int, symbol str
 	return securityData, result.Error
 }
 
-func (m *mysql) GetSecuriryById(ctx context.Context, secruityId int) (domain.Security, error) {
+func (m *mysql) GetSecuriryById(ctx context.Context, securityId int) (domain.Security, error) {
 	var securityData domain.Security
 
-	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Select("id", "type", "exchange", "symbol", "name").Where("id = ?", secruityId).First(&securityData)
+	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Select("id", "type", "exchange", "symbol", "name").Where("id = ?", securityId).First(&securityData)
 	if result.Error == gorm.ErrRecordNotFound {
 		result.Error = nil
 	}
@@ -95,8 +97,8 @@ func (m *mysql) GetSecuriryById(ctx context.Context, secruityId int) (domain.Sec
 	return securityData, result.Error
 }
 
-func (m *mysql) UpdateSecuriry(ctx context.Context, secruityId int, securityData domain.Security) error {
-	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Where("id = ?", secruityId).Updates(&securityData)
+func (m *mysql) UpdateSecuriry(ctx context.Context, securityId int, securityData domain.Security) error {
+	result := m.dialer.WithContext(ctx).Model(&domain.Security{}).Where("id = ?", securityId).Updates(&securityData)
 	return result.Error
 
 }
@@ -121,4 +123,24 @@ func (m *mysql) SearchSecurities(ctx context.Context, types, exchange int, searc
 	}
 
 	return securitiesData, result.Error
+}
+
+func (m *mysql) InsertTransaction(ctx context.Context, transactionData domain.Transaction) (domain.Transaction, error) {
+	result := m.dialer.WithContext(ctx).Model(&domain.Transaction{}).Create(&transactionData)
+	return transactionData, result.Error
+}
+func (m *mysql) InsertInventory(ctx context.Context, inventoryData domain.Inventory) (domain.Inventory, error) {
+	result := m.dialer.WithContext(ctx).Model(&domain.Inventory{}).Create(&inventoryData)
+	return inventoryData, result.Error
+}
+
+func (m *mysql) GetInventoryByInventoryIdAndAccountId(ctx context.Context, inventoryId int) (domain.Inventory, error) {
+	var inventoryData domain.Inventory
+
+	result := m.dialer.WithContext(ctx).Model(&domain.Inventory{}).Select("id", "account_id", "security_id", "state").Where("id = ? ", inventoryId).Find(&inventoryData)
+	if result.Error == gorm.ErrRecordNotFound {
+		result.Error = nil
+	}
+
+	return inventoryData, result.Error
 }

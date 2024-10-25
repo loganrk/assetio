@@ -54,6 +54,9 @@ type api struct {
 	SecurityGet       apiData `mapstructure:"securityGet"`
 	SecurityAll       apiData `mapstructure:"securityAll"`
 	SecuritySearch    apiData `mapstructure:"securitySearch"`
+	StockBuy          apiData `mapstructure:"stockBuy"`
+	StockSell         apiData `mapstructure:"stockSell"`
+	StockDividendAdd  apiData `mapstructure:"stockDividendAdd"`
 }
 
 type apiData struct {

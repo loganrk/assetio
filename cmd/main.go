@@ -17,10 +17,11 @@ import (
 
 	accountSrv "assetio/internal/usecase/account"
 	securitySrv "assetio/internal/usecase/security"
+	stockSrv "assetio/internal/usecase/stock"
 )
 
 const (
-	CONFIG_FILE_PATH = ``
+	CONFIG_FILE_PATH = `../config/yaml/`
 	CONFIG_FILE_NAME = `app_config`
 	CONFIG_FILE_TYPE = `yaml`
 )
@@ -51,14 +52,17 @@ func main() {
 	}
 	mysqlIns.AutoMigrate()
 
-	/* get the user account instance */
+	/* get the account instance */
 	accountSrvIns := accountSrv.New(loggerIns, mysqlIns)
-	/* get the user account instance */
+	/* get the security instance */
 	securitySrvIns := securitySrv.New(loggerIns, mysqlIns)
+	/* get the stock instance */
+	stockSrvIns := stockSrv.New(loggerIns, mysqlIns)
 
 	svcList := domain.List{
 		Account:  accountSrvIns,
 		Security: securitySrvIns,
+		Stock:    stockSrvIns,
 	}
 
 	/* get the router instance */
@@ -201,4 +205,20 @@ func updateAccountRouters(generalGr port.RouterGroup, accessTokenGr port.RouterG
 		apiMethod, apiRoute := apiConfigIns.GetSecuritySearchProperties()
 		generalGr.RegisterRoute(apiMethod, apiRoute, handlerIns.SecuritySearch)
 	}
+
+	if apiConfigIns.GetStockBuyEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockBuyProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockBuy)
+	}
+
+	if apiConfigIns.GetStockSellEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockSellProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockSell)
+	}
+
+	if apiConfigIns.GetStockDividendAddEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockDividendAddProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockDividendAdd)
+	}
+
 }

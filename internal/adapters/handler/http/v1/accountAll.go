@@ -29,7 +29,7 @@ func (h *handler) AccountAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accounts, err := h.usecases.Account.GetAccounts(ctx, req.GetUserId())
+	accounts, err := h.usecases.Account.GetAccounts(ctx, req.UserId)
 
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)

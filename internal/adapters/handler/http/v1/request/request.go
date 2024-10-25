@@ -58,3 +58,32 @@ type securitySearch struct {
 	Exchange string `json:"exchange"`
 	Search   string `json:"search"`
 }
+
+type stockBuy struct {
+	UserId            int     `json:"uid"`
+	AccountId         int     `json:"account_id"`
+	StockId           int     `json:"stock_id"`
+	InventoryId       int     `json:"inventory_id"`
+	Quantity          int     `json:"quantity"`
+	AmountPerQuantity float64 `json:"amount_per_quantity"`
+	TaxAmount         float64 `json:"tax_amount"`
+}
+
+type stockSell struct {
+	UserId            int     `json:"uid"`
+	AccountId         int     `json:"account_id"`
+	StockId           int     `json:"stock_id"`
+	InventoryId       int     `json:"inventory_id"`
+	Quantity          int     `json:"quantity"`
+	AmountPerQuantity float64 `json:"amount_per_quantity"`
+	TaxAmount         float64 `json:"tax_amount"`
+}
+
+type stockDividendAdd struct {
+	UserId            int     `json:"uid"`
+	AccountId         int     `json:"account_id"`
+	StockId           int     `json:"stock_id"`
+	InventoryId       int     `json:"inventory_id"`
+	Quantity          int     `json:"quantity"`
+	AmountPerQuantity float64 `json:"amount_per_quantity"`
+}

@@ -28,7 +28,7 @@ func (h *handler) AccountGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	account, err := h.usecases.Account.GetAccount(ctx, req.GetAccountId(), req.GetUserId())
+	account, err := h.usecases.Account.GetAccount(ctx, req.AccountId, req.UserId)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(ERROR_CODE_REQUEST_INVALID, "internal server error")

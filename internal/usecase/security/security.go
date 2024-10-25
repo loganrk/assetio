@@ -68,20 +68,20 @@ func (s *securityUsecase) GetSecuriry(ctx context.Context, types, exchange int, 
 	return securityData, err
 }
 
-func (s *securityUsecase) GetSecuriryById(ctx context.Context, secruityId int) (domain.Security, error) {
-	securityData, err := s.mysql.GetSecuriryById(ctx, secruityId)
+func (s *securityUsecase) GetSecuriryById(ctx context.Context, securityId int) (domain.Security, error) {
+	securityData, err := s.mysql.GetSecuriryById(ctx, securityId)
 
 	return securityData, err
 }
 
-func (s *securityUsecase) UpdateSecuriry(ctx context.Context, secruityId, types, exchange int, symbol string, name string) error {
+func (s *securityUsecase) UpdateSecuriry(ctx context.Context, securityId, types, exchange int, symbol string, name string) error {
 	securityData := domain.Security{
 		Type:     types,
 		Exchange: exchange,
 		Name:     name,
 		Symbol:   symbol,
 	}
-	err := s.mysql.UpdateSecuriry(ctx, secruityId, securityData)
+	err := s.mysql.UpdateSecuriry(ctx, securityId, securityData)
 
 	return err
 }

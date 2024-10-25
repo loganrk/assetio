@@ -29,7 +29,7 @@ func (h *handler) AccountCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.usecases.Account.CreateAccount(ctx, req.GetUserId(), req.GetName())
+	err = h.usecases.Account.CreateAccount(ctx, req.UserId, req.Name)
 
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
