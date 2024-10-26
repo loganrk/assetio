@@ -87,3 +87,23 @@ type stockDividendAdd struct {
 	Quantity          int     `json:"quantity"`
 	AmountPerQuantity float64 `json:"amount_per_quantity"`
 }
+
+type mutualFundBuy struct {
+	UserId            int     `json:"uid"`
+	AccountId         int     `json:"account_id"`
+	MutualFundId      int     `json:"stock_id"`
+	InventoryId       int     `json:"inventory_id"`
+	Quantity          int     `json:"quantity"`
+	AmountPerQuantity float64 `json:"amount_per_quantity"`
+	TaxAmount         float64 `json:"tax_amount"`
+}
+
+type mutualFundSell struct {
+	UserId            int     `json:"uid"`
+	AccountId         int     `json:"account_id"`
+	MutualFundId      int     `json:"stock_id"`
+	InventoryId       int     `json:"inventory_id"`
+	Quantity          int     `json:"quantity"`
+	AmountPerQuantity float64 `json:"amount_per_quantity"`
+	TaxAmount         float64 `json:"tax_amount"`
+}

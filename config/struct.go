@@ -49,14 +49,25 @@ type api struct {
 	AccountUpdate     apiData `mapstructure:"accountUpdate"`
 	AccountActivate   apiData `mapstructure:"accountActivate"`
 	AccountInactivate apiData `mapstructure:"accountInactivate"`
-	SecurityCreate    apiData `mapstructure:"securityCreate"`
-	SecurityUpdate    apiData `mapstructure:"securityUpdate"`
-	SecurityGet       apiData `mapstructure:"securityGet"`
-	SecurityAll       apiData `mapstructure:"securityAll"`
-	SecuritySearch    apiData `mapstructure:"securitySearch"`
-	StockBuy          apiData `mapstructure:"stockBuy"`
-	StockSell         apiData `mapstructure:"stockSell"`
-	StockDividendAdd  apiData `mapstructure:"stockDividendAdd"`
+
+	SecurityCreate apiData `mapstructure:"securityCreate"`
+	SecurityUpdate apiData `mapstructure:"securityUpdate"`
+	SecurityGet    apiData `mapstructure:"securityGet"`
+	SecurityAll    apiData `mapstructure:"securityAll"`
+	SecuritySearch apiData `mapstructure:"securitySearch"`
+
+	StockBuy         apiData `mapstructure:"stockBuy"`
+	StockSell        apiData `mapstructure:"stockSell"`
+	StockDividendAdd apiData `mapstructure:"stockDividendAdd"`
+	StockSummary     apiData `mapstructure:"stockSummary"`
+	StockInventory   apiData `mapstructure:"stockInventory"`
+	StockTransaction apiData `mapstructure:"stockTransaction"`
+
+	MutualFundBuy         apiData `mapstructure:"mutualFundBuy"`
+	MutualFundSell        apiData `mapstructure:"mutualFundSell"`
+	MutualFundSummary     apiData `mapstructure:"mutualFundSummary"`
+	MutualFundInventory   apiData `mapstructure:"mutualFundInventory"`
+	MutualFundTransaction apiData `mapstructure:"mutualFundTransaction"`
 }
 
 type apiData struct {

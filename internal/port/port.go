@@ -24,16 +24,15 @@ type Handler interface {
 	StockBuy(w http.ResponseWriter, r *http.Request)
 	StockSell(w http.ResponseWriter, r *http.Request)
 	StockDividendAdd(w http.ResponseWriter, r *http.Request)
+	StockSummary(w http.ResponseWriter, r *http.Request)
+	StockInventory(w http.ResponseWriter, r *http.Request)
+	StockTransaction(w http.ResponseWriter, r *http.Request)
 
-	// MutualFundBuy(w http.ResponseWriter, r *http.Request)
-	// MutualFundSell(w http.ResponseWriter, r *http.Request)
-	// MutualFundAdd(w http.ResponseWriter, r *http.Request)
-
-	// InventorySummary(w http.ResponseWriter, r *http.Request)
-	// InventoryGet(w http.ResponseWriter, r *http.Request)
-	// InventoryTransactions(w http.ResponseWriter, r *http.Request)
-
-	// TransactionGet(w http.ResponseWriter, r *http.Request)
+	MutualFundBuy(w http.ResponseWriter, r *http.Request)
+	MutualFundSell(w http.ResponseWriter, r *http.Request)
+	MutualFundSummary(w http.ResponseWriter, r *http.Request)
+	MutualFundInventory(w http.ResponseWriter, r *http.Request)
+	MutualFundTransaction(w http.ResponseWriter, r *http.Request)
 }
 
 type RepositoryMySQL interface {

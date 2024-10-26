@@ -42,6 +42,30 @@ type Api interface {
 
 	GetStockDividendAddEnabled() bool
 	GetStockDividendAddProperties() (string, string)
+
+	GetStockSummarylEnabled() bool
+	GetStockSummaryProperties() (string, string)
+
+	GetStockInventorylEnabled() bool
+	GetStockInventoryProperties() (string, string)
+
+	GetStockTransactionlEnabled() bool
+	GetStockTransactionProperties() (string, string)
+
+	GetMutualFundBuyEnabled() bool
+	GetMutualFundBuyProperties() (string, string)
+
+	GetMutualFundSellEnabled() bool
+	GetMutualFundSellProperties() (string, string)
+
+	GetMutualFundSummarylEnabled() bool
+	GetMutualFundSummaryProperties() (string, string)
+
+	GetMutualFundInventorylEnabled() bool
+	GetMutualFundInventoryProperties() (string, string)
+
+	GetMutualFundTransactionlEnabled() bool
+	GetMutualFundTransactionProperties() (string, string)
 }
 
 func (a api) GetAccountCreateEnabled() bool {
@@ -194,6 +218,94 @@ func (a api) GetStockDividendAddEnabled() bool {
 
 func (a api) GetStockDividendAddProperties() (string, string) {
 	apiData := a.StockDividendAdd
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetStockSummarylEnabled() bool {
+
+	return a.StockSummary.Enabled
+}
+
+func (a api) GetStockSummaryProperties() (string, string) {
+	apiData := a.StockSummary
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetStockInventorylEnabled() bool {
+
+	return a.StockInventory.Enabled
+}
+
+func (a api) GetStockInventoryProperties() (string, string) {
+	apiData := a.StockInventory
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetStockTransactionlEnabled() bool {
+
+	return a.StockTransaction.Enabled
+}
+
+func (a api) GetStockTransactionProperties() (string, string) {
+	apiData := a.StockTransaction
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetMutualFundBuyEnabled() bool {
+
+	return a.MutualFundBuy.Enabled
+}
+
+func (a api) GetMutualFundBuyProperties() (string, string) {
+	apiData := a.MutualFundBuy
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetMutualFundSellEnabled() bool {
+
+	return a.MutualFundSell.Enabled
+}
+
+func (a api) GetMutualFundSellProperties() (string, string) {
+	apiData := a.MutualFundSell
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetMutualFundSummarylEnabled() bool {
+
+	return a.MutualFundSummary.Enabled
+}
+
+func (a api) GetMutualFundSummaryProperties() (string, string) {
+	apiData := a.MutualFundSummary
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetMutualFundInventorylEnabled() bool {
+
+	return a.MutualFundInventory.Enabled
+}
+
+func (a api) GetMutualFundInventoryProperties() (string, string) {
+	apiData := a.MutualFundInventory
+
+	return apiData.Method, apiData.Route
+}
+
+func (a api) GetMutualFundTransactionlEnabled() bool {
+
+	return a.MutualFundTransaction.Enabled
+}
+
+func (a api) GetMutualFundTransactionProperties() (string, string) {
+	apiData := a.MutualFundTransaction
 
 	return apiData.Method, apiData.Route
 }

@@ -115,3 +115,6 @@ func (h *handler) StockDividendAdd(w http.ResponseWriter, r *http.Request) {
 	res.SetData(resData)
 	res.Send(w)
 }
+func (h *handler) StockSummary(w http.ResponseWriter, r *http.Request)     {}
+func (h *handler) StockInventory(w http.ResponseWriter, r *http.Request)   {}
+func (h *handler) StockTransaction(w http.ResponseWriter, r *http.Request) {}

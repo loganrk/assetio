@@ -16,6 +16,7 @@ import (
 	tokenEngineJwt "assetio/internal/adapters/tokenEngine/jwt"
 
 	accountSrv "assetio/internal/usecase/account"
+	mutualFundSrv "assetio/internal/usecase/mutualFund"
 	securitySrv "assetio/internal/usecase/security"
 	stockSrv "assetio/internal/usecase/stock"
 )
@@ -58,11 +59,14 @@ func main() {
 	securitySrvIns := securitySrv.New(loggerIns, mysqlIns)
 	/* get the stock instance */
 	stockSrvIns := stockSrv.New(loggerIns, mysqlIns)
+	/* get the mutual fund instance */
+	mutualFundIns := mutualFundSrv.New(loggerIns, mysqlIns)
 
 	svcList := domain.List{
-		Account:  accountSrvIns,
-		Security: securitySrvIns,
-		Stock:    stockSrvIns,
+		Account:    accountSrvIns,
+		Security:   securitySrvIns,
+		Stock:      stockSrvIns,
+		MutualFund: mutualFundIns,
 	}
 
 	/* get the router instance */
@@ -221,4 +225,41 @@ func updateAccountRouters(generalGr port.RouterGroup, accessTokenGr port.RouterG
 		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockDividendAdd)
 	}
 
+	if apiConfigIns.GetStockSummarylEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockSummaryProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockSummary)
+	}
+
+	if apiConfigIns.GetStockInventorylEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockInventoryProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockInventory)
+	}
+	if apiConfigIns.GetStockTransactionlEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockTransactionProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockTransaction)
+	}
+
+	if apiConfigIns.GetMutualFundBuyEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetMutualFundBuyProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundBuy)
+	}
+
+	if apiConfigIns.GetMutualFundSellEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetMutualFundSellProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundSell)
+	}
+
+	if apiConfigIns.GetMutualFundSummarylEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetMutualFundSummaryProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundSummary)
+	}
+
+	if apiConfigIns.GetMutualFundInventorylEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetMutualFundInventoryProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundInventory)
+	}
+	if apiConfigIns.GetMutualFundTransactionlEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetMutualFundTransactionProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundTransaction)
+	}
 }

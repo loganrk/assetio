@@ -1,6 +1,7 @@
 package stock
 
 import (
+	"assetio/internal/constant"
 	"assetio/internal/domain"
 	"assetio/internal/port"
 	"context"
@@ -25,6 +26,10 @@ func (s *stockUsecase) BuyStock(ctx context.Context, userId int, accountId int, 
 	if err != nil {
 		return err
 	}
+	if secuirity.Type != constant.SECURITY_TYPE_STOCK {
+		return errors.New("incorrect stock")
+	}
+
 	var inventory domain.Inventory
 
 	if inventoryId != 0 {
@@ -76,6 +81,9 @@ func (s *stockUsecase) SellStock(ctx context.Context, userId int, accountId int,
 	if err != nil {
 		return err
 	}
+	if secuirity.Type != constant.SECURITY_TYPE_STOCK {
+		return errors.New("incorrect stock")
+	}
 
 	inventory, err := s.mysql.GetInventoryByInventoryIdAndAccountId(ctx, inventoryId)
 	if err != nil {
@@ -110,6 +118,9 @@ func (s *stockUsecase) StockDividendAdd(ctx context.Context, userId int, account
 	secuirity, err := s.mysql.GetSecuriryById(ctx, stockId)
 	if err != nil {
 		return err
+	}
+	if secuirity.Type != constant.SECURITY_TYPE_STOCK {
+		return errors.New("incorrect stock")
 	}
 
 	inventory, err := s.mysql.GetInventoryByInventoryIdAndAccountId(ctx, inventoryId)

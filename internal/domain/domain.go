@@ -5,9 +5,10 @@ import (
 )
 
 type List struct {
-	Account  AccountSvr
-	Security SecuritySvr
-	Stock    StockSvr
+	Account    AccountSvr
+	Security   SecuritySvr
+	Stock      StockSvr
+	MutualFund MutualFundSvr
 }
 
 type AccountSvr interface {
@@ -38,4 +39,9 @@ type StockSvr interface {
 	BuyStock(ctx context.Context, userId int, accountId int, inventoryId int, stockId int, quantity int, amountPerQuantity float64, taxAmount float64) error
 	SellStock(ctx context.Context, userId int, accountId int, inventoryId int, stockId int, quantity int, amountPerQuantity float64, taxAmount float64) error
 	StockDividendAdd(ctx context.Context, userId int, accountId int, inventoryId int, stockId int, quantity int, amountPerQuantity float64) error
+}
+
+type MutualFundSvr interface {
+	BuyMutualFund(ctx context.Context, userId int, accountId int, inventoryId int, stockId int, quantity int, amountPerQuantity float64, taxAmount float64) error
+	SellMutualFund(ctx context.Context, userId int, accountId int, inventoryId int, stockId int, quantity int, amountPerQuantity float64, taxAmount float64) error
 }
