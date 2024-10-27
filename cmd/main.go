@@ -9,6 +9,7 @@ import (
 
 	cipherAes "assetio/internal/adapters/cipher/aes"
 	handler "assetio/internal/adapters/handler/http/v1"
+	"assetio/internal/adapters/handler/validator"
 	loggerZap "assetio/internal/adapters/logger/zapLogger"
 	middlewareAuth "assetio/internal/adapters/middleware/auth"
 	repositoryMysql "assetio/internal/adapters/repository/mysql"
@@ -45,6 +46,9 @@ func main() {
 		return
 	}
 
+	/* get the validator instance */
+	validatorIns := validator.New()
+
 	/* get the database instance */
 	mysqlIns, err := getDatabase(appConfigIns)
 	if err != nil {
@@ -70,7 +74,7 @@ func main() {
 	}
 
 	/* get the router instance */
-	routerIns := getRouter(appConfigIns, loggerIns, svcList)
+	routerIns := getRouter(appConfigIns, validatorIns, loggerIns, svcList)
 
 	/* start the app */
 	port := appConfigIns.GetAppPort()
@@ -99,7 +103,7 @@ func getLogger(logConfigIns config.Logger) (port.Logger, error) {
 	return loggerZap.New(loggerConfig)
 }
 
-func getDatabase(appConfigIns config.App) (port.RepositoryMySQL, error) {
+func getDatabase(appConfigIns config.App) (port.RepositoryStore, error) {
 	cipherCryptoKey := appConfigIns.GetCipherCryptoKey()
 	cipherIns := cipherAes.New(cipherCryptoKey)
 
@@ -129,7 +133,7 @@ func getDatabase(appConfigIns config.App) (port.RepositoryMySQL, error) {
 
 }
 
-func getRouter(appConfigIns config.App, loggerIns port.Logger, svcList domain.List) port.Router {
+func getRouter(appConfigIns config.App, validatorIns port.Validator, loggerIns port.Logger, svcList domain.List) port.Router {
 	cipherCryptoKey := appConfigIns.GetCipherCryptoKey()
 	cipherIns := cipherAes.New(cipherCryptoKey)
 	apiKeys := appConfigIns.GetMiddlewareApiKeys()
@@ -138,7 +142,7 @@ func getRouter(appConfigIns config.App, loggerIns port.Logger, svcList domain.Li
 
 	middlewareAuthIns := middlewareAuth.New(apiKeys, tokenEngineIns)
 
-	handlerIns := handler.New(loggerIns, svcList)
+	handlerIns := handler.New(validatorIns, loggerIns, svcList)
 	apiConfigIns := appConfigIns.GetApi()
 
 	routerIns := routerGin.New()
@@ -234,9 +238,9 @@ func updateAccountRouters(generalGr port.RouterGroup, accessTokenGr port.RouterG
 		apiMethod, apiRoute := apiConfigIns.GetStockInventoryProperties()
 		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockInventory)
 	}
-	if apiConfigIns.GetStockTransactionlEnabled() {
-		apiMethod, apiRoute := apiConfigIns.GetStockTransactionProperties()
-		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockTransaction)
+	if apiConfigIns.GetStockInventoryTransactionslEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockInventoryTransactionsProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockInventoryTransactions)
 	}
 
 	if apiConfigIns.GetMutualFundBuyEnabled() {

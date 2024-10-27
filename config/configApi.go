@@ -49,8 +49,8 @@ type Api interface {
 	GetStockInventorylEnabled() bool
 	GetStockInventoryProperties() (string, string)
 
-	GetStockTransactionlEnabled() bool
-	GetStockTransactionProperties() (string, string)
+	GetStockInventoryTransactionslEnabled() bool
+	GetStockInventoryTransactionsProperties() (string, string)
 
 	GetMutualFundBuyEnabled() bool
 	GetMutualFundBuyProperties() (string, string)
@@ -244,13 +244,13 @@ func (a api) GetStockInventoryProperties() (string, string) {
 	return apiData.Method, apiData.Route
 }
 
-func (a api) GetStockTransactionlEnabled() bool {
+func (a api) GetStockInventoryTransactionslEnabled() bool {
 
-	return a.StockTransaction.Enabled
+	return a.StockInventoryTransactions.Enabled
 }
 
-func (a api) GetStockTransactionProperties() (string, string) {
-	apiData := a.StockTransaction
+func (a api) GetStockInventoryTransactionsProperties() (string, string) {
+	apiData := a.StockInventoryTransactions
 
 	return apiData.Method, apiData.Route
 }

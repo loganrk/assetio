@@ -1,12 +1,24 @@
 package response
 
 import (
-	"assetio/internal/port"
+	"assetio/internal/domain"
 	"encoding/json"
 	"net/http"
 )
 
-func New() port.Response {
+type response struct {
+	Status  int        `json:"status"`
+	Success bool       `json:"success"`
+	Err     []errorMsg `json:"error,omitempty"`
+	Data    any        `json:"data,omitempty"`
+}
+
+type errorMsg struct {
+	Code string `json:"code"`
+	Msg  string `json:"msg"`
+}
+
+func New() domain.Response {
 	return &response{}
 }
 

@@ -15,13 +15,15 @@ const (
 )
 
 type handler struct {
-	usecases domain.List
-	logger   port.Logger
+	usecases  domain.List
+	logger    port.Logger
+	validator port.Validator
 }
 
-func New(loggerIns port.Logger, svcList domain.List) port.Handler {
+func New(validatorIns port.Validator, loggerIns port.Logger, svcList domain.List) port.Handler {
 	return &handler{
-		usecases: svcList,
-		logger:   loggerIns,
+		usecases:  svcList,
+		logger:    loggerIns,
+		validator: validatorIns,
 	}
 }
