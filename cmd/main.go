@@ -9,6 +9,7 @@ import (
 
 	cipherAes "assetio/internal/adapters/cipher/aes"
 	handler "assetio/internal/adapters/handler/http/v1"
+	"assetio/internal/adapters/handler/validator"
 	loggerZap "assetio/internal/adapters/logger/zapLogger"
 	middlewareAuth "assetio/internal/adapters/middleware/auth"
 	repositoryMysql "assetio/internal/adapters/repository/mysql"
@@ -16,11 +17,13 @@ import (
 	tokenEngineJwt "assetio/internal/adapters/tokenEngine/jwt"
 
 	accountSrv "assetio/internal/usecase/account"
+	mutualFundSrv "assetio/internal/usecase/mutualFund"
 	securitySrv "assetio/internal/usecase/security"
+	stockSrv "assetio/internal/usecase/stock"
 )
 
 const (
-	CONFIG_FILE_PATH = ``
+	CONFIG_FILE_PATH = `../config/yaml/`
 	CONFIG_FILE_NAME = `app_config`
 	CONFIG_FILE_TYPE = `yaml`
 )
@@ -43,6 +46,9 @@ func main() {
 		return
 	}
 
+	/* get the validator instance */
+	validatorIns := validator.New()
+
 	/* get the database instance */
 	mysqlIns, err := getDatabase(appConfigIns)
 	if err != nil {
@@ -51,18 +57,24 @@ func main() {
 	}
 	mysqlIns.AutoMigrate()
 
-	/* get the user account instance */
+	/* get the account instance */
 	accountSrvIns := accountSrv.New(loggerIns, mysqlIns)
-	/* get the user account instance */
+	/* get the security instance */
 	securitySrvIns := securitySrv.New(loggerIns, mysqlIns)
+	/* get the stock instance */
+	stockSrvIns := stockSrv.New(loggerIns, mysqlIns)
+	/* get the mutual fund instance */
+	mutualFundIns := mutualFundSrv.New(loggerIns, mysqlIns)
 
 	svcList := domain.List{
-		Account:  accountSrvIns,
-		Security: securitySrvIns,
+		Account:    accountSrvIns,
+		Security:   securitySrvIns,
+		Stock:      stockSrvIns,
+		MutualFund: mutualFundIns,
 	}
 
 	/* get the router instance */
-	routerIns := getRouter(appConfigIns, loggerIns, svcList)
+	routerIns := getRouter(appConfigIns, validatorIns, loggerIns, svcList)
 
 	/* start the app */
 	port := appConfigIns.GetAppPort()
@@ -91,7 +103,7 @@ func getLogger(logConfigIns config.Logger) (port.Logger, error) {
 	return loggerZap.New(loggerConfig)
 }
 
-func getDatabase(appConfigIns config.App) (port.RepositoryMySQL, error) {
+func getDatabase(appConfigIns config.App) (port.RepositoryStore, error) {
 	cipherCryptoKey := appConfigIns.GetCipherCryptoKey()
 	cipherIns := cipherAes.New(cipherCryptoKey)
 
@@ -121,7 +133,7 @@ func getDatabase(appConfigIns config.App) (port.RepositoryMySQL, error) {
 
 }
 
-func getRouter(appConfigIns config.App, loggerIns port.Logger, svcList domain.List) port.Router {
+func getRouter(appConfigIns config.App, validatorIns port.Validator, loggerIns port.Logger, svcList domain.List) port.Router {
 	cipherCryptoKey := appConfigIns.GetCipherCryptoKey()
 	cipherIns := cipherAes.New(cipherCryptoKey)
 	apiKeys := appConfigIns.GetMiddlewareApiKeys()
@@ -130,7 +142,7 @@ func getRouter(appConfigIns config.App, loggerIns port.Logger, svcList domain.Li
 
 	middlewareAuthIns := middlewareAuth.New(apiKeys, tokenEngineIns)
 
-	handlerIns := handler.New(loggerIns, svcList)
+	handlerIns := handler.New(validatorIns, loggerIns, svcList)
 	apiConfigIns := appConfigIns.GetApi()
 
 	routerIns := routerGin.New()
@@ -200,5 +212,58 @@ func updateAccountRouters(generalGr port.RouterGroup, accessTokenGr port.RouterG
 	if apiConfigIns.GetSecuritySearchEnabled() {
 		apiMethod, apiRoute := apiConfigIns.GetSecuritySearchProperties()
 		generalGr.RegisterRoute(apiMethod, apiRoute, handlerIns.SecuritySearch)
+	}
+
+	if apiConfigIns.GetStockBuyEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockBuyProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockBuy)
+	}
+
+	if apiConfigIns.GetStockSellEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockSellProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockSell)
+	}
+
+	if apiConfigIns.GetStockDividendAddEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockDividendAddProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockDividendAdd)
+	}
+
+	if apiConfigIns.GetStockSummarylEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockSummaryProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockSummary)
+	}
+
+	if apiConfigIns.GetStockInventorylEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockInventoryProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockInventory)
+	}
+	if apiConfigIns.GetStockInventoryTransactionslEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockInventoryTransactionsProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockInventoryTransactions)
+	}
+
+	if apiConfigIns.GetMutualFundBuyEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetMutualFundBuyProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundBuy)
+	}
+
+	if apiConfigIns.GetMutualFundSellEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetMutualFundSellProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundSell)
+	}
+
+	if apiConfigIns.GetMutualFundSummarylEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetMutualFundSummaryProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundSummary)
+	}
+
+	if apiConfigIns.GetMutualFundInventorylEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetMutualFundInventoryProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundInventory)
+	}
+	if apiConfigIns.GetMutualFundTransactionlEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetMutualFundTransactionProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundTransaction)
 	}
 }

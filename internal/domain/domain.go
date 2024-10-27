@@ -1,34 +1,48 @@
 package domain
 
 import (
-	"context"
+	"net/http"
 )
 
 type List struct {
-	Account  AccountSvr
-	Security SecuritySvr
+	Account    AccountSvr
+	Security   SecuritySvr
+	Stock      StockSvr
+	MutualFund MutualFundSvr
 }
 
 type AccountSvr interface {
-	CreateAccount(ctx context.Context, userId int, name string) error
-	GetAccounts(ctx context.Context, userId int) ([]Account, error)
-	GetAccount(ctx context.Context, accountId, userId int) (Account, error)
-	UpdateAccount(ctx context.Context, accountId, userId int, name string) error
-	GetStatusString(status int) string
-	AccountActivate(ctx context.Context, accountId, userId int) error
-	AccountInactivate(ctx context.Context, accountId, userId int) error
+	AccountCreate(request ClientAccountCreateRequest) Response
+	AccountAll(request ClientAccountAllRequest) Response
+	AccountGet(request ClientAccountGetRequest) Response
+	AccountActivate(request ClientAccountActivateRequest) Response
+	AccountInactivate(request ClientAccountInactivateRequest) Response
+	AccountUpdate(request ClientAccountUpdateRequest) Response
 }
 
 type SecuritySvr interface {
-	GetType(typeData string) int
-	GetExchange(exchange string) int
-	GetTypeString(typeData int) string
-	GetExchangeString(exchange int) string
+	SecurityCreate(request ClientSecurityCreateRequest) Response
+	SecurityAll(request ClientSecurityAllRequest) Response
+	SecurityGet(request ClientSecurityGetRequest) Response
+	SecuritySearch(request ClientSecuritySearchRequest) Response
+	SecurityUpdate(request ClientSecurityUpdateRequest) Response
+}
 
-	CreateSecuriry(ctx context.Context, types, exchange int, symbol, name string) error
-	GetSecuriry(ctx context.Context, types, exchange int, symbol string) (Security, error)
-	GetSecuriryById(ctx context.Context, secruityId int) (Security, error)
-	UpdateSecuriry(ctx context.Context, secruityId, types, exchange int, symbol string, name string) error
-	GetSecurities(ctx context.Context, types, exchange int) ([]Security, error)
-	SearchSecurities(ctx context.Context, types, exchange int, search string) ([]Security, error)
+type StockSvr interface {
+	StockBuy(request ClientStockBuyRequest) Response
+	StockSell(request ClientStockSellRequest) Response
+	StockDividendAdd(request ClientStockDividendAddRequest) Response
+	StockSummary(request ClientStockSummaryRequest) Response
+	StockInventory(request ClientStockInventoryRequest) Response
+	StockInventoryTransactions(request ClientStockInventoryTransactionsRequest) Response
+}
+
+type MutualFundSvr interface {
+}
+
+type Response interface {
+	SetError(errCode string, errMsg string)
+	SetStatus(status int)
+	SetData(data any)
+	Send(w http.ResponseWriter)
 }
