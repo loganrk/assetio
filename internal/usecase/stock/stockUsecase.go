@@ -26,7 +26,7 @@ func (s *stockUsecase) StockBuy(request domain.ClientStockBuyRequest) domain.Res
 	ctx := context.Background()
 	res := response.New()
 
-	secuirity, err := s.mysql.GetSecuriryById(ctx, request.StockId)
+	secuirity, err := s.mysql.GetSecuriryDataById(ctx, request.StockId)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -39,7 +39,7 @@ func (s *stockUsecase) StockBuy(request domain.ClientStockBuyRequest) domain.Res
 		return res
 	}
 
-	inventory, err := s.mysql.InsertInventory(ctx, domain.Inventories{
+	inventory, err := s.mysql.InsertInventoryData(ctx, domain.Inventories{
 		AccountId:         request.AccountId,
 		SecurityId:        secuirity.Id,
 		AvailableQuantiry: request.Quantity,
@@ -51,7 +51,7 @@ func (s *stockUsecase) StockBuy(request domain.ClientStockBuyRequest) domain.Res
 		return res
 	}
 
-	_, err = s.mysql.InsertTransaction(ctx, domain.Transactions{
+	_, err = s.mysql.InsertTransactionData(ctx, domain.Transactions{
 		AccountId:   request.AccountId,
 		InventoryId: inventory.Id,
 		Type:        domain.Buy,
@@ -79,7 +79,7 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 	ctx := context.Background()
 	res := response.New()
 
-	secuirity, err := s.mysql.GetSecuriryById(ctx, request.StockId)
+	secuirity, err := s.mysql.GetSecuriryDataById(ctx, request.StockId)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -92,7 +92,7 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 	}
 
 	if request.InventoryId != 0 {
-		inventory, err := s.mysql.GetInventoryById(ctx, request.InventoryId)
+		inventory, err := s.mysql.GetInventoryDataById(ctx, request.InventoryId)
 		if err != nil {
 			res.SetStatus(http.StatusInternalServerError)
 			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -123,7 +123,7 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 			return res
 		}
-		_, err = s.mysql.InsertTransaction(ctx, domain.Transactions{
+		_, err = s.mysql.InsertTransactionData(ctx, domain.Transactions{
 			AccountId:   request.AccountId,
 			InventoryId: inventory.Id,
 			Type:        domain.Sell,
@@ -156,7 +156,7 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 						res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 						return res
 					}
-					_, err = s.mysql.InsertTransaction(ctx, domain.Transactions{
+					_, err = s.mysql.InsertTransactionData(ctx, domain.Transactions{
 						AccountId:   request.AccountId,
 						InventoryId: inventory.Id,
 						Type:        domain.Sell,
@@ -181,7 +181,7 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 						return res
 					}
 
-					_, err = s.mysql.InsertTransaction(ctx, domain.Transactions{
+					_, err = s.mysql.InsertTransactionData(ctx, domain.Transactions{
 						AccountId:   request.AccountId,
 						InventoryId: inventory.Id,
 						Type:        domain.Sell,
@@ -223,7 +223,7 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 	ctx := context.Background()
 	res := response.New()
 
-	secuirity, err := s.mysql.GetSecuriryById(ctx, request.StockId)
+	secuirity, err := s.mysql.GetSecuriryDataById(ctx, request.StockId)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -237,7 +237,7 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 	}
 
 	if request.InventoryId != 0 {
-		inventory, err := s.mysql.GetInventoryById(ctx, request.InventoryId)
+		inventory, err := s.mysql.GetInventoryDataById(ctx, request.InventoryId)
 		if err != nil {
 			res.SetStatus(http.StatusInternalServerError)
 			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -261,7 +261,7 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 			res.SetError(constant.ERROR_CODE_REQUEST_INVALID, "stock quanity not available to dividend")
 			return res
 		}
-		_, err = s.mysql.InsertTransaction(ctx, domain.Transactions{
+		_, err = s.mysql.InsertTransactionData(ctx, domain.Transactions{
 			AccountId:   request.AccountId,
 			InventoryId: inventory.Id,
 			Type:        domain.Dividend,
@@ -289,7 +289,7 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 		for _, inventory := range inventories {
 			if availQuanitiy != 0 {
 				if inventory.AvailableQuantiry <= availQuanitiy {
-					_, err = s.mysql.InsertTransaction(ctx, domain.Transactions{
+					_, err = s.mysql.InsertTransactionData(ctx, domain.Transactions{
 						AccountId:   request.AccountId,
 						InventoryId: inventory.Id,
 						Type:        domain.Dividend,
@@ -307,7 +307,7 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 					availQuanitiy = availQuanitiy - inventory.AvailableQuantiry
 
 				} else {
-					_, err = s.mysql.InsertTransaction(ctx, domain.Transactions{
+					_, err = s.mysql.InsertTransactionData(ctx, domain.Transactions{
 						AccountId:   request.AccountId,
 						InventoryId: inventory.Id,
 						Type:        domain.Dividend,
@@ -348,7 +348,7 @@ func (s *stockUsecase) StockSummary(request domain.ClientStockSummaryRequest) do
 	ctx := context.Background()
 	res := response.New()
 
-	inventoriesData, err := s.mysql.SelectInvertriesSummaryByAccountIdAndSecurityType(ctx, request.AccountId, constant.SECURITY_TYPE_STOCK)
+	inventoriesData, err := s.mysql.GetInvertriesSummaryByAccountIdAndSecurityType(ctx, request.AccountId, constant.SECURITY_TYPE_STOCK)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -377,7 +377,7 @@ func (s *stockUsecase) StockInventory(request domain.ClientStockInventoryRequest
 	ctx := context.Background()
 	res := response.New()
 
-	secuirityData, err := s.mysql.GetSecuriryById(ctx, request.StockId)
+	secuirityData, err := s.mysql.GetSecuriryDataById(ctx, request.StockId)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -390,7 +390,7 @@ func (s *stockUsecase) StockInventory(request domain.ClientStockInventoryRequest
 		return res
 	}
 
-	inventoriesData, err := s.mysql.SelectInvertriesByAccountIdAndStockId(ctx, request.AccountId, request.StockId)
+	inventoriesData, err := s.mysql.GetInvertriesByAccountIdAndStockId(ctx, request.AccountId, request.StockId)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -416,14 +416,14 @@ func (s *stockUsecase) StockInventoryTransactions(request domain.ClientStockInve
 	ctx := context.Background()
 	res := response.New()
 
-	inventoryData, err := s.mysql.GetInventoryById(ctx, request.InventoryId)
+	inventoryData, err := s.mysql.GetInventoryDataById(ctx, request.InventoryId)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
 	}
 
-	secuirityData, err := s.mysql.GetSecuriryById(ctx, inventoryData.SecurityId)
+	secuirityData, err := s.mysql.GetSecuriryDataById(ctx, inventoryData.SecurityId)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -436,7 +436,7 @@ func (s *stockUsecase) StockInventoryTransactions(request domain.ClientStockInve
 		return res
 	}
 
-	transactionsData, err := s.mysql.SelectInvertriesTransactionByIdAndAccountId(ctx, request.AccountId, inventoryData.Id)
+	transactionsData, err := s.mysql.GetInvertriesTransactionByIdAndAccountId(ctx, request.AccountId, inventoryData.Id)
 
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)

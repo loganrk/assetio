@@ -24,13 +24,13 @@ func (a *accountUsecase) AccountCreate(request domain.ClientAccountCreateRequest
 	ctx := context.Background()
 	res := response.New()
 
-	userId, err := a.mysql.CreateAccount(ctx, domain.Accounts{
+	userData, err := a.mysql.InsertAccountData(ctx, domain.Accounts{
 		Name:   request.Name,
 		UserId: request.UserId,
 		Status: constant.ACCOUNT_STATUS_ACTIVE,
 	})
 
-	if err != nil || userId == 0 {
+	if err != nil || userData.Id == 0 {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -48,7 +48,7 @@ func (a *accountUsecase) AccountAll(request domain.ClientAccountAllRequest) doma
 	ctx := context.Background()
 	res := response.New()
 
-	accounts, err := a.mysql.GetAccounts(ctx, request.UserId)
+	accounts, err := a.mysql.GetAccountsData(ctx, request.UserId)
 
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
@@ -80,7 +80,7 @@ func (a *accountUsecase) AccountGet(request domain.ClientAccountGetRequest) doma
 	ctx := context.Background()
 	res := response.New()
 
-	account, err := a.mysql.GetAccount(ctx, request.AccountId, request.UserId)
+	account, err := a.mysql.GetAccountDataByIdAndUserId(ctx, request.AccountId, request.UserId)
 
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
@@ -109,7 +109,7 @@ func (a *accountUsecase) AccountActivate(request domain.ClientAccountActivateReq
 	ctx := context.Background()
 	res := response.New()
 
-	account, err := a.mysql.GetAccount(ctx, request.AccountId, request.UserId)
+	account, err := a.mysql.GetAccountDataByIdAndUserId(ctx, request.AccountId, request.UserId)
 
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
@@ -135,7 +135,7 @@ func (a *accountUsecase) AccountActivate(request domain.ClientAccountActivateReq
 		Status: constant.ACCOUNT_STATUS_ACTIVE,
 	}
 
-	err = a.mysql.UpdateAccount(ctx, request.AccountId, request.UserId, accountData)
+	err = a.mysql.UpdateAccountData(ctx, request.AccountId, request.UserId, accountData)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -154,7 +154,7 @@ func (a *accountUsecase) AccountInactivate(request domain.ClientAccountInactivat
 	ctx := context.Background()
 	res := response.New()
 
-	account, err := a.mysql.GetAccount(ctx, request.AccountId, request.UserId)
+	account, err := a.mysql.GetAccountDataByIdAndUserId(ctx, request.AccountId, request.UserId)
 
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
@@ -180,7 +180,7 @@ func (a *accountUsecase) AccountInactivate(request domain.ClientAccountInactivat
 		Status: constant.ACCOUNT_STATUS_INACTIVE,
 	}
 
-	err = a.mysql.UpdateAccount(ctx, request.AccountId, request.UserId, accountData)
+	err = a.mysql.UpdateAccountData(ctx, request.AccountId, request.UserId, accountData)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
@@ -202,7 +202,7 @@ func (a *accountUsecase) AccountUpdate(request domain.ClientAccountUpdateRequest
 	accountData := domain.Accounts{
 		Name: request.Name,
 	}
-	err := a.mysql.UpdateAccount(ctx, request.AccountId, request.UserId, accountData)
+	err := a.mysql.UpdateAccountData(ctx, request.AccountId, request.UserId, accountData)
 	if err != nil {
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")

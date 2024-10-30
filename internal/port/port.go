@@ -65,26 +65,26 @@ type Validator interface {
 
 type RepositoryStore interface {
 	AutoMigrate()
-	CreateAccount(ctx context.Context, accountData domain.Accounts) (int, error)
-	GetAccounts(ctx context.Context, userId int) ([]domain.Accounts, error)
-	GetAccount(ctx context.Context, accountId, userId int) (domain.Accounts, error)
-	UpdateAccount(ctx context.Context, accountId, userId int, accountData domain.Accounts) error
+	InsertAccountData(ctx context.Context, accountData domain.Accounts) (domain.Accounts, error)
+	GetAccountDataByIdAndUserId(ctx context.Context, accountId int, userId int) (domain.Accounts, error)
+	GetAccountsData(ctx context.Context, userId int) ([]domain.Accounts, error)
+	UpdateAccountData(ctx context.Context, accountId, userId int, accountData domain.Accounts) error
 
-	CreateSecuriry(ctx context.Context, securityData domain.Securities) (int, error)
-	GetSecuriry(ctx context.Context, types, exchange int, symbol string) (domain.Securities, error)
-	GetSecuriryById(ctx context.Context, securityId int) (domain.Securities, error)
-	UpdateSecuriry(ctx context.Context, securityId int, securityData domain.Securities) error
-	GetSecurities(ctx context.Context, types, exchange int) ([]domain.Securities, error)
-	SearchSecurities(ctx context.Context, types, exchange int, search string) ([]domain.Securities, error)
+	InsertSecurityData(ctx context.Context, securityData domain.Securities) (domain.Securities, error)
+	GetSecuriryDataById(ctx context.Context, securityId int) (domain.Securities, error)
+	GetSecuriryDataByTypeAndExchangeAndSymbol(ctx context.Context, types, exchange int, symbol string) (domain.Securities, error)
+	UpdateSecuriryData(ctx context.Context, securityId int, securityData domain.Securities) error
+	GetSecuritiesDataByExchange(ctx context.Context, types, exchange int) ([]domain.Securities, error)
+	SearchSecuritiesDataByTypeAndExchange(ctx context.Context, types, exchange int, search string) ([]domain.Securities, error)
 
-	InsertTransaction(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error)
-	InsertInventory(ctx context.Context, inventoryData domain.Inventories) (domain.Inventories, error)
-	GetInventoryById(ctx context.Context, inventoryId int) (domain.Inventories, error)
+	InsertTransactionData(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error)
+	InsertInventoryData(ctx context.Context, inventoryData domain.Inventories) (domain.Inventories, error)
+	GetInventoryDataById(ctx context.Context, inventoryId int) (domain.Inventories, error)
 	UpdateAvailableQuanityToInventoryById(ctx context.Context, inventoryId int, quantity float64) error
 	GetActiveInventoriesByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.Inventories, error)
-	SelectInvertriesSummaryByAccountIdAndSecurityType(ctx context.Context, accountId, securityType int) ([]domain.InventorySummary, error)
-	SelectInvertriesByAccountIdAndStockId(ctx context.Context, accountId, securityId int) ([]domain.InventoryDetails, error)
-	SelectInvertriesTransactionByIdAndAccountId(ctx context.Context, accountId, inventoryId int) ([]domain.InventoryTransactions, error)
+	GetInvertriesSummaryByAccountIdAndSecurityType(ctx context.Context, accountId, securityType int) ([]domain.InventorySummary, error)
+	GetInvertriesByAccountIdAndStockId(ctx context.Context, accountId, securityId int) ([]domain.InventoryDetails, error)
+	GetInvertriesTransactionByIdAndAccountId(ctx context.Context, accountId, inventoryId int) ([]domain.InventoryTransactions, error)
 }
 
 type Router interface {

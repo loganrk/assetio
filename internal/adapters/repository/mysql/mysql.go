@@ -37,13 +37,13 @@ func (m *mysql) AutoMigrate() {
 	m.dialer.AutoMigrate(&domain.Accounts{}, &domain.Inventories{}, &domain.Securities{}, &domain.Transactions{})
 }
 
-func (m *mysql) CreateAccount(ctx context.Context, accountData domain.Accounts) (int, error) {
+func (m *mysql) InsertAccountData(ctx context.Context, accountData domain.Accounts) (domain.Accounts, error) {
 	result := m.dialer.WithContext(ctx).Model(&domain.Accounts{}).Create(&accountData)
-	return accountData.Id, result.Error
+	return accountData, result.Error
 
 }
 
-func (m *mysql) GetAccount(ctx context.Context, accountId, userId int) (domain.Accounts, error) {
+func (m *mysql) GetAccountDataByIdAndUserId(ctx context.Context, accountId, userId int) (domain.Accounts, error) {
 	var accountData domain.Accounts
 	result := m.dialer.WithContext(ctx).Model(&domain.Accounts{}).Select("id", "name", "status").Where("id = ? and user_id = ? ", accountId, userId).First(&accountData)
 
@@ -53,7 +53,7 @@ func (m *mysql) GetAccount(ctx context.Context, accountId, userId int) (domain.A
 	return accountData, result.Error
 }
 
-func (m *mysql) GetAccounts(ctx context.Context, userId int) ([]domain.Accounts, error) {
+func (m *mysql) GetAccountsData(ctx context.Context, userId int) ([]domain.Accounts, error) {
 	var accountsData []domain.Accounts
 	result := m.dialer.WithContext(ctx).Model(&domain.Accounts{}).Select("id", "name", "status").Where("user_id = ? ", userId).Find(&accountsData)
 
@@ -63,19 +63,19 @@ func (m *mysql) GetAccounts(ctx context.Context, userId int) ([]domain.Accounts,
 	return accountsData, result.Error
 }
 
-func (m *mysql) UpdateAccount(ctx context.Context, accountId, userId int, accountData domain.Accounts) error {
+func (m *mysql) UpdateAccountData(ctx context.Context, accountId, userId int, accountData domain.Accounts) error {
 	result := m.dialer.WithContext(ctx).Model(&domain.Accounts{}).Where("id = ? and user_id = ? ", accountId, userId).Updates(&accountData)
 	return result.Error
 
 }
 
-func (m *mysql) CreateSecuriry(ctx context.Context, securityData domain.Securities) (int, error) {
+func (m *mysql) InsertSecurityData(ctx context.Context, securityData domain.Securities) (domain.Securities, error) {
 	result := m.dialer.WithContext(ctx).Model(&domain.Securities{}).Create(&securityData)
-	return securityData.Id, result.Error
+	return securityData, result.Error
 
 }
 
-func (m *mysql) GetSecuriry(ctx context.Context, types, exchange int, symbol string) (domain.Securities, error) {
+func (m *mysql) GetSecuriryDataByTypeAndExchangeAndSymbol(ctx context.Context, types, exchange int, symbol string) (domain.Securities, error) {
 	var securityData domain.Securities
 
 	result := m.dialer.WithContext(ctx).Model(&domain.Securities{}).Select("id").Where("type = ? and exchange = ? and symbol =? ", types, exchange, symbol).First(&securityData)
@@ -86,7 +86,7 @@ func (m *mysql) GetSecuriry(ctx context.Context, types, exchange int, symbol str
 	return securityData, result.Error
 }
 
-func (m *mysql) GetSecuriryById(ctx context.Context, securityId int) (domain.Securities, error) {
+func (m *mysql) GetSecuriryDataById(ctx context.Context, securityId int) (domain.Securities, error) {
 	var securityData domain.Securities
 
 	result := m.dialer.WithContext(ctx).Model(&domain.Securities{}).Select("id", "type", "exchange", "symbol", "name").Where("id = ?", securityId).First(&securityData)
@@ -97,13 +97,13 @@ func (m *mysql) GetSecuriryById(ctx context.Context, securityId int) (domain.Sec
 	return securityData, result.Error
 }
 
-func (m *mysql) UpdateSecuriry(ctx context.Context, securityId int, securityData domain.Securities) error {
+func (m *mysql) UpdateSecuriryData(ctx context.Context, securityId int, securityData domain.Securities) error {
 	result := m.dialer.WithContext(ctx).Model(&domain.Securities{}).Where("id = ?", securityId).Updates(&securityData)
 	return result.Error
 
 }
 
-func (m *mysql) GetSecurities(ctx context.Context, types, exchange int) ([]domain.Securities, error) {
+func (m *mysql) GetSecuritiesDataByExchange(ctx context.Context, types, exchange int) ([]domain.Securities, error) {
 	var securitiesData []domain.Securities
 
 	result := m.dialer.WithContext(ctx).Model(&domain.Securities{}).Select("id", "type", "exchange", "symbol", "name").Where("type = ? and exchange = ?", types, exchange).Find(&securitiesData)
@@ -114,7 +114,7 @@ func (m *mysql) GetSecurities(ctx context.Context, types, exchange int) ([]domai
 	return securitiesData, result.Error
 }
 
-func (m *mysql) SearchSecurities(ctx context.Context, types, exchange int, search string) ([]domain.Securities, error) {
+func (m *mysql) SearchSecuritiesDataByTypeAndExchange(ctx context.Context, types, exchange int, search string) ([]domain.Securities, error) {
 	var securitiesData []domain.Securities
 
 	result := m.dialer.WithContext(ctx).Model(&domain.Securities{}).Select("id", "type", "exchange", "symbol", "name").Where("type = ? and exchange = ? and (name LIKE ? or symbol LIKE ?)", types, exchange, "%"+search+"%", "%"+search+"%").Find(&securitiesData)
@@ -125,16 +125,16 @@ func (m *mysql) SearchSecurities(ctx context.Context, types, exchange int, searc
 	return securitiesData, result.Error
 }
 
-func (m *mysql) InsertTransaction(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error) {
+func (m *mysql) InsertTransactionData(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error) {
 	result := m.dialer.WithContext(ctx).Model(&domain.Transactions{}).Create(&transactionData)
 	return transactionData, result.Error
 }
-func (m *mysql) InsertInventory(ctx context.Context, inventoryData domain.Inventories) (domain.Inventories, error) {
+func (m *mysql) InsertInventoryData(ctx context.Context, inventoryData domain.Inventories) (domain.Inventories, error) {
 	result := m.dialer.WithContext(ctx).Model(&domain.Inventories{}).Create(&inventoryData)
 	return inventoryData, result.Error
 }
 
-func (m *mysql) GetInventoryById(ctx context.Context, inventoryId int) (domain.Inventories, error) {
+func (m *mysql) GetInventoryDataById(ctx context.Context, inventoryId int) (domain.Inventories, error) {
 	var inventoryData domain.Inventories
 
 	result := m.dialer.WithContext(ctx).Model(&domain.Inventories{}).Select("id", "account_id", "security_id", "available_quantity").Where("id = ? ", inventoryId).Find(&inventoryData)
@@ -169,7 +169,7 @@ func (m *mysql) GetActiveInventoriesByAccountIdAndSecurityId(ctx context.Context
 	return InventoriesData, result.Error
 }
 
-func (m *mysql) SelectInvertriesSummaryByAccountIdAndSecurityType(ctx context.Context, accountId, securityType int) ([]domain.InventorySummary, error) {
+func (m *mysql) GetInvertriesSummaryByAccountIdAndSecurityType(ctx context.Context, accountId, securityType int) ([]domain.InventorySummary, error) {
 	var inventoryData []domain.InventorySummary
 
 	result := m.dialer.WithContext(ctx).
@@ -187,7 +187,7 @@ func (m *mysql) SelectInvertriesSummaryByAccountIdAndSecurityType(ctx context.Co
 	return inventoryData, result.Error
 }
 
-func (m *mysql) SelectInvertriesByAccountIdAndStockId(ctx context.Context, accountId, securityId int) ([]domain.InventoryDetails, error) {
+func (m *mysql) GetInvertriesByAccountIdAndStockId(ctx context.Context, accountId, securityId int) ([]domain.InventoryDetails, error) {
 	var inventoryData []domain.InventoryDetails
 
 	result := m.dialer.WithContext(ctx).
@@ -203,7 +203,7 @@ func (m *mysql) SelectInvertriesByAccountIdAndStockId(ctx context.Context, accou
 	return inventoryData, result.Error
 }
 
-func (m *mysql) SelectInvertriesTransactionByIdAndAccountId(ctx context.Context, accountId, inventoryId int) ([]domain.InventoryTransactions, error) {
+func (m *mysql) GetInvertriesTransactionByIdAndAccountId(ctx context.Context, accountId, inventoryId int) ([]domain.InventoryTransactions, error) {
 	var inventoryData []domain.InventoryTransactions
 
 	result := m.dialer.WithContext(ctx).
