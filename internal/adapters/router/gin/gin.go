@@ -81,5 +81,10 @@ func (r *route) wrapHTTPHandlerFunc(h http.Handler) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Wrap the handler with the provided middleware
 		h.ServeHTTP(c.Writer, c.Request)
+
+		if c.Writer.Status() == http.StatusOK {
+			c.Next()
+		}
+
 	}
 }
