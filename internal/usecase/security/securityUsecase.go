@@ -42,6 +42,12 @@ func (s *securityUsecase) SecurityCreate(request domain.ClientSecurityCreateRequ
 	securityData, err := s.mysql.GetSecuriryDataByTypeAndExchangeAndSymbol(ctx, securityType, securityExchange, request.Symbol)
 
 	if err != nil {
+		s.logger.Errorw(ctx, "GetSecuriryDataByTypeAndExchangeAndSymbol failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -55,14 +61,20 @@ func (s *securityUsecase) SecurityCreate(request domain.ClientSecurityCreateRequ
 		return res
 	}
 
-	securityData, err = s.mysql.InsertSecurityData(ctx, domain.Securities{
+	_, err = s.mysql.InsertSecurityData(ctx, domain.Securities{
 		Type:     securityType,
 		Exchange: securityExchange,
 		Name:     request.Name,
 		Symbol:   request.Symbol,
 	})
 
-	if err != nil || securityData.Id != 0 {
+	if err != nil {
+		s.logger.Errorw(ctx, "InsertSecurityData failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -98,6 +110,12 @@ func (s *securityUsecase) SecurityAll(request domain.ClientSecurityAllRequest) d
 	securitiesData, err := s.mysql.GetSecuritiesDataByExchange(ctx, securityType, securityExchange)
 
 	if err != nil {
+		s.logger.Errorw(ctx, "GetSecuritiesDataByExchange failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -129,6 +147,12 @@ func (s *securityUsecase) SecurityGet(request domain.ClientSecurityGetRequest) d
 
 	securityData, err := s.mysql.GetSecuriryDataById(ctx, request.SecurityId)
 	if err != nil {
+		s.logger.Errorw(ctx, "GetSecuriryDataById failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -173,6 +197,12 @@ func (s *securityUsecase) SecuritySearch(request domain.ClientSecuritySearchRequ
 
 	securitiesData, err := s.mysql.SearchSecuritiesDataByTypeAndExchange(ctx, securityType, securityExchange, request.Search)
 	if err != nil {
+		s.logger.Errorw(ctx, "SearchSecuritiesDataByTypeAndExchange failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -219,6 +249,12 @@ func (s *securityUsecase) SecurityUpdate(request domain.ClientSecurityUpdateRequ
 
 	securityData, err := s.mysql.GetSecuriryDataById(ctx, request.SecurityId)
 	if err != nil {
+		s.logger.Errorw(ctx, "GetSecuriryDataById failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -232,6 +268,12 @@ func (s *securityUsecase) SecurityUpdate(request domain.ClientSecurityUpdateRequ
 
 	securityData, err = s.mysql.GetSecuriryDataByTypeAndExchangeAndSymbol(ctx, securityType, securityExchange, request.Symbol)
 	if err != nil {
+		s.logger.Errorw(ctx, "GetSecuriryDataByTypeAndExchangeAndSymbol failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -255,6 +297,12 @@ func (s *securityUsecase) SecurityUpdate(request domain.ClientSecurityUpdateRequ
 	err = s.mysql.UpdateSecuriryData(ctx, request.SecurityId, securityData)
 
 	if err != nil {
+		s.logger.Errorw(ctx, "UpdateSecuriryData failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res

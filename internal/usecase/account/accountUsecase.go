@@ -24,13 +24,18 @@ func (a *accountUsecase) AccountCreate(request domain.ClientAccountCreateRequest
 	ctx := context.Background()
 	res := response.New()
 
-	userData, err := a.mysql.InsertAccountData(ctx, domain.Accounts{
+	_, err := a.mysql.InsertAccountData(ctx, domain.Accounts{
 		Name:   request.Name,
 		UserId: request.UserId,
 		Status: constant.ACCOUNT_STATUS_ACTIVE,
 	})
 
-	if err != nil || userData.Id == 0 {
+	if err != nil {
+		a.logger.Errorw(ctx, "InsertAccountData failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -51,6 +56,12 @@ func (a *accountUsecase) AccountAll(request domain.ClientAccountAllRequest) doma
 	accounts, err := a.mysql.GetAccountsData(ctx, request.UserId)
 
 	if err != nil {
+		a.logger.Errorw(ctx, "GetAccountsData failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -83,6 +94,12 @@ func (a *accountUsecase) AccountGet(request domain.ClientAccountGetRequest) doma
 	account, err := a.mysql.GetAccountDataByIdAndUserId(ctx, request.AccountId, request.UserId)
 
 	if err != nil {
+		a.logger.Errorw(ctx, "GetAccountDataByIdAndUserId failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -112,6 +129,11 @@ func (a *accountUsecase) AccountActivate(request domain.ClientAccountActivateReq
 	account, err := a.mysql.GetAccountDataByIdAndUserId(ctx, request.AccountId, request.UserId)
 
 	if err != nil {
+		a.logger.Errorw(ctx, "GetAccountDataByIdAndUserId failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -137,6 +159,12 @@ func (a *accountUsecase) AccountActivate(request domain.ClientAccountActivateReq
 
 	err = a.mysql.UpdateAccountData(ctx, request.AccountId, request.UserId, accountData)
 	if err != nil {
+		a.logger.Errorw(ctx, "UpdateAccountData failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -157,6 +185,12 @@ func (a *accountUsecase) AccountInactivate(request domain.ClientAccountInactivat
 	account, err := a.mysql.GetAccountDataByIdAndUserId(ctx, request.AccountId, request.UserId)
 
 	if err != nil {
+		a.logger.Errorw(ctx, "GetAccountDataByIdAndUserId failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -182,6 +216,11 @@ func (a *accountUsecase) AccountInactivate(request domain.ClientAccountInactivat
 
 	err = a.mysql.UpdateAccountData(ctx, request.AccountId, request.UserId, accountData)
 	if err != nil {
+		a.logger.Errorw(ctx, "GetAccountDataByIdAndUserId failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -204,6 +243,11 @@ func (a *accountUsecase) AccountUpdate(request domain.ClientAccountUpdateRequest
 	}
 	err := a.mysql.UpdateAccountData(ctx, request.AccountId, request.UserId, accountData)
 	if err != nil {
+		a.logger.Errorw(ctx, "UpdateAccountData failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res

@@ -28,6 +28,12 @@ func (s *stockUsecase) StockBuy(request domain.ClientStockBuyRequest) domain.Res
 
 	secuirity, err := s.mysql.GetSecuriryDataById(ctx, request.StockId)
 	if err != nil {
+		s.logger.Errorw(ctx, "GetSecuriryDataById failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -45,7 +51,14 @@ func (s *stockUsecase) StockBuy(request domain.ClientStockBuyRequest) domain.Res
 		AvailableQuantiry: request.Quantity,
 		Price:             request.AmountPerQuantity,
 	})
+
 	if err != nil {
+		s.logger.Errorw(ctx, "InsertInventoryData failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -62,6 +75,12 @@ func (s *stockUsecase) StockBuy(request domain.ClientStockBuyRequest) domain.Res
 	})
 
 	if err != nil {
+		s.logger.Errorw(ctx, "InsertTransactionData failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -81,6 +100,12 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 
 	secuirity, err := s.mysql.GetSecuriryDataById(ctx, request.StockId)
 	if err != nil {
+		s.logger.Errorw(ctx, "GetSecuriryDataById failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -94,6 +119,12 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 	if request.InventoryId != 0 {
 		inventory, err := s.mysql.GetInventoryDataById(ctx, request.InventoryId)
 		if err != nil {
+			s.logger.Errorw(ctx, "GetInventoryDataById failed",
+				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+				constant.ERROR_MESSAGE, err.Error(),
+				constant.REQUEST, request,
+			)
+
 			res.SetStatus(http.StatusInternalServerError)
 			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 			return res
@@ -119,6 +150,12 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 
 		err = s.mysql.UpdateAvailableQuanityToInventoryById(ctx, inventory.Id, inventory.AvailableQuantiry-request.Quantity)
 		if err != nil {
+			s.logger.Errorw(ctx, "UpdateAvailableQuanityToInventoryById failed",
+				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+				constant.ERROR_MESSAGE, err.Error(),
+				constant.REQUEST, request,
+			)
+
 			res.SetStatus(http.StatusInternalServerError)
 			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 			return res
@@ -134,6 +171,12 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 		})
 
 		if err != nil {
+			s.logger.Errorw(ctx, "InsertTransactionData failed",
+				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+				constant.ERROR_MESSAGE, err.Error(),
+				constant.REQUEST, request,
+			)
+
 			res.SetStatus(http.StatusInternalServerError)
 			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 			return res
@@ -142,6 +185,12 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 	} else {
 		inventories, err := s.mysql.GetActiveInventoriesByAccountIdAndSecurityId(ctx, request.AccountId, request.StockId)
 		if err != nil {
+			s.logger.Errorw(ctx, "GetActiveInventoriesByAccountIdAndSecurityId failed",
+				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+				constant.ERROR_MESSAGE, err.Error(),
+				constant.REQUEST, request,
+			)
+
 			res.SetStatus(http.StatusInternalServerError)
 			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 			return res
@@ -152,6 +201,12 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 				if inventory.AvailableQuantiry <= availQuanitiy {
 					err := s.mysql.UpdateAvailableQuanityToInventoryById(ctx, inventory.Id, 0)
 					if err != nil {
+						s.logger.Errorw(ctx, "UpdateAvailableQuanityToInventoryById failed",
+							constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+							constant.ERROR_MESSAGE, err.Error(),
+							constant.REQUEST, request,
+						)
+
 						res.SetStatus(http.StatusInternalServerError)
 						res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 						return res
@@ -167,6 +222,12 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 					})
 
 					if err != nil {
+						s.logger.Errorw(ctx, "InsertTransactionData failed",
+							constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+							constant.ERROR_MESSAGE, err.Error(),
+							constant.REQUEST, request,
+						)
+
 						res.SetStatus(http.StatusInternalServerError)
 						res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 						return res
@@ -176,6 +237,12 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 				} else {
 					err := s.mysql.UpdateAvailableQuanityToInventoryById(ctx, inventory.Id, inventory.AvailableQuantiry-availQuanitiy)
 					if err != nil {
+						s.logger.Errorw(ctx, "UpdateAvailableQuanityToInventoryById failed",
+							constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+							constant.ERROR_MESSAGE, err.Error(),
+							constant.REQUEST, request,
+						)
+
 						res.SetStatus(http.StatusInternalServerError)
 						res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 						return res
@@ -192,6 +259,12 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 					})
 
 					if err != nil {
+						s.logger.Errorw(ctx, "InsertTransactionData failed",
+							constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+							constant.ERROR_MESSAGE, err.Error(),
+							constant.REQUEST, request,
+						)
+
 						res.SetStatus(http.StatusInternalServerError)
 						res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 						return res
@@ -225,6 +298,12 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 
 	secuirity, err := s.mysql.GetSecuriryDataById(ctx, request.StockId)
 	if err != nil {
+		s.logger.Errorw(ctx, "GetSecuriryDataById failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -239,6 +318,12 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 	if request.InventoryId != 0 {
 		inventory, err := s.mysql.GetInventoryDataById(ctx, request.InventoryId)
 		if err != nil {
+			s.logger.Errorw(ctx, "GetInventoryDataById failed",
+				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+				constant.ERROR_MESSAGE, err.Error(),
+				constant.REQUEST, request,
+			)
+
 			res.SetStatus(http.StatusInternalServerError)
 			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 			return res
@@ -271,6 +356,12 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 		})
 
 		if err != nil {
+			s.logger.Errorw(ctx, "InsertTransactionData failed",
+				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+				constant.ERROR_MESSAGE, err.Error(),
+				constant.REQUEST, request,
+			)
+
 			res.SetStatus(http.StatusInternalServerError)
 			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 			return res
@@ -279,6 +370,12 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 	} else {
 		inventories, err := s.mysql.GetActiveInventoriesByAccountIdAndSecurityId(ctx, request.AccountId, request.StockId)
 		if err != nil {
+			s.logger.Errorw(ctx, "GetActiveInventoriesByAccountIdAndSecurityId failed",
+				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+				constant.ERROR_MESSAGE, err.Error(),
+				constant.REQUEST, request,
+			)
+
 			res.SetStatus(http.StatusInternalServerError)
 			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 			return res
@@ -299,6 +396,12 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 					})
 
 					if err != nil {
+						s.logger.Errorw(ctx, "InsertTransactionData failed",
+							constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+							constant.ERROR_MESSAGE, err.Error(),
+							constant.REQUEST, request,
+						)
+
 						res.SetStatus(http.StatusInternalServerError)
 						res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 						return res
@@ -317,6 +420,12 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 					})
 
 					if err != nil {
+						s.logger.Errorw(ctx, "InsertTransactionData failed",
+							constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+							constant.ERROR_MESSAGE, err.Error(),
+							constant.REQUEST, request,
+						)
+
 						res.SetStatus(http.StatusInternalServerError)
 						res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 						return res
@@ -350,6 +459,12 @@ func (s *stockUsecase) StockSummary(request domain.ClientStockSummaryRequest) do
 
 	inventoriesData, err := s.mysql.GetInvertriesSummaryByAccountIdAndSecurityType(ctx, request.AccountId, constant.SECURITY_TYPE_STOCK)
 	if err != nil {
+		s.logger.Errorw(ctx, "inventoriesData failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -379,6 +494,12 @@ func (s *stockUsecase) StockInventory(request domain.ClientStockInventoryRequest
 
 	secuirityData, err := s.mysql.GetSecuriryDataById(ctx, request.StockId)
 	if err != nil {
+		s.logger.Errorw(ctx, "secuirityData failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -392,6 +513,12 @@ func (s *stockUsecase) StockInventory(request domain.ClientStockInventoryRequest
 
 	inventoriesData, err := s.mysql.GetInvertriesByAccountIdAndStockId(ctx, request.AccountId, request.StockId)
 	if err != nil {
+		s.logger.Errorw(ctx, "GetInvertriesByAccountIdAndStockId failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -418,6 +545,12 @@ func (s *stockUsecase) StockInventoryTransactions(request domain.ClientStockInve
 
 	inventoryData, err := s.mysql.GetInventoryDataById(ctx, request.InventoryId)
 	if err != nil {
+		s.logger.Errorw(ctx, "GetInventoryDataById failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -425,6 +558,12 @@ func (s *stockUsecase) StockInventoryTransactions(request domain.ClientStockInve
 
 	secuirityData, err := s.mysql.GetSecuriryDataById(ctx, inventoryData.SecurityId)
 	if err != nil {
+		s.logger.Errorw(ctx, "GetSecuriryDataById failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
@@ -439,6 +578,12 @@ func (s *stockUsecase) StockInventoryTransactions(request domain.ClientStockInve
 	transactionsData, err := s.mysql.GetInvertriesTransactionByIdAndAccountId(ctx, request.AccountId, inventoryData.Id)
 
 	if err != nil {
+		s.logger.Errorw(ctx, "GetInvertriesTransactionByIdAndAccountId failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res

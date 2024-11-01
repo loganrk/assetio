@@ -41,7 +41,6 @@ func New(config Config) (port.Logger, error) {
 		NameKey:        "logger",
 		CallerKey:      "caller",
 		MessageKey:     "msg",
-		StacktraceKey:  "stacktrace",
 		LineEnding:     zapcore.DefaultLineEnding,
 		EncodeLevel:    zapcore.CapitalLevelEncoder,
 		EncodeTime:     zapcore.ISO8601TimeEncoder,
