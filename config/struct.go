@@ -5,8 +5,9 @@ type app struct {
 		Name string `mapstructure:"name"`
 		Port string `mapstructure:"port"`
 	} `mapstructure:"application"`
-	Logger logger `mapstructure:"logger"`
-	Cipher struct {
+	AccessLog logger `mapstructure:"accessLog"`
+	AppLog    logger `mapstructure:"appLog"`
+	Cipher    struct {
 		CryptoKey string `mapstructure:"cryptoKey"`
 	} `mapstructure:"cipher"`
 	Middleware struct {
@@ -38,8 +39,7 @@ type logger struct {
 		Method int
 		Caller bool
 	}
-	Path    string
-	ErrPath string
+	Path string
 }
 
 type api struct {

@@ -17,11 +17,10 @@ const (
 )
 
 type Config struct {
-	Level           int
-	Encoding        int
-	EncodingCaller  bool
-	OutputPath      string
-	ErrorOutputPath string
+	Level          int
+	Encoding       int
+	EncodingCaller bool
+	OutputPath     string
 }
 
 type zapLog struct {
@@ -65,18 +64,7 @@ func New(config Config) (port.Logger, error) {
 		zap.NewAtomicLevelAt(zapLevel),
 	)
 
-	errorCore := zapcore.NewCore(
-		zapcore.NewJSONEncoder(encoderConfig),
-		zapcore.AddSync(&lumberjack.Logger{
-			Filename:   config.ErrorOutputPath,
-			MaxSize:    100, // megabytes
-			MaxBackups: 3,
-			MaxAge:     28, // days
-		}),
-		zap.NewAtomicLevelAt(zapcore.ErrorLevel),
-	)
-
-	core := zapcore.NewTee(generalCore, errorCore)
+	core := zapcore.NewTee(generalCore)
 
 	logger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 

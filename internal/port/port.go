@@ -90,13 +90,13 @@ type RepositoryStore interface {
 type Router interface {
 	RegisterRoute(method, path string, handlerFunc http.HandlerFunc)
 	StartServer(port string) error
-	UseBefore(middlewares ...http.HandlerFunc)
+	UseBefore(middlewares ...http.Handler)
 	NewGroup(groupName string) RouterGroup
 }
 
 type RouterGroup interface {
 	RegisterRoute(method, path string, handlerFunc http.HandlerFunc)
-	UseBefore(middlewares ...http.HandlerFunc)
+	UseBefore(middlewares ...http.Handler)
 }
 
 type Cipher interface {
@@ -110,8 +110,8 @@ type Token interface {
 }
 
 type Auth interface {
-	ValidateApiKey() http.HandlerFunc
-	ValidateAccessToken() http.HandlerFunc
+	ValidateApiKey() http.Handler
+	ValidateAccessToken() http.Handler
 }
 
 type Logger interface {

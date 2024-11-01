@@ -5,7 +5,6 @@ type Logger interface {
 	GetLoggerEncodingMethod() int
 	GetLoggerEncodingCaller() bool
 	GetLoggerPath() string
-	GetLoggerErrorPath() string
 }
 
 func (l logger) GetLoggerLevel() int {
@@ -25,10 +24,5 @@ func (l logger) GetLoggerEncodingCaller() bool {
 
 func (l logger) GetLoggerPath() string {
 	return l.Path
-
-}
-
-func (l logger) GetLoggerErrorPath() string {
-	return l.ErrPath
 
 }

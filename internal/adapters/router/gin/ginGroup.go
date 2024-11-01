@@ -3,27 +3,28 @@ package gin
 import (
 	"assetio/internal/port"
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-type route struct {
-	gin       *gin.Engine
+type routeGroup struct {
+	ginGroup  *gin.RouterGroup
 	accessLog port.Logger
 }
 
-func New(accessLoggerIns port.Logger) port.Router {
-	gin.DisableConsoleColor()
-	return &route{
-		gin:       gin.Default(),
-		accessLog: accessLoggerIns,
+func (r *route) NewGroup(groupName string) port.RouterGroup {
+	return &routeGroup{
+		ginGroup:  r.gin.Group(groupName),
+		accessLog: r.accessLog,
 	}
 }
 
-func (r *route) RegisterRoute(method, path string, handlerFunc http.HandlerFunc) {
-	r.gin.Handle(method, path, func(c *gin.Context) {
+func (r *routeGroup) RegisterRoute(method, path string, handlerFunc http.HandlerFunc) {
+	r.ginGroup.Handle(method, path, func(c *gin.Context) {
+
 		// Wrap Gin's writer with our custom response writer
 		respWriter := &responseWriter{
 			ResponseWriter: c.Writer,
@@ -35,6 +36,7 @@ func (r *route) RegisterRoute(method, path string, handlerFunc http.HandlerFunc)
 		// Execute the handler
 		handlerFunc(c.Writer, c.Request)
 
+		fmt.Println(respWriter.statusCode)
 		// Determine logging based on response status
 		if respWriter.statusCode == http.StatusOK {
 			r.accessLog.Infow(c, "api response success",
@@ -67,19 +69,16 @@ func (r *route) RegisterRoute(method, path string, handlerFunc http.HandlerFunc)
 	})
 }
 
-func (r *route) StartServer(port string) error {
-	return r.gin.Run(":" + port)
-}
-
-func (r *route) UseBefore(middlewares ...http.Handler) {
+func (r *routeGroup) UseBefore(middlewares ...http.Handler) {
 	for _, middleware := range middlewares {
-		r.gin.Use(r.wrapHTTPHandlerFunc(middleware))
+		r.ginGroup.Use(r.wrapHTTPHandlerFunc(middleware))
 	}
 }
 
-func (r *route) wrapHTTPHandlerFunc(h http.Handler) gin.HandlerFunc {
+func (r *routeGroup) wrapHTTPHandlerFunc(h http.Handler) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Wrap the handler with the provided middleware
 		h.ServeHTTP(c.Writer, c.Request)
+
 	}
 }
