@@ -1,4 +1,4 @@
-package auth
+package middleware
 
 import (
 	"assetio/internal/port"
@@ -10,19 +10,19 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-type auth struct {
+type middleware struct {
 	apiKeys  []string
 	tokenIns port.Token
 }
 
 func New(apiKeys []string, tokenIns port.Token) port.Auth {
-	return &auth{
+	return &middleware{
 		apiKeys:  apiKeys,
 		tokenIns: tokenIns,
 	}
 }
 
-func (a *auth) ValidateApiKey() http.HandlerFunc {
+func (m *middleware) ValidateApiKey() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		reqApiKey := r.URL.Query().Get("key")
 		if reqApiKey == "" {
@@ -30,7 +30,7 @@ func (a *auth) ValidateApiKey() http.HandlerFunc {
 			return
 		}
 
-		if !slices.Contains(a.apiKeys, reqApiKey) {
+		if !slices.Contains(m.apiKeys, reqApiKey) {
 			http.Error(w, "api key is invalid", http.StatusUnauthorized)
 			return
 		}
@@ -40,16 +40,17 @@ func (a *auth) ValidateApiKey() http.HandlerFunc {
 	})
 }
 
-func (a *auth) ValidateAccessToken() http.HandlerFunc {
+func (m *middleware) ValidateAccessToken() http.Handler {
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		accessToken := r.Header.Get("Authorization")
-		token := a.exactToken(accessToken)
+		token := m.exactToken(accessToken)
 		if token == "" {
 			http.Error(w, "authorization header required", http.StatusUnauthorized)
 			return
 		}
 
-		userid, expiresAt, err := a.tokenIns.GetAccessTokenData(token)
+		userid, expiresAt, err := m.tokenIns.GetAccessTokenData(token)
 		if err != nil {
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
@@ -68,11 +69,11 @@ func (a *auth) ValidateAccessToken() http.HandlerFunc {
 		queryParams := r.URL.Query()
 		queryParams.Set("uid", strconv.Itoa(userid))
 		r.URL.RawQuery = queryParams.Encode()
-
 	})
+
 }
 
-func (a *auth) exactToken(token string) string {
+func (m *middleware) exactToken(token string) string {
 	parts := strings.SplitN(token, " ", 2)
 	if len(parts) == 2 && parts[0] == "Bearer" {
 		return parts[1]

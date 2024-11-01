@@ -7,11 +7,12 @@ import (
 	"context"
 	"log"
 
+	"assetio/internal/adapters/handler/validator"
+	"assetio/internal/adapters/middleware"
+
 	cipherAes "assetio/internal/adapters/cipher/aes"
 	handler "assetio/internal/adapters/handler/http/v1"
-	"assetio/internal/adapters/handler/validator"
 	loggerZap "assetio/internal/adapters/logger/zapLogger"
-	middlewareAuth "assetio/internal/adapters/middleware/auth"
 	repositoryMysql "assetio/internal/adapters/repository/mysql"
 	routerGin "assetio/internal/adapters/router/gin"
 	tokenEngineJwt "assetio/internal/adapters/tokenEngine/jwt"
@@ -39,8 +40,15 @@ func main() {
 		return
 	}
 
-	/* get the logger instance */
-	loggerIns, err := getLogger(appConfigIns.GetLogger())
+	/* get the app logger instance */
+	appLoggerIns, err := getLogger(appConfigIns.GetAppLog())
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	/* get the app logger instance */
+	accessLoggerIns, err := getLogger(appConfigIns.GetAccessLog())
 	if err != nil {
 		log.Println(err)
 		return
@@ -58,13 +66,13 @@ func main() {
 	mysqlIns.AutoMigrate()
 
 	/* get the account instance */
-	accountSrvIns := accountSrv.New(loggerIns, mysqlIns)
+	accountSrvIns := accountSrv.New(appLoggerIns, mysqlIns)
 	/* get the security instance */
-	securitySrvIns := securitySrv.New(loggerIns, mysqlIns)
+	securitySrvIns := securitySrv.New(appLoggerIns, mysqlIns)
 	/* get the stock instance */
-	stockSrvIns := stockSrv.New(loggerIns, mysqlIns)
+	stockSrvIns := stockSrv.New(appLoggerIns, mysqlIns)
 	/* get the mutual fund instance */
-	mutualFundIns := mutualFundSrv.New(loggerIns, mysqlIns)
+	mutualFundIns := mutualFundSrv.New(appLoggerIns, mysqlIns)
 
 	svcList := domain.List{
 		Account:    accountSrvIns,
@@ -74,31 +82,30 @@ func main() {
 	}
 
 	/* get the router instance */
-	routerIns := getRouter(appConfigIns, validatorIns, loggerIns, svcList)
+	routerIns := getRouter(appConfigIns, validatorIns, appLoggerIns, accessLoggerIns, svcList)
 
 	/* start the app */
 	port := appConfigIns.GetAppPort()
-	loggerIns.Infow(context.Background(), "app started", "port", port)
-	loggerIns.Sync(context.Background())
+	appLoggerIns.Infow(context.Background(), "app started", "port", port)
+	appLoggerIns.Sync(context.Background())
 
 	err = routerIns.StartServer(port)
 	if err != nil {
-		loggerIns.Errorw(context.Background(), "app stoped", "port", port, "error", err)
-		loggerIns.Sync(context.Background())
+		appLoggerIns.Errorw(context.Background(), "app stoped", "port", port, "error", err)
+		appLoggerIns.Sync(context.Background())
 		return
 	}
 
-	loggerIns.Infow(context.Background(), "app stoped", "port", port, "error", nil)
-	loggerIns.Sync(context.Background())
+	appLoggerIns.Infow(context.Background(), "app stoped", "port", port, "error", nil)
+	appLoggerIns.Sync(context.Background())
 }
 
 func getLogger(logConfigIns config.Logger) (port.Logger, error) {
 	loggerConfig := loggerZap.Config{
-		Level:           logConfigIns.GetLoggerLevel(),
-		Encoding:        logConfigIns.GetLoggerEncodingMethod(),
-		EncodingCaller:  logConfigIns.GetLoggerEncodingCaller(),
-		OutputPath:      logConfigIns.GetLoggerPath(),
-		ErrorOutputPath: logConfigIns.GetLoggerErrorPath(),
+		Level:          logConfigIns.GetLoggerLevel(),
+		Encoding:       logConfigIns.GetLoggerEncodingMethod(),
+		EncodingCaller: logConfigIns.GetLoggerEncodingCaller(),
+		OutputPath:     logConfigIns.GetLoggerPath(),
 	}
 	return loggerZap.New(loggerConfig)
 }
@@ -133,25 +140,25 @@ func getDatabase(appConfigIns config.App) (port.RepositoryStore, error) {
 
 }
 
-func getRouter(appConfigIns config.App, validatorIns port.Validator, loggerIns port.Logger, svcList domain.List) port.Router {
+func getRouter(appConfigIns config.App, validatorIns port.Validator, appLoggerIns, accessLoggerIns port.Logger, svcList domain.List) port.Router {
 	cipherCryptoKey := appConfigIns.GetCipherCryptoKey()
 	cipherIns := cipherAes.New(cipherCryptoKey)
 	apiKeys := appConfigIns.GetMiddlewareApiKeys()
 
 	tokenEngineIns := tokenEngineJwt.New(cipherIns)
 
-	middlewareAuthIns := middlewareAuth.New(apiKeys, tokenEngineIns)
+	middlewareIns := middleware.New(apiKeys, tokenEngineIns)
 
-	handlerIns := handler.New(validatorIns, loggerIns, svcList)
+	handlerIns := handler.New(validatorIns, appLoggerIns, svcList)
 	apiConfigIns := appConfigIns.GetApi()
 
-	routerIns := routerGin.New()
+	routerIns := routerGin.New(accessLoggerIns)
 
 	generalGr := routerIns.NewGroup("")
-	generalGr.UseBefore(middlewareAuthIns.ValidateApiKey())
+	generalGr.UseBefore(middlewareIns.ValidateApiKey())
 
 	accessTokenGr := routerIns.NewGroup("")
-	accessTokenGr.UseBefore(middlewareAuthIns.ValidateAccessToken())
+	accessTokenGr.UseBefore(middlewareIns.ValidateAccessToken())
 
 	updateAccountRouters(generalGr, accessTokenGr, apiConfigIns, handlerIns)
 
