@@ -2,23 +2,32 @@ application:
   port: 8001
   name: assetio
 
-logger:
-  level:
+accessLog:
+  level: 5
   encoding:
-    method:
-    caller:
-  path:
-  errPath:
+    method: 1
+    caller: false
+  path:  logs\access\access.log
+
+appLog:
+  level: 5
+  encoding:
+    method: 1
+    caller: true
+  path:  logs\app\app.log
 
 cipher:
   cryptoKey: qf0ac7131xktkut8
-  
+
 middleware:
-  authorization:
-    enabled: true
-    token: c713-kut8-1xkt-qf0a
+  keys:
+    - "mhkwuhcL30tq6IuErPfKgRi86BfcRC8vtdQvJa5ILqrDmC2JdNlGlYs05w2KWcyd"
+    - "f97bTqnEWXcSKQ4wtMwFf2vDCdUjnCrZDS6voQNZbf5s0a18j8uOWuS41Uwj6Jhv"
+    - "bLiaBYhfYGr1ZXp6VfIEeaipGXWFAqxtw7LgaYaDcNMmHyz73BBnxMgK78YcfpUp"
+    - "qIAJeZ7qzrUZ2CjsR2vvmhfnDOz8hMnKH2BwlpvCHkmc7TP0poxeqrCmU8ZV7q9q"
 
 api:
+  api:
   accountCreate:
     enabled: true
     route: /account/create
@@ -62,6 +71,58 @@ api:
   securityGet:
     enabled: true
     route: /security/get
+    method: GET
+  stockBuy:
+    enabled: true
+    route: /stock/buy
+    method: GET
+  stockSell:
+    enabled: true
+    route: /stock/sell
+    method: GET
+  stockDividendAdd:
+    enabled: true
+    route: /stock/dividend/add
+    method: GET
+  stockSplit:
+    enabled: true
+    route: /stock/split
+    method: GET
+  stockSummary:
+    enabled: true
+    route: /stock/summary
+    method: GET
+  stockInventories:
+    enabled: true
+    route: /stock/inventories
+    method: GET
+  stockInventiryLedgers:
+    enabled: true
+    route: /stock/inventory/ledgers
+    method: GET
+  mutualFundBuy:
+    enabled: true
+    route: /mf/buy
+    method: GET
+  mutualFundSell:
+    enabled: true
+    route: /mf/sell
+    method: GET
+  mutualFundAdd:
+    enabled: true
+    route: /mf/add
+    method: GET
+  mutualFundSummary:
+    enabled: true
+    route: /mf/summary
+    method: GET
+  mutualFundInventory:
+    enabled: true
+    route: /mf/inventory
+    method: GET
+  mutualFundTransaction:
+    enabled: true
+    route: /mf/transaction
     method: GET
 
 store:

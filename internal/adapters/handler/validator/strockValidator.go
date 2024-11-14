@@ -21,7 +21,7 @@ func (v validation) StockBuy(request domain.ClientStockBuyRequest) error {
 		return errors.New("invalid quantity")
 	}
 
-	if request.AmountPerQuantity == 0 {
+	if request.AveragePrice == 0 {
 		return errors.New("invalid amount per quantity")
 	}
 	if request.FeeAmount == 0 {
@@ -46,7 +46,7 @@ func (v validation) StockSell(request domain.ClientStockSellRequest) error {
 		return errors.New("invalid quantity")
 	}
 
-	if request.AmountPerQuantity == 0 {
+	if request.AveragePrice == 0 {
 		return errors.New("invalid amount per quantity")
 	}
 	if request.FeeAmount == 0 {
@@ -55,6 +55,30 @@ func (v validation) StockSell(request domain.ClientStockSellRequest) error {
 
 	return nil
 }
+
+func (v validation) StockSplit(request domain.ClientStockSplitRequest) error {
+	if request.AccountId == 0 {
+		return errors.New("invalid account id")
+	}
+	if request.UserId == 0 {
+		return errors.New("invalid user id")
+	}
+
+	if request.StockId == 0 {
+		return errors.New("invalid stock id")
+	}
+
+	if request.Quantity == 0 {
+		return errors.New("invalid quantity")
+	}
+
+	if request.FeeAmount == 0 {
+		return errors.New("invalid fee amount")
+	}
+
+	return nil
+}
+
 func (v validation) StockDividendAdd(request domain.ClientStockDividendAddRequest) error {
 	if request.AccountId == 0 {
 		return errors.New("invalid account id")
@@ -88,7 +112,7 @@ func (v validation) StockSummary(request domain.ClientStockSummaryRequest) error
 
 	return nil
 }
-func (v validation) StockInventory(request domain.ClientStockInventoryRequest) error {
+func (v validation) StockInventories(request domain.ClientStockInventoriesRequest) error {
 
 	if request.AccountId == 0 {
 		return errors.New("invalid account id")
@@ -103,7 +127,7 @@ func (v validation) StockInventory(request domain.ClientStockInventoryRequest) e
 
 	return nil
 }
-func (v validation) StockInventoryTransactions(request domain.ClientStockInventoryTransactionsRequest) error {
+func (v validation) StockInventoryLedgers(request domain.ClientStockInventoryLedgersRequest) error {
 	if request.AccountId == 0 {
 		return errors.New("invalid account id")
 	}
@@ -112,7 +136,7 @@ func (v validation) StockInventoryTransactions(request domain.ClientStockInvento
 		return errors.New("invalid user id")
 	}
 	if request.InventoryId == 0 {
-		return errors.New("invalid stock id")
+		return errors.New("invalid inventory id")
 	}
 
 	return nil

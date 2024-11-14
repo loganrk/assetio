@@ -56,12 +56,13 @@ type api struct {
 	SecurityAll    apiData `mapstructure:"securityAll"`
 	SecuritySearch apiData `mapstructure:"securitySearch"`
 
-	StockBuy                   apiData `mapstructure:"stockBuy"`
-	StockSell                  apiData `mapstructure:"stockSell"`
-	StockDividendAdd           apiData `mapstructure:"stockDividendAdd"`
-	StockSummary               apiData `mapstructure:"stockSummary"`
-	StockInventory             apiData `mapstructure:"stockInventory"`
-	StockInventoryTransactions apiData `mapstructure:"stockInventoryTransaction"`
+	StockBuy              apiData `mapstructure:"stockBuy"`
+	StockSell             apiData `mapstructure:"stockSell"`
+	StockSplit            apiData `mapstructure:"stockSplit"`
+	StockDividendAdd      apiData `mapstructure:"stockDividendAdd"`
+	StockSummary          apiData `mapstructure:"stockSummary"`
+	StockInventories      apiData `mapstructure:"stockInventories"`
+	StockInventoryLedgers apiData `mapstructure:"stockInventiryLedgers"`
 
 	MutualFundBuy         apiData `mapstructure:"mutualFundBuy"`
 	MutualFundSell        apiData `mapstructure:"mutualFundSell"`

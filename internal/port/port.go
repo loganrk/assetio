@@ -23,12 +23,14 @@ type Handler interface {
 
 	StockBuy(w http.ResponseWriter, r *http.Request)
 	StockSell(w http.ResponseWriter, r *http.Request)
+	StockSplit(w http.ResponseWriter, r *http.Request)
 	StockDividendAdd(w http.ResponseWriter, r *http.Request)
 	StockSummary(w http.ResponseWriter, r *http.Request)
-	StockInventory(w http.ResponseWriter, r *http.Request)
-	StockInventoryTransactions(w http.ResponseWriter, r *http.Request)
+	StockInventories(w http.ResponseWriter, r *http.Request)
+	StockInventoryLedgers(w http.ResponseWriter, r *http.Request)
 
 	MutualFundBuy(w http.ResponseWriter, r *http.Request)
+	MutualFundAdd(w http.ResponseWriter, r *http.Request)
 	MutualFundSell(w http.ResponseWriter, r *http.Request)
 	MutualFundSummary(w http.ResponseWriter, r *http.Request)
 	MutualFundInventory(w http.ResponseWriter, r *http.Request)
@@ -51,16 +53,18 @@ type Validator interface {
 
 	StockBuy(request domain.ClientStockBuyRequest) error
 	StockSell(request domain.ClientStockSellRequest) error
+	StockSplit(request domain.ClientStockSplitRequest) error
 	StockDividendAdd(request domain.ClientStockDividendAddRequest) error
 	StockSummary(request domain.ClientStockSummaryRequest) error
-	StockInventory(request domain.ClientStockInventoryRequest) error
-	StockInventoryTransactions(request domain.ClientStockInventoryTransactionsRequest) error
+	StockInventories(request domain.ClientStockInventoriesRequest) error
+	StockInventoryLedgers(request domain.ClientStockInventoryLedgersRequest) error
 
 	MutualFundBuy(request domain.ClientMutualFundBuyRequest) error
+	MutualFundAdd(request domain.ClientMutualFundAddRequest) error
 	MutualFundSell(request domain.ClientMutualFundSellRequest) error
-	// MutualFundSummary(request domain.ClientAccountCreateRequest) error
-	// MutualFundInventory(request domain.ClientAccountCreateRequest) error
-	// MutualFundTransaction(request domain.ClientAccountCreateRequest) error
+	MutualFundSummary(request domain.ClientMutualFundSummaryRequest) error
+	MutualFundInventory(request domain.ClientMutualFundInventoryRequest) error
+	MutualFundInventoryLedgers(request domain.ClientMutualFundInventoryLedgersRequest) error
 }
 
 type RepositoryStore interface {
@@ -71,20 +75,27 @@ type RepositoryStore interface {
 	UpdateAccountData(ctx context.Context, accountId, userId int, accountData domain.Accounts) error
 
 	InsertSecurityData(ctx context.Context, securityData domain.Securities) (domain.Securities, error)
-	GetSecuriryDataById(ctx context.Context, securityId int) (domain.Securities, error)
-	GetSecuriryDataByTypeAndExchangeAndSymbol(ctx context.Context, types, exchange int, symbol string) (domain.Securities, error)
-	UpdateSecuriryData(ctx context.Context, securityId int, securityData domain.Securities) error
+	GetSecurityDataById(ctx context.Context, securityId int) (domain.Securities, error)
+	GetSecurityDataByTypeAndExchangeAndSymbol(ctx context.Context, types, exchange int, symbol string) (domain.Securities, error)
+	UpdateSecurityData(ctx context.Context, securityId int, securityData domain.Securities) error
 	GetSecuritiesDataByExchange(ctx context.Context, types, exchange int) ([]domain.Securities, error)
 	SearchSecuritiesDataByTypeAndExchange(ctx context.Context, types, exchange int, search string) ([]domain.Securities, error)
+
+	InsertInventoryLedger(ctx context.Context, inventoryLedgerData domain.InventoryLedger) (domain.InventoryLedger, error)
+	UpdateInventoryDataById(ctx context.Context, inventoryId int, inventoryData domain.Inventories) error
+	InsertTransaction(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error)
+	UpdateInventoryLedgerTransactionIdById(ctx context.Context, ledgerId, transactionId int) error
+	UpdateInventoryLedgerTransactionIdByIds(ctx context.Context, ledgerIds []int, transactionId int) error
+
+	GetInvertriesSummaryByAccountIdAndSecurityType(ctx context.Context, accountId, securityType int) ([]domain.InventorySummary, error)
+	GetInvertriesByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.InventoryDetails, error)
 
 	InsertTransactionData(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error)
 	InsertInventoryData(ctx context.Context, inventoryData domain.Inventories) (domain.Inventories, error)
 	GetInventoryDataById(ctx context.Context, inventoryId int) (domain.Inventories, error)
 	UpdateAvailableQuanityToInventoryById(ctx context.Context, inventoryId int, quantity float64) error
 	GetActiveInventoriesByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.Inventories, error)
-	GetInvertriesSummaryByAccountIdAndSecurityType(ctx context.Context, accountId, securityType int) ([]domain.InventorySummary, error)
-	GetInvertriesByAccountIdAndStockId(ctx context.Context, accountId, securityId int) ([]domain.InventoryDetails, error)
-	GetInvertriesTransactionByIdAndAccountId(ctx context.Context, accountId, inventoryId int) ([]domain.InventoryTransactions, error)
+	GetInventoryLedgersByInventoryIdAndAccountId(ctx context.Context, accountId, inventoryId int) ([]domain.InventoryLedgers, error)
 }
 
 type Router interface {

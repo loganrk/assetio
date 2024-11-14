@@ -32,12 +32,19 @@ type StockSvr interface {
 	StockBuy(request ClientStockBuyRequest) Response
 	StockSell(request ClientStockSellRequest) Response
 	StockDividendAdd(request ClientStockDividendAddRequest) Response
+	StockSplit(request ClientStockSplitRequest) Response
 	StockSummary(request ClientStockSummaryRequest) Response
-	StockInventory(request ClientStockInventoryRequest) Response
-	StockInventoryTransactions(request ClientStockInventoryTransactionsRequest) Response
+	StockInventories(request ClientStockInventoriesRequest) Response
+	StockInventoryLedgers(request ClientStockInventoryLedgersRequest) Response
 }
 
 type MutualFundSvr interface {
+	MutualFundBuy(request ClientMutualFundBuyRequest) Response
+	MutualFundAdd(request ClientMutualFundAddRequest) Response
+	MutualFundSell(request ClientMutualFundSellRequest) Response
+	MutualFundSummary(request ClientMutualFundSummaryRequest) Response
+	MutualFundInventory(request ClientMutualFundInventoryRequest) Response
+	MutualFundInventoryLedgers(request ClientMutualFundInventoryLedgersRequest) Response
 }
 
 type Response interface {

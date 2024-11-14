@@ -1,9 +1,9 @@
 package mutualFund
 
 import (
+	"assetio/internal/adapters/handler/response"
 	"assetio/internal/domain"
 	"assetio/internal/port"
-	"context"
 )
 
 type mutualFundUsecase struct {
@@ -18,12 +18,49 @@ func New(loggerIns port.Logger, mysqlIns port.RepositoryStore) domain.MutualFund
 	}
 }
 
-func (m *mutualFundUsecase) BuyMutualFund(ctx context.Context, userId int, accountId int, inventoryId int, stockId int, quantity float64, amountPerQuantity float64, feeAmount float64) error {
-	return nil
+func (m *mutualFundUsecase) MutualFundBuy(request domain.ClientMutualFundBuyRequest) domain.Response {
+
+	res := response.New()
+
+	return res
 
 }
 
-func (m *mutualFundUsecase) SellMutualFund(ctx context.Context, userId int, accountId int, inventoryId int, stockId int, quantity float64, amountPerQuantity float64, feeAmount float64) error {
+func (m *mutualFundUsecase) MutualFundAdd(request domain.ClientMutualFundAddRequest) domain.Response {
 
-	return nil
+	res := response.New()
+
+	return res
+
+}
+
+func (m *mutualFundUsecase) MutualFundSell(request domain.ClientMutualFundSellRequest) domain.Response {
+
+	res := response.New()
+
+	return res
+
+}
+
+func (m *mutualFundUsecase) MutualFundSummary(request domain.ClientMutualFundSummaryRequest) domain.Response {
+
+	res := response.New()
+
+	return res
+
+}
+
+func (m *mutualFundUsecase) MutualFundInventory(request domain.ClientMutualFundInventoryRequest) domain.Response {
+
+	res := response.New()
+
+	return res
+
+}
+func (m *mutualFundUsecase) MutualFundInventoryLedgers(request domain.ClientMutualFundInventoryLedgersRequest) domain.Response {
+
+	res := response.New()
+
+	return res
+
 }
