@@ -7,139 +7,161 @@ import (
 	"time"
 )
 
+// Handler defines the interface for the various API handler methods for account, security, and stock management
 type Handler interface {
-	AccountCreate(w http.ResponseWriter, r *http.Request)
-	AccountAll(w http.ResponseWriter, r *http.Request)
-	AccountGet(w http.ResponseWriter, r *http.Request)
-	AccountUpdate(w http.ResponseWriter, r *http.Request)
-	AccountActivate(w http.ResponseWriter, r *http.Request)
-	AccountInactivate(w http.ResponseWriter, r *http.Request)
+	// Account-related methods
+	AccountCreate(w http.ResponseWriter, r *http.Request)     // Creates a new account
+	AccountAll(w http.ResponseWriter, r *http.Request)        // Retrieves all accounts for a user
+	AccountGet(w http.ResponseWriter, r *http.Request)        // Retrieves details of a specific account by ID
+	AccountUpdate(w http.ResponseWriter, r *http.Request)     // Updates an existing account
+	AccountActivate(w http.ResponseWriter, r *http.Request)   // Activates an account
+	AccountInactivate(w http.ResponseWriter, r *http.Request) // Inactivates an account
 
-	SecurityCreate(w http.ResponseWriter, r *http.Request)
-	SecurityUpdate(w http.ResponseWriter, r *http.Request)
-	SecurityAll(w http.ResponseWriter, r *http.Request)
-	SecurityGet(w http.ResponseWriter, r *http.Request)
-	SecuritySearch(w http.ResponseWriter, r *http.Request)
+	// Security-related methods
+	SecurityCreate(w http.ResponseWriter, r *http.Request) // Creates a new security (e.g., stock, bond, etc.)
+	SecurityUpdate(w http.ResponseWriter, r *http.Request) // Updates details of an existing security
+	SecurityAll(w http.ResponseWriter, r *http.Request)    // Retrieves all securities of a specific type or exchange
+	SecurityGet(w http.ResponseWriter, r *http.Request)    // Retrieves a specific security by its ID
+	SecuritySearch(w http.ResponseWriter, r *http.Request) // Searches for securities based on certain criteria
 
-	StockBuy(w http.ResponseWriter, r *http.Request)
-	StockSell(w http.ResponseWriter, r *http.Request)
-	StockSplit(w http.ResponseWriter, r *http.Request)
-	StockDividendAdd(w http.ResponseWriter, r *http.Request)
-	StockSummary(w http.ResponseWriter, r *http.Request)
-	StockInventories(w http.ResponseWriter, r *http.Request)
-	StockInventoryLedgers(w http.ResponseWriter, r *http.Request)
+	// Stock-related methods
+	StockBuy(w http.ResponseWriter, r *http.Request)              // Buys a stock for a user
+	StockSell(w http.ResponseWriter, r *http.Request)             // Sells a stock for a user
+	StockSplit(w http.ResponseWriter, r *http.Request)            // Splits a stock (e.g., stock split action)
+	StockDividendAdd(w http.ResponseWriter, r *http.Request)      // Adds a dividend for a specific stock
+	StockSummary(w http.ResponseWriter, r *http.Request)          // Retrieves a summary of a user's stock holdings
+	StockInventories(w http.ResponseWriter, r *http.Request)      // Retrieves the stock inventory (holdings) for a user
+	StockInventoryLedgers(w http.ResponseWriter, r *http.Request) // Retrieves the inventory ledger for stock transactions
 
-	MutualFundBuy(w http.ResponseWriter, r *http.Request)
-	MutualFundAdd(w http.ResponseWriter, r *http.Request)
-	MutualFundSell(w http.ResponseWriter, r *http.Request)
-	MutualFundSummary(w http.ResponseWriter, r *http.Request)
-	MutualFundInventory(w http.ResponseWriter, r *http.Request)
-	MutualFundTransaction(w http.ResponseWriter, r *http.Request)
+	// Mutual fund-related methods
+	MutualFundBuy(w http.ResponseWriter, r *http.Request)         // Buys a mutual fund for a user
+	MutualFundAdd(w http.ResponseWriter, r *http.Request)         // Adds a new mutual fund
+	MutualFundSell(w http.ResponseWriter, r *http.Request)        // Sells a mutual fund for a user
+	MutualFundSummary(w http.ResponseWriter, r *http.Request)     // Retrieves a summary of a user's mutual fund holdings
+	MutualFundInventory(w http.ResponseWriter, r *http.Request)   // Retrieves mutual fund inventory for a user
+	MutualFundTransaction(w http.ResponseWriter, r *http.Request) // Handles mutual fund transactions like buys/sells
 }
 
+// Validator defines the interface for validating the different requests for account, security, stock, and mutual funds
 type Validator interface {
-	AccountCreate(request domain.ClientAccountCreateRequest) error
-	AccountAll(request domain.ClientAccountAllRequest) error
-	AccountGet(request domain.ClientAccountGetRequest) error
-	AccountUpdate(request domain.ClientAccountUpdateRequest) error
-	AccountActivate(request domain.ClientAccountActivateRequest) error
-	AccountInactivate(request domain.ClientAccountInactivateRequest) error
+	// Account-related validations
+	AccountCreate(request domain.ClientAccountCreateRequest) error         // Validates account creation request
+	AccountAll(request domain.ClientAccountAllRequest) error               // Validates request for fetching all accounts
+	AccountGet(request domain.ClientAccountGetRequest) error               // Validates request for fetching a specific account
+	AccountUpdate(request domain.ClientAccountUpdateRequest) error         // Validates account update request
+	AccountActivate(request domain.ClientAccountActivateRequest) error     // Validates account activation request
+	AccountInactivate(request domain.ClientAccountInactivateRequest) error // Validates account inactivation request
 
-	SecurityCreate(request domain.ClientSecurityCreateRequest) error
-	SecurityUpdate(request domain.ClientSecurityUpdateRequest) error
-	SecurityAll(request domain.ClientSecurityAllRequest) error
-	SecurityGet(request domain.ClientSecurityGetRequest) error
-	SecuritySearch(request domain.ClientSecuritySearchRequest) error
+	// Security-related validations
+	SecurityCreate(request domain.ClientSecurityCreateRequest) error // Validates security creation request
+	SecurityUpdate(request domain.ClientSecurityUpdateRequest) error // Validates security update request
+	SecurityAll(request domain.ClientSecurityAllRequest) error       // Validates request for fetching all securities
+	SecurityGet(request domain.ClientSecurityGetRequest) error       // Validates request for fetching a specific security
+	SecuritySearch(request domain.ClientSecuritySearchRequest) error // Validates security search request
 
-	StockBuy(request domain.ClientStockBuyRequest) error
-	StockSell(request domain.ClientStockSellRequest) error
-	StockSplit(request domain.ClientStockSplitRequest) error
-	StockDividendAdd(request domain.ClientStockDividendAddRequest) error
-	StockSummary(request domain.ClientStockSummaryRequest) error
-	StockInventories(request domain.ClientStockInventoriesRequest) error
-	StockInventoryLedgers(request domain.ClientStockInventoryLedgersRequest) error
+	// Stock-related validations
+	StockBuy(request domain.ClientStockBuyRequest) error                           // Validates stock buy request
+	StockSell(request domain.ClientStockSellRequest) error                         // Validates stock sell request
+	StockSplit(request domain.ClientStockSplitRequest) error                       // Validates stock split request
+	StockDividendAdd(request domain.ClientStockDividendAddRequest) error           // Validates stock dividend add request
+	StockSummary(request domain.ClientStockSummaryRequest) error                   // Validates stock summary request
+	StockInventories(request domain.ClientStockInventoriesRequest) error           // Validates request for stock inventories
+	StockInventoryLedgers(request domain.ClientStockInventoryLedgersRequest) error // Validates request for stock inventory ledgers
 
-	MutualFundBuy(request domain.ClientMutualFundBuyRequest) error
-	MutualFundAdd(request domain.ClientMutualFundAddRequest) error
-	MutualFundSell(request domain.ClientMutualFundSellRequest) error
-	MutualFundSummary(request domain.ClientMutualFundSummaryRequest) error
-	MutualFundInventory(request domain.ClientMutualFundInventoryRequest) error
-	MutualFundInventoryLedgers(request domain.ClientMutualFundInventoryLedgersRequest) error
+	// Mutual fund-related validations
+	MutualFundBuy(request domain.ClientMutualFundBuyRequest) error                           // Validates mutual fund buy request
+	MutualFundAdd(request domain.ClientMutualFundAddRequest) error                           // Validates mutual fund add request
+	MutualFundSell(request domain.ClientMutualFundSellRequest) error                         // Validates mutual fund sell request
+	MutualFundSummary(request domain.ClientMutualFundSummaryRequest) error                   // Validates mutual fund summary request
+	MutualFundInventory(request domain.ClientMutualFundInventoryRequest) error               // Validates mutual fund inventory request
+	MutualFundInventoryLedgers(request domain.ClientMutualFundInventoryLedgersRequest) error // Validates mutual fund inventory ledgers request
 }
 
+// RepositoryStore defines the interface for interacting with the database to store and retrieve various entities like accounts, securities, transactions, etc.
 type RepositoryStore interface {
-	AutoMigrate()
-	InsertAccountData(ctx context.Context, accountData domain.Accounts) (domain.Accounts, error)
-	GetAccountDataByIdAndUserId(ctx context.Context, accountId int, userId int) (domain.Accounts, error)
-	GetAccountsData(ctx context.Context, userId int) ([]domain.Accounts, error)
-	UpdateAccountData(ctx context.Context, accountId, userId int, accountData domain.Accounts) error
+	// Account-related database interactions
+	AutoMigrate()                                                                                        // Automatically migrate the database schema
+	InsertAccountData(ctx context.Context, accountData domain.Accounts) (domain.Accounts, error)         // Inserts new account data
+	GetAccountDataByIdAndUserId(ctx context.Context, accountId int, userId int) (domain.Accounts, error) // Retrieves account data by account ID and user ID
+	GetAccountsData(ctx context.Context, userId int) ([]domain.Accounts, error)                          // Retrieves all accounts for a user
+	UpdateAccountData(ctx context.Context, accountId, userId int, accountData domain.Accounts) error     // Updates an existing account
 
-	InsertSecurityData(ctx context.Context, securityData domain.Securities) (domain.Securities, error)
-	GetSecurityDataById(ctx context.Context, securityId int) (domain.Securities, error)
-	GetSecurityDataByTypeAndExchangeAndSymbol(ctx context.Context, types, exchange int, symbol string) (domain.Securities, error)
-	UpdateSecurityData(ctx context.Context, securityId int, securityData domain.Securities) error
-	GetSecuritiesDataByExchange(ctx context.Context, types, exchange int) ([]domain.Securities, error)
-	SearchSecuritiesDataByTypeAndExchange(ctx context.Context, types, exchange int, search string) ([]domain.Securities, error)
+	// Security-related database interactions
+	InsertSecurityData(ctx context.Context, securityData domain.Securities) (domain.Securities, error)                            // Inserts new security data
+	GetSecurityDataById(ctx context.Context, securityId int) (domain.Securities, error)                                           // Retrieves security data by ID
+	GetSecurityDataByTypeAndExchangeAndSymbol(ctx context.Context, types, exchange int, symbol string) (domain.Securities, error) // Retrieves security data based on type, exchange, and symbol
+	UpdateSecurityData(ctx context.Context, securityId int, securityData domain.Securities) error                                 // Updates an existing security
+	GetSecuritiesDataByExchange(ctx context.Context, types, exchange int) ([]domain.Securities, error)                            // Retrieves securities data by exchange
+	SearchSecuritiesDataByTypeAndExchange(ctx context.Context, types, exchange int, search string) ([]domain.Securities, error)   // Searches for securities by type, exchange, and search term
 
-	InsertInventoryLedger(ctx context.Context, inventoryLedgerData domain.InventoryLedger) (domain.InventoryLedger, error)
-	UpdateInventoryDataById(ctx context.Context, inventoryId int, inventoryData domain.Inventories) error
-	InsertTransaction(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error)
-	UpdateInventoryLedgerTransactionIdById(ctx context.Context, ledgerId, transactionId int) error
-	UpdateInventoryLedgerTransactionIdByIds(ctx context.Context, ledgerIds []int, transactionId int) error
+	// Inventory-related database interactions
+	InsertInventoryLedger(ctx context.Context, inventoryLedgerData domain.InventoryLedger) (domain.InventoryLedger, error) // Inserts new inventory ledger data
+	UpdateInventoryDataById(ctx context.Context, inventoryId int, inventoryData domain.Inventories) error                  // Updates an inventory by ID
+	InsertTransaction(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error)               // Inserts a new transaction
+	UpdateInventoryLedgerTransactionIdById(ctx context.Context, ledgerId, transactionId int) error                         // Updates inventory ledger with a transaction ID
+	UpdateInventoryLedgerTransactionIdByIds(ctx context.Context, ledgerIds []int, transactionId int) error                 // Updates inventory ledgers with a transaction ID
 
-	GetInvertriesSummaryByAccountIdAndSecurityType(ctx context.Context, accountId, securityType int) ([]domain.InventorySummary, error)
-	GetInvertriesByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.InventoryDetails, error)
+	// Additional inventory-related database interactions
+	GetInvertriesSummaryByAccountIdAndSecurityType(ctx context.Context, accountId, securityType int) ([]domain.InventorySummary, error) // Retrieves inventory summary by account ID and security type
+	GetInvertriesByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.InventoryDetails, error)            // Retrieves detailed inventory data by account and security ID
 
-	InsertTransactionData(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error)
-	InsertInventoryData(ctx context.Context, inventoryData domain.Inventories) (domain.Inventories, error)
-	GetInventoryDataById(ctx context.Context, inventoryId int) (domain.Inventories, error)
-	UpdateAvailableQuanityToInventoryById(ctx context.Context, inventoryId int, quantity float64) error
-	GetActiveInventoriesByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.Inventories, error)
-	GetInventoryLedgersByInventoryIdAndAccountId(ctx context.Context, accountId, inventoryId int) ([]domain.InventoryLedgers, error)
+	// Additional transaction and inventory management methods
+	InsertTransactionData(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error)                     // Inserts new transaction data
+	InsertInventoryData(ctx context.Context, inventoryData domain.Inventories) (domain.Inventories, error)                           // Inserts new inventory data
+	GetInventoryDataById(ctx context.Context, inventoryId int) (domain.Inventories, error)                                           // Retrieves inventory data by ID
+	UpdateAvailableQuanityToInventoryById(ctx context.Context, inventoryId int, quantity float64) error                              // Updates the available quantity of inventory by ID
+	GetActiveInventoriesByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.Inventories, error)       // Retrieves active inventories for an account and security
+	GetInventoryLedgersByInventoryIdAndAccountId(ctx context.Context, accountId, inventoryId int) ([]domain.InventoryLedgers, error) // Retrieves inventory ledgers by inventory and account ID
 }
 
+// Router defines the interface for routing API requests and handling middleware
 type Router interface {
-	RegisterRoute(method, path string, handlerFunc http.HandlerFunc)
-	StartServer(port string) error
-	UseBefore(middlewares ...http.Handler)
-	NewGroup(groupName string) RouterGroup
+	RegisterRoute(method, path string, handlerFunc http.HandlerFunc) // Registers a route with a specified HTTP method and handler
+	StartServer(port string) error                                   // Starts the server on the given port
+	UseBefore(middlewares ...http.Handler)                           // Applies middleware to routes before request handling
+	NewGroup(groupName string) RouterGroup                           // Creates a new route group
 }
 
+// RouterGroup defines the interface for grouping related routes together
 type RouterGroup interface {
-	RegisterRoute(method, path string, handlerFunc http.HandlerFunc)
-	UseBefore(middlewares ...http.Handler)
+	RegisterRoute(method, path string, handlerFunc http.HandlerFunc) // Registers a route within the group
+	UseBefore(middlewares ...http.Handler)                           // Applies middleware to routes within the group before request handling
 }
 
+// Cipher defines the interface for encrypting and decrypting data
 type Cipher interface {
-	Encrypt(text string) (string, error)
-	Decrypt(cryptoText string) (string, error)
-	GetKey() string
+	Encrypt(text string) (string, error)       // Encrypts plain text
+	Decrypt(cryptoText string) (string, error) // Decrypts encrypted text
+	GetKey() string                            // Retrieves the encryption key
 }
 
+// Token defines the interface for validating and retrieving access token data
 type Token interface {
-	GetAccessTokenData(encryptedToken string) (int, time.Time, error)
+	GetAccessTokenData(encryptedToken string) (int, time.Time, error) // Retrieves access token data, including user ID and expiration
 }
 
+// Auth defines the interface for API key and access token validation
 type Auth interface {
-	ValidateApiKey() http.Handler
-	ValidateAccessToken() http.Handler
+	ValidateApiKey() http.Handler      // Validates the API key from the request
+	ValidateAccessToken() http.Handler // Validates the access token from the request
 }
 
+// Logger defines the interface for logging various levels of log messages
 type Logger interface {
-	Debug(ctx context.Context, messages ...any)
-	Info(ctx context.Context, messages ...any)
-	Warn(ctx context.Context, messages ...any)
-	Error(ctx context.Context, messages ...any)
-	Fatal(ctx context.Context, messages ...any)
-	Debugf(ctx context.Context, template string, args ...any)
-	Infof(ctx context.Context, template string, args ...any)
-	Warnf(ctx context.Context, template string, args ...any)
-	Errorf(ctx context.Context, template string, args ...any)
-	Fatalf(ctx context.Context, template string, args ...any)
-	Debugw(ctx context.Context, msg string, keysAndValues ...any)
-	Infow(ctx context.Context, msg string, keysAndValues ...any)
-	Warnw(ctx context.Context, msg string, keysAndValues ...any)
-	Errorw(ctx context.Context, msg string, keysAndValues ...any)
-	Fatalw(ctx context.Context, msg string, keysAndValues ...any)
-	Sync(ctx context.Context) error
+	Debug(ctx context.Context, messages ...any)                   // Logs debug messages
+	Info(ctx context.Context, messages ...any)                    // Logs info messages
+	Warn(ctx context.Context, messages ...any)                    // Logs warning messages
+	Error(ctx context.Context, messages ...any)                   // Logs error messages
+	Fatal(ctx context.Context, messages ...any)                   // Logs fatal messages and terminates the program
+	Debugf(ctx context.Context, template string, args ...any)     // Logs debug messages with formatting
+	Infof(ctx context.Context, template string, args ...any)      // Logs info messages with formatting
+	Warnf(ctx context.Context, template string, args ...any)      // Logs warning messages with formatting
+	Errorf(ctx context.Context, template string, args ...any)     // Logs error messages with formatting
+	Fatalf(ctx context.Context, template string, args ...any)     // Logs fatal messages with formatting and terminates the program
+	Debugw(ctx context.Context, msg string, keysAndValues ...any) // Logs debug messages with structured data
+	Infow(ctx context.Context, msg string, keysAndValues ...any)  // Logs info messages with structured data
+	Warnw(ctx context.Context, msg string, keysAndValues ...any)  // Logs warning messages with structured data
+	Errorw(ctx context.Context, msg string, keysAndValues ...any) // Logs error messages with structured data
+	Fatalw(ctx context.Context, msg string, keysAndValues ...any) // Logs fatal messages with structured data and terminates the program
+	Sync(ctx context.Context) error                               // Ensures all logs are written to storage
 }
