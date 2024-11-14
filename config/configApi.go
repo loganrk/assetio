@@ -43,14 +43,17 @@ type Api interface {
 	GetStockDividendAddEnabled() bool
 	GetStockDividendAddProperties() (string, string)
 
+	GetStockSplitEnabled() bool
+	GetStockSplitProperties() (string, string)
+
 	GetStockSummarylEnabled() bool
 	GetStockSummaryProperties() (string, string)
 
-	GetStockInventorylEnabled() bool
-	GetStockInventoryProperties() (string, string)
+	GetStockInventorieslEnabled() bool
+	GetStockInventoriesProperties() (string, string)
 
-	GetStockInventoryTransactionslEnabled() bool
-	GetStockInventoryTransactionsProperties() (string, string)
+	GetStockInventoryLedgerslEnabled() bool
+	GetStockInventoryLedgersProperties() (string, string)
 
 	GetMutualFundBuyEnabled() bool
 	GetMutualFundBuyProperties() (string, string)
@@ -222,6 +225,17 @@ func (a api) GetStockDividendAddProperties() (string, string) {
 	return apiData.Method, apiData.Route
 }
 
+func (a api) GetStockSplitEnabled() bool {
+
+	return a.StockSplit.Enabled
+}
+
+func (a api) GetStockSplitProperties() (string, string) {
+	apiData := a.StockSplit
+
+	return apiData.Method, apiData.Route
+}
+
 func (a api) GetStockSummarylEnabled() bool {
 
 	return a.StockSummary.Enabled
@@ -233,24 +247,24 @@ func (a api) GetStockSummaryProperties() (string, string) {
 	return apiData.Method, apiData.Route
 }
 
-func (a api) GetStockInventorylEnabled() bool {
+func (a api) GetStockInventorieslEnabled() bool {
 
-	return a.StockInventory.Enabled
+	return a.StockInventories.Enabled
 }
 
-func (a api) GetStockInventoryProperties() (string, string) {
-	apiData := a.StockInventory
+func (a api) GetStockInventoriesProperties() (string, string) {
+	apiData := a.StockInventories
 
 	return apiData.Method, apiData.Route
 }
 
-func (a api) GetStockInventoryTransactionslEnabled() bool {
+func (a api) GetStockInventoryLedgerslEnabled() bool {
 
-	return a.StockInventoryTransactions.Enabled
+	return a.StockInventoryLedgers.Enabled
 }
 
-func (a api) GetStockInventoryTransactionsProperties() (string, string) {
-	apiData := a.StockInventoryTransactions
+func (a api) GetStockInventoryLedgersProperties() (string, string) {
+	apiData := a.StockInventoryLedgers
 
 	return apiData.Method, apiData.Route
 }

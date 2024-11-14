@@ -236,18 +236,23 @@ func updateAccountRouters(generalGr port.RouterGroup, accessTokenGr port.RouterG
 		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockDividendAdd)
 	}
 
+	if apiConfigIns.GetStockSplitEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockSplitProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockSplit)
+	}
+
 	if apiConfigIns.GetStockSummarylEnabled() {
 		apiMethod, apiRoute := apiConfigIns.GetStockSummaryProperties()
 		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockSummary)
 	}
 
-	if apiConfigIns.GetStockInventorylEnabled() {
-		apiMethod, apiRoute := apiConfigIns.GetStockInventoryProperties()
-		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockInventory)
+	if apiConfigIns.GetStockInventorieslEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockInventoriesProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockInventories)
 	}
-	if apiConfigIns.GetStockInventoryTransactionslEnabled() {
-		apiMethod, apiRoute := apiConfigIns.GetStockInventoryTransactionsProperties()
-		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockInventoryTransactions)
+	if apiConfigIns.GetStockInventoryLedgerslEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockInventoryLedgersProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockInventoryLedgers)
 	}
 
 	if apiConfigIns.GetMutualFundBuyEnabled() {

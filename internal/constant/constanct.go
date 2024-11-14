@@ -14,6 +14,12 @@ const (
 
 	EXCHANGE_TYPE_NSE_STRING = "NSE"
 	EXCHANGE_TYPE_BSE_STRING = "BSE"
+
+	ERROR_TYPE    = "etype"
+	ERROR_MESSAGE = "emessage"
+	REQUEST       = "req"
+
+	ERROR_TYPE_DBEXECUTION = "DbExecution"
 )
 
 const (

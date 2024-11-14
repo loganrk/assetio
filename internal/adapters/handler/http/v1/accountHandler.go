@@ -4,7 +4,6 @@ import (
 	"assetio/internal/adapters/handler/response"
 	"assetio/internal/domain"
 	"encoding/json"
-	"fmt"
 	"strconv"
 
 	"net/http"
@@ -93,7 +92,6 @@ func (h *handler) AccountAll(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) AccountGet(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println(w)
 	var request domain.ClientAccountGetRequest
 	res := response.New()
 
