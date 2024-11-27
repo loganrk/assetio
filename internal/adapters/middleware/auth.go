@@ -27,16 +27,18 @@ func New(apiKeys []string, tokenIns port.Token) port.Auth {
 // ValidateApiKey returns an HTTP handler that checks if the request contains a valid API key.
 func (m *middleware) ValidateApiKey() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Extract the API key from the query parameters
-		reqApiKey := r.URL.Query().Get("key")
-		if reqApiKey == "" {
+		// Extract the access token from the Authorization header
+		accessToken := r.Header.Get("Authorization")
+		token := m.exactToken(accessToken)
+
+		if token == "" {
 			// If no API key is provided, respond with Unauthorized error.
 			http.Error(w, "api key is required", http.StatusUnauthorized)
 			return
 		}
 
 		// Check if the provided API key is valid
-		if !slices.Contains(m.apiKeys, reqApiKey) {
+		if !slices.Contains(m.apiKeys, token) {
 			// If the API key is invalid, respond with Unauthorized error.
 			http.Error(w, "api key is invalid", http.StatusUnauthorized)
 			return

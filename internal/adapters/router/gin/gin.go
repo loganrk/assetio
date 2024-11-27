@@ -5,7 +5,9 @@ import (
 	"bytes"
 	"io"
 	"net/http"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,8 +19,20 @@ type route struct {
 // New creates a new instance of the Gin router with a custom access logger.
 func New(accessLoggerIns port.Logger) port.Router {
 	gin.DisableConsoleColor()
+
+	r := gin.Default()
+
+	// Add CORS middleware
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},                             // Allow specific origin
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},  // Allowed methods
+		AllowHeaders:     []string{"Authorization", "Content-Type"}, // Allowed headers
+		ExposeHeaders:    []string{"Content-Length"},                // Headers exposed to the browser
+		AllowCredentials: true,                                      // Allow credentials (cookies, Authorization header)
+		MaxAge:           12 * time.Hour,                            // Preflight cache duration
+	}))
 	return &route{
-		gin:       gin.Default(),
+		gin:       r,
 		accessLog: accessLoggerIns,
 	}
 }

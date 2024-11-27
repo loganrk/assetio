@@ -53,9 +53,7 @@ func (v validation) SecurityUpdate(request domain.ClientSecurityUpdateRequest) e
 // SecurityAll validates the fields in the ClientSecurityAllRequest object before fetching all securities.
 // It checks if the required fields (Exchange, Type) are valid (non-empty).
 func (v validation) SecurityAll(request domain.ClientSecurityAllRequest) error {
-	if request.Exchange == "" {
-		return errors.New("invalid exchange") // Exchange must be non-empty
-	}
+
 	if request.Type == "" {
 		return errors.New("invalid type") // Type must be non-empty
 	}

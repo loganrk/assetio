@@ -8,7 +8,8 @@ type ClientSecurityCreateRequest struct {
 }
 
 type ClientSecurityCreateResponse struct {
-	Message string `json:"message" schema:"message"`
+	SecurityId int    `json:"security_id" schema:"security_id"`
+	Message    string `json:"message" schema:"message"`
 }
 
 type ClientSecurityUpdateRequest struct {
@@ -24,8 +25,7 @@ type ClientSecurityUpdateResponse struct {
 }
 
 type ClientSecurityAllRequest struct {
-	Type     string `json:"type" schema:"type"`
-	Exchange string `json:"exchange" schema:"exchange"`
+	Type string `json:"type" schema:"type"`
 }
 
 type ClientSecurityAllResponse struct {
