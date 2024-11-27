@@ -91,7 +91,7 @@ type RepositoryStore interface {
 	GetSecurityDataById(ctx context.Context, securityId int) (domain.Securities, error)                                           // Retrieves security data by ID
 	GetSecurityDataByTypeAndExchangeAndSymbol(ctx context.Context, types, exchange int, symbol string) (domain.Securities, error) // Retrieves security data based on type, exchange, and symbol
 	UpdateSecurityData(ctx context.Context, securityId int, securityData domain.Securities) error                                 // Updates an existing security
-	GetSecuritiesDataByExchange(ctx context.Context, types, exchange int) ([]domain.Securities, error)                            // Retrieves securities data by exchange
+	GetSecuritiesDataByType(ctx context.Context, types int) ([]domain.Securities, error)                                          // Retrieves securities data by exchange
 	SearchSecuritiesDataByTypeAndExchange(ctx context.Context, types, exchange int, search string) ([]domain.Securities, error)   // Searches for securities by type, exchange, and search term
 
 	// Inventory-related database interactions

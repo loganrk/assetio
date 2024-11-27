@@ -152,15 +152,15 @@ func (m *mysql) UpdateSecurityData(ctx context.Context, securityId int, security
 	return result.Error
 }
 
-// GetSecuritiesDataByExchange retrieves all securities data that match the given type and exchange.
+// GetSecuritiesDataByType retrieves all securities data that match the given type and exchange.
 // Returns a slice of Securities if records are found, or an empty slice if no records match.
-func (m *mysql) GetSecuritiesDataByExchange(ctx context.Context, types, exchange int) ([]domain.Securities, error) {
+func (m *mysql) GetSecuritiesDataByType(ctx context.Context, types int) ([]domain.Securities, error) {
 	var securitiesData []domain.Securities
 
 	// Query the Securities table for records that match the given type and exchange
 	result := m.dialer.WithContext(ctx).Model(&domain.Securities{}).
 		Select("id", "type", "exchange", "symbol", "name").
-		Where("type = ? and exchange = ?", types, exchange).
+		Where("type = ? ", types).
 		Find(&securitiesData)
 
 	// Set result.Error to nil if no record is found, preventing "record not found" error
