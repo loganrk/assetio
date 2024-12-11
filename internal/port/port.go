@@ -95,11 +95,11 @@ type RepositoryStore interface {
 	SearchSecuritiesDataByTypeAndExchange(ctx context.Context, types, exchange int, search string) ([]domain.Securities, error)   // Searches for securities by type, exchange, and search term
 
 	// Inventory-related database interactions
-	InsertInventoryLedger(ctx context.Context, inventoryLedgerData domain.InventoryLedger) (domain.InventoryLedger, error) // Inserts new inventory ledger data
-	UpdateInventoryDataById(ctx context.Context, inventoryId int, inventoryData domain.Inventories) error                  // Updates an inventory by ID
-	InsertTransaction(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error)               // Inserts a new transaction
-	UpdateInventoryLedgerTransactionIdById(ctx context.Context, ledgerId, transactionId int) error                         // Updates inventory ledger with a transaction ID
-	UpdateInventoryLedgerTransactionIdByIds(ctx context.Context, ledgerIds []int, transactionId int) error                 // Updates inventory ledgers with a transaction ID
+	InsertInventoryLedger(ctx context.Context, inventoryLedgerData domain.InventoryLedger) (domain.InventoryLedger, error)      // Inserts new inventory ledger data
+	UpdateInventoryDetailsById(ctx context.Context, inventoryId int, availableQuantity, averagePrice, totalValue float64) error // Updates an inventory by ID
+	InsertTransaction(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error)                    // Inserts a new transaction
+	UpdateInventoryLedgerTransactionIdById(ctx context.Context, ledgerId, transactionId int) error                              // Updates inventory ledger with a transaction ID
+	UpdateInventoryLedgerTransactionIdByIds(ctx context.Context, ledgerIds []int, transactionId int) error                      // Updates inventory ledgers with a transaction ID
 
 	// Additional inventory-related database interactions
 	GetInvertriesSummaryByAccountIdAndSecurityType(ctx context.Context, accountId, securityType int) ([]domain.InventorySummary, error) // Retrieves inventory summary by account ID and security type
@@ -164,4 +164,13 @@ type Logger interface {
 	Errorw(ctx context.Context, msg string, keysAndValues ...any) // Logs error messages with structured data
 	Fatalw(ctx context.Context, msg string, keysAndValues ...any) // Logs fatal messages with structured data and terminates the program
 	Sync(ctx context.Context) error                               // Ensures all logs are written to storage
+}
+
+type Marketer interface {
+	Query(symbol, exchange string) (MarketerData, error)
+}
+type MarketerData interface {
+	GetMarketPrice() float64
+	GetMarketChange() float64
+	GetMarketChangePercent() float64
 }

@@ -46,7 +46,10 @@ type app struct {
 	} `mapstructure:"store"`
 
 	// Api contains the API configuration for different services.
-	Api api `mapstructure:"api"` // API configuration with various endpoints.
+	Api   api `mapstructure:"api"` // API configuration with various endpoints.
+	Yahoo struct {
+		ExchangeHash map[string]string `mapstructure:"exchange_hash"`
+	} `mapstructure:"yahoo"`
 }
 
 // logger struct defines the logging configuration for the application, including log level,

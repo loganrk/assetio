@@ -39,6 +39,8 @@ type App interface {
 
 	// GetApi returns the API configuration for the application.
 	GetApi() Api
+
+	GetYahooExchangeHash() map[string]string
 }
 
 // StartConfig reads and processes the configuration file and returns an App instance or an error.
@@ -117,4 +119,8 @@ func (a app) GetStoreCacheHeapProperties() (bool, int) {
 // GetApi returns the API configuration for the application.
 func (a app) GetApi() Api {
 	return a.Api
+}
+
+func (a app) GetYahooExchangeHash() map[string]string {
+	return a.Yahoo.ExchangeHash
 }

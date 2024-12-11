@@ -7,18 +7,21 @@ import (
 	"assetio/internal/port"
 	"context"
 	"net/http"
+	"sync"
 	"time"
 )
 
 type stockUsecase struct {
-	logger port.Logger
-	mysql  port.RepositoryStore
+	logger   port.Logger
+	mysql    port.RepositoryStore
+	marketer port.Marketer
 }
 
-func New(loggerIns port.Logger, mysqlIns port.RepositoryStore) domain.StockSvr {
+func New(loggerIns port.Logger, mysqlIns port.RepositoryStore, marketerIns port.Marketer) domain.StockSvr {
 	return &stockUsecase{
-		mysql:  mysqlIns,
-		logger: loggerIns,
+		mysql:    mysqlIns,
+		logger:   loggerIns,
+		marketer: marketerIns,
 	}
 }
 
@@ -59,6 +62,15 @@ func (s *stockUsecase) StockBuy(request domain.ClientStockBuyRequest) domain.Res
 		return res
 	}
 
+	var date = time.Now()
+
+	if request.Date != "" {
+		parsedDate, err := time.Parse(constant.DATE_LAYOUT, request.Date)
+		if err == nil {
+			date = parsedDate
+		}
+	}
+
 	var inventory domain.Inventories
 	// If inventory ID is provided, fetch existing inventory; otherwise, create new.
 	if request.InventoryId != 0 {
@@ -91,6 +103,7 @@ func (s *stockUsecase) StockBuy(request domain.ClientStockBuyRequest) domain.Res
 		inventory, err = s.mysql.InsertInventoryData(ctx, domain.Inventories{
 			AccountId:  request.AccountId,
 			SecurityId: secuirity.Id,
+			Date:       date,
 		})
 		if err != nil {
 			s.logger.Errorw(ctx, "InsertInventoryData failed",
@@ -113,7 +126,7 @@ func (s *stockUsecase) StockBuy(request domain.ClientStockBuyRequest) domain.Res
 		AveragePrice: request.AveragePrice,
 		Fee:          request.FeeAmount,
 		TotalValue:   request.Quantity * request.AveragePrice,
-		Date:         time.Now(),
+		Date:         date,
 	})
 
 	if err != nil {
@@ -133,7 +146,7 @@ func (s *stockUsecase) StockBuy(request domain.ClientStockBuyRequest) domain.Res
 	inventory.AveragePrice = inventory.TotalValue / inventory.AvailableQuantity
 
 	// Update inventory data in database.
-	err = s.mysql.UpdateInventoryDataById(ctx, inventory.Id, inventory)
+	err = s.mysql.UpdateInventoryDetailsById(ctx, inventory.Id, inventory.AvailableQuantity, inventory.AveragePrice, inventory.TotalValue)
 	if err != nil {
 		s.logger.Errorw(ctx, "UpdateInventoryDataById failed",
 			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
@@ -153,7 +166,7 @@ func (s *stockUsecase) StockBuy(request domain.ClientStockBuyRequest) domain.Res
 		AveragePrice: request.AveragePrice,
 		Fee:          request.FeeAmount,
 		TotalValue:   request.Quantity * request.AveragePrice,
-		Date:         time.Now(),
+		Date:         date,
 	})
 
 	if err != nil {
@@ -220,6 +233,15 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 		res.SetStatus(http.StatusBadRequest)
 		res.SetError(constant.ERROR_CODE_REQUEST_INVALID, "incorrect stock")
 		return res
+	}
+
+	var date = time.Now()
+
+	if request.Date != "" {
+		parsedDate, err := time.Parse(constant.DATE_LAYOUT, request.Date)
+		if err == nil {
+			date = parsedDate
+		}
 	}
 
 	var inventories []domain.Inventories
@@ -306,11 +328,11 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 		inventoryLedgerData, err := s.mysql.InsertInventoryLedger(ctx, domain.InventoryLedger{
 			InventoryId:  inventory.Id,
 			Type:         domain.SELL,
-			Quantity:     request.Quantity,
+			Quantity:     ledgerQuanity,
 			AveragePrice: request.AveragePrice,
 			Fee:          request.FeeAmount,
-			TotalValue:   request.Quantity * request.AveragePrice,
-			Date:         time.Now(),
+			TotalValue:   ledgerQuanity * request.AveragePrice,
+			Date:         date,
 		})
 
 		if err != nil {
@@ -325,12 +347,21 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 		}
 
 		inventoryLedgerIds = append(inventoryLedgerIds, inventoryLedgerData.Id)
-
+		inventory, err := s.mysql.GetInventoryDataById(ctx, inventory.Id)
+		if err != nil {
+			s.logger.Errorw(ctx, "InsertInventoryLedger failed",
+				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+				constant.ERROR_MESSAGE, err.Error(),
+				constant.REQUEST, request,
+			)
+			res.SetStatus(http.StatusInternalServerError)
+			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
+			return res
+		}
 		// Update inventory data with reduced quantity and recalculated total value.
-		inventory.AvailableQuantity -= inventoryLedgerData.Quantity
+		inventory.AvailableQuantity -= ledgerQuanity
 		inventory.TotalValue = inventory.AvailableQuantity * inventory.AveragePrice
-
-		err = s.mysql.UpdateInventoryDataById(ctx, request.InventoryId, inventory)
+		err = s.mysql.UpdateInventoryDetailsById(ctx, inventory.Id, inventory.AvailableQuantity, inventory.AveragePrice, inventory.TotalValue)
 		if err != nil {
 			s.logger.Errorw(ctx, "UpdateInventoryDataById failed",
 				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
@@ -353,7 +384,7 @@ func (s *stockUsecase) StockSell(request domain.ClientStockSellRequest) domain.R
 		AveragePrice: request.AveragePrice,
 		Fee:          request.FeeAmount,
 		TotalValue:   request.Quantity * request.AveragePrice,
-		Date:         time.Now(),
+		Date:         date,
 	})
 	if err != nil {
 		s.logger.Errorw(ctx, "InsertTransaction failed",
@@ -497,7 +528,7 @@ func (s *stockUsecase) StockSplit(request domain.ClientStockSplitRequest) domain
 	inventory.AveragePrice = inventory.TotalValue / inventory.AvailableQuantity
 
 	// Update inventory data in database.
-	err = s.mysql.UpdateInventoryDataById(ctx, inventory.Id, inventory)
+	err = s.mysql.UpdateInventoryDetailsById(ctx, inventory.Id, inventory.AvailableQuantity, inventory.AveragePrice, inventory.TotalValue)
 	if err != nil {
 		s.logger.Errorw(ctx, "UpdateInventoryDataById failed",
 			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
@@ -610,12 +641,6 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 			return res
 		}
 
-		if inventory.AvailableQuantity < request.Quantity {
-			res.SetStatus(http.StatusBadRequest)
-			res.SetError(constant.ERROR_CODE_REQUEST_INVALID, "requested stock not available to sell")
-			return res
-		}
-
 		inventories = append(inventories, inventory)
 	} else {
 		// If no InventoryId is provided, retrieve all active inventories for the stock and account.
@@ -631,43 +656,35 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 			return res
 		}
 
-		// Calculate the total available quantity across all inventories to ensure sufficient stock.
-		var availabletoSell float64
-		for _, inventory := range inventories {
-			availabletoSell += inventory.AvailableQuantity
-		}
-
-		if availabletoSell < request.Quantity {
-			res.SetStatus(http.StatusBadRequest)
-			res.SetError(constant.ERROR_CODE_REQUEST_INVALID, "requested stock not available to sell")
-			return res
-		}
 	}
 
 	var inventoryLedgerIds []int
-	quantity := request.Quantity
-
+	var totalQuantity float64
 	// Process each inventory to apply the dividend for the specified quantity.
 	for _, inventory := range inventories {
-		if quantity <= 0 {
-			break
+		if inventory.AvailableQuantity <= 0 {
+			continue
 		}
 
-		// Determine the quantity to apply for each inventory.
-		var ledgerQuanity float64
-		if inventory.AvailableQuantity < quantity {
-			ledgerQuanity = inventory.AvailableQuantity
-		} else {
-			ledgerQuanity = quantity
+		inventory, err := s.mysql.GetInventoryDataById(ctx, inventory.Id)
+		if err != nil {
+			s.logger.Errorw(ctx, "InsertInventoryLedger failed",
+				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+				constant.ERROR_MESSAGE, err.Error(),
+				constant.REQUEST, request,
+			)
+			res.SetStatus(http.StatusInternalServerError)
+			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
+			return res
 		}
 
 		// Insert a ledger entry to record the dividend addition.
 		inventoryLedgerData, err := s.mysql.InsertInventoryLedger(ctx, domain.InventoryLedger{
 			InventoryId:  inventory.Id,
 			Type:         domain.DIVIDEND,
-			Quantity:     ledgerQuanity,
+			Quantity:     inventory.AvailableQuantity,
 			AveragePrice: request.AmountPerQuantity,
-			TotalValue:   ledgerQuanity * request.AmountPerQuantity,
+			TotalValue:   inventory.AvailableQuantity * request.AmountPerQuantity,
 			Date:         time.Now(),
 		})
 
@@ -684,18 +701,19 @@ func (s *stockUsecase) StockDividendAdd(request domain.ClientStockDividendAddReq
 
 		// Append ledger ID to track this entry and decrement remaining quantity.
 		inventoryLedgerIds = append(inventoryLedgerIds, inventoryLedgerData.Id)
-		quantity -= ledgerQuanity
+		totalQuantity += inventory.AvailableQuantity
 	}
 
 	// Insert a transaction entry to log the dividend distribution.
 	transactionData, err := s.mysql.InsertTransaction(ctx, domain.Transactions{
 		AccountId:    request.AccountId,
 		Type:         domain.DIVIDEND,
-		Quantity:     request.Quantity,
+		Quantity:     totalQuantity,
 		AveragePrice: request.AmountPerQuantity,
-		TotalValue:   request.Quantity * request.AmountPerQuantity,
+		TotalValue:   totalQuantity * request.AmountPerQuantity,
 		Date:         time.Now(),
 	})
+
 	if err != nil {
 		s.logger.Errorw(ctx, "InsertTransaction failed",
 			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
@@ -764,17 +782,34 @@ func (s *stockUsecase) StockSummary(request domain.ClientStockSummaryRequest) do
 	// Prepare a slice to accumulate the stock summary data to be sent in the response.
 	var resData []domain.ClientStockSummaryResponse
 
+	var wg sync.WaitGroup
+
 	// Iterate over each inventory record and transform it into a stock summary format.
 	for _, inventoryData := range inventoriesData {
-		resData = append(resData, domain.ClientStockSummaryResponse{
-			StockId:       inventoryData.SecurityId,
-			StockSymbol:   inventoryData.SecuritySymbol,
-			StockExchange: inventoryData.SecurityExchange,
-			StockName:     inventoryData.SecurityName,
-			Quantity:      int(inventoryData.AvailableQuantity),
-			Amount:        inventoryData.TotalValue,
-		})
+		wg.Add(1)
+		go func(inventoryData domain.InventorySummary) {
+			metaData := domain.ClientStockSummaryResponse{
+				StockId:       inventoryData.SecurityId,
+				StockSymbol:   inventoryData.SecuritySymbol,
+				StockExchange: inventoryData.SecurityExchange,
+				StockName:     inventoryData.SecurityName,
+				Quantity:      int(inventoryData.AvailableQuantity),
+				Amount:        inventoryData.TotalValue,
+			}
+
+			markerData, err := s.marketer.Query(inventoryData.SecuritySymbol, "NSE")
+			if err == nil {
+				metaData.MarketPrice = markerData.GetMarketPrice()
+				metaData.MarketChange = markerData.GetMarketChange()
+				metaData.MarketChangePercent = markerData.GetMarketChangePercent()
+			}
+
+			resData = append(resData, metaData)
+			wg.Done()
+		}(inventoryData)
+
 	}
+	wg.Wait()
 
 	// Set the formatted stock summary data in the response to be returned to the client.
 	res.SetData(resData)
@@ -837,6 +872,13 @@ func (s *stockUsecase) StockInventories(request domain.ClientStockInventoriesReq
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
 		return res
 	}
+	var marketPrice, marketChange, marketChangePercent float64
+	markerData, err := s.marketer.Query(secuirityData.Symbol, "NSE")
+	if err == nil {
+		marketPrice = markerData.GetMarketPrice()
+		marketChange = markerData.GetMarketChange()
+		marketChangePercent = markerData.GetMarketChangePercent()
+	}
 
 	// Initialize a slice to store the inventory details for the response.
 	var resData []domain.ClientStockInventoriesResponse
@@ -844,9 +886,13 @@ func (s *stockUsecase) StockInventories(request domain.ClientStockInventoriesReq
 	// Process each inventory record and transform it into a client-specific response format.
 	for _, inventoryData := range inventoriesData {
 		resData = append(resData, domain.ClientStockInventoriesResponse{
-			InventoryId: inventoryData.Id,
-			Amount:      (inventoryData.TotalValue / inventoryData.AvailableQuantity),
-			Quantity:    int(inventoryData.AvailableQuantity),
+			InventoryId:         inventoryData.Id,
+			Amount:              (inventoryData.TotalValue / inventoryData.AvailableQuantity),
+			Quantity:            int(inventoryData.AvailableQuantity),
+			MarketPrice:         marketPrice,
+			MarketChange:        marketChange,
+			MarketChangePercent: marketChangePercent,
+			Date:                inventoryData.Date.Format("02-01-2006"),
 		})
 	}
 

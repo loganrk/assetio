@@ -197,11 +197,15 @@ func (m *mysql) InsertInventoryLedger(ctx context.Context, inventoryLedgerData d
 	return inventoryLedgerData, result.Error
 }
 
-// UpdateInventoryDataById updates an inventory record by its ID with the provided inventory data.
+// UpdateInventoryDetailsById updates an inventory record by its ID with the provided inventory data.
 // Returns any error encountered during the update.
-func (m *mysql) UpdateInventoryDataById(ctx context.Context, inventoryId int, inventoryData domain.Inventories) error {
+func (m *mysql) UpdateInventoryDetailsById(ctx context.Context, inventoryId int, availableQuantity, averagePrice, totalValue float64) error {
 	// Update the inventory record where the ID matches the given inventoryId
-	result := m.dialer.WithContext(ctx).Model(&domain.Inventories{}).Where("id = ?", inventoryId).Updates(&inventoryData)
+	result := m.dialer.WithContext(ctx).Model(&domain.Inventories{}).Where("id = ?", inventoryId).Updates(map[string]interface{}{
+		"available_quantity": availableQuantity,
+		"average_price":      averagePrice,
+		"total_value":        totalValue,
+	})
 	return result.Error
 }
 
@@ -275,9 +279,9 @@ func (m *mysql) GetInvertriesByAccountIdAndSecurityId(ctx context.Context, accou
 	// Query to get inventory details based on account and security IDs, ordered by the latest creation date
 	result := m.dialer.WithContext(ctx).
 		Model(&domain.Inventories{}).
-		Select("id", "available_quantity", "total_value").
+		Select("id", "available_quantity", "total_value", "date").
 		Where("account_id = ? and security_id = ? and available_quantity > 0 ", accountId, securityId).
-		Order("created_at desc"). // Retrieve the latest data first
+		Order("date desc"). // Retrieve the latest data first
 		Find(&inventoryData)
 
 	// If no record found, set error to nil for empty results
@@ -312,7 +316,7 @@ func (m *mysql) GetInventoryDataById(ctx context.Context, inventoryId int) (doma
 
 	// Query the Inventories table for a record matching the specified inventory ID
 	result := m.dialer.WithContext(ctx).Model(&domain.Inventories{}).
-		Select("id", "account_id", "security_id", "available_quantity", "total_value").
+		Select("*").
 		Where("id = ?", inventoryId).
 		Find(&inventoryData)
 

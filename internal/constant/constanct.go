@@ -19,6 +19,8 @@ const (
 	ERROR_MESSAGE = "emessage"
 	REQUEST       = "req"
 
+	DATE_LAYOUT = "01/02/2006"
+
 	ERROR_TYPE_DBEXECUTION = "DbExecution"
 )
 
