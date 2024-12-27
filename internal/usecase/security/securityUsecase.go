@@ -74,15 +74,13 @@ func (s *securityUsecase) SecurityCreate(request domain.ClientSecurityCreateRequ
 
 	// If the security symbol already exists, return a response indicating that.
 	if securityData.Id != 0 {
-		resData := domain.ClientSecurityCreateResponse{
-			Message: "security symbol already available",
-		}
-		res.SetData(resData)
+		res.SetStatus(http.StatusConflict)
+		res.SetError(constant.ERROR_CODE_DATA_EXISTS, "symbol already available")
 		return res
 	}
 
 	// Insert the new security data into the database.
-	_, err = s.mysql.InsertSecurityData(ctx, domain.Securities{
+	securityData, err = s.mysql.InsertSecurityData(ctx, domain.Securities{
 		Type:     securityType,
 		Exchange: securityExchange,
 		Name:     request.Name,
@@ -104,7 +102,8 @@ func (s *securityUsecase) SecurityCreate(request domain.ClientSecurityCreateRequ
 
 	// Set success response message upon successful security creation.
 	resData := domain.ClientSecurityCreateResponse{
-		Message: "security created successfully",
+		SecurityId: securityData.Id,
+		Message:    "security created successfully",
 	}
 
 	// Set the response data and return.
@@ -138,21 +137,12 @@ func (s *securityUsecase) SecurityAll(request domain.ClientSecurityAllRequest) d
 		return res
 	}
 
-	// Get the security exchange based on the provided request exchange.
-	securityExchange := s.getExchange(request.Exchange)
-	// If the security exchange is invalid, return a bad request error.
-	if securityExchange == 0 {
-		res.SetStatus(http.StatusBadRequest)
-		res.SetError(constant.ERROR_CODE_REQUEST_INVALID, "invalid exchange")
-		return res
-	}
-
-	// Retrieve the list of securities data from the database by type and exchange.
-	securitiesData, err := s.mysql.GetSecuritiesDataByExchange(ctx, securityType, securityExchange)
+	// Retrieve the list of securities data from the database by type
+	securitiesData, err := s.mysql.GetSecuritiesDataByType(ctx, securityType)
 
 	if err != nil {
 		// Log error and return internal server error response if the database query fails.
-		s.logger.Errorw(ctx, "GetSecuritiesDataByExchange failed",
+		s.logger.Errorw(ctx, "GetSecuritiesDataByType failed",
 			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
 			constant.ERROR_MESSAGE, err.Error(),
 			constant.REQUEST, request,
@@ -379,10 +369,8 @@ func (s *securityUsecase) SecurityUpdate(request domain.ClientSecurityUpdateRequ
 
 	// If a security with the same symbol already exists but with a different ID, return a message indicating a conflict.
 	if securityData.Id != 0 && securityData.Id != request.SecurityId {
-		resData := domain.ClientSecurityUpdateResponse{
-			Message: "security symbol already available",
-		}
-		res.SetData(resData)
+		res.SetStatus(http.StatusConflict)
+		res.SetError(constant.ERROR_CODE_DATA_EXISTS, "symbol already available")
 		return res
 	}
 

@@ -77,6 +77,8 @@ type StockSvr interface {
 
 	// StockInventoryLedgers retrieves the ledger information of stock inventories.
 	StockInventoryLedgers(request ClientStockInventoryLedgersRequest) Response
+
+	StockDividends(request ClientStockDividendsRequest) Response
 }
 
 // MutualFundSvr defines the interface for mutual fund-related service operations.

@@ -317,3 +317,46 @@ func (h *handler) StockInventoryLedgers(w http.ResponseWriter, r *http.Request) 
 	resData := h.usecases.Stock.StockInventoryLedgers(request)
 	resData.Send(w)
 }
+
+func (h *handler) StockDividends(w http.ResponseWriter, r *http.Request) {
+	var request domain.ClientStockDividendsRequest
+	res := response.New()
+
+	// Decode request based on HTTP method (POST or GET)
+	if r.Method == http.MethodPost {
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&request)
+		if err != nil {
+			res.SetStatus(http.StatusBadRequest)
+			res.SetError(ERROR_CODE_REQUEST_INVALID, err.Error())
+			res.Send(w)
+			return
+		}
+	} else {
+		var decoder = schema.NewDecoder()
+		decoder.IgnoreUnknownKeys(true)
+		if err := decoder.Decode(&request, r.URL.Query()); err != nil {
+			res.SetStatus(http.StatusBadRequest)
+			res.SetError(ERROR_CODE_REQUEST_INVALID, err.Error())
+			res.Send(w)
+			return
+		}
+	}
+
+	// Assign user ID from URL query to the request
+	userid, _ := strconv.Atoi(r.URL.Query().Get("uid"))
+	request.UserId = userid
+
+	// Validate the inventory ledger request
+	err := h.validator.StockDividends(request)
+	if err != nil {
+		res.SetStatus(http.StatusBadRequest)
+		res.SetError(ERROR_CODE_REQUEST_INVALID, err.Error())
+		res.Send(w)
+		return
+	}
+
+	// Call the usecase to get the stock inventory ledger
+	resData := h.usecases.Stock.StockDividends(request)
+	resData.Send(w)
+}

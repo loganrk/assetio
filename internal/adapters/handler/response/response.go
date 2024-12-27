@@ -43,6 +43,7 @@ func (r *response) SetStatus(status int) {
 // If the data is non-nil, it is assigned to the Data field of the response.
 // If the data is nil, an empty struct is assigned to represent no data.
 func (r *response) SetData(data any) {
+
 	if data != nil {
 		// Assign the provided data to the Data field
 		r.Data = data
@@ -71,7 +72,6 @@ func (r *response) Send(w http.ResponseWriter) {
 		r.Success = true             // Mark the response as successful
 		r.Err = make([]errorMsg, 0)  // Clear any previous error messages
 	}
-
 	// Encode the response object as JSON and send it to the client
 	json.NewEncoder(w).Encode(r)
 }

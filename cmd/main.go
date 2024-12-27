@@ -2,6 +2,7 @@ package main
 
 import (
 	"assetio/config"
+	"assetio/external/yahoo"
 	"assetio/internal/domain"
 	"assetio/internal/port"
 	"context"
@@ -71,10 +72,12 @@ func main() {
 	// Automatically migrate the database schema if needed.
 	mysqlIns.AutoMigrate()
 
+	marketerIns := yahoo.New(appConfigIns.GetYahooExchangeHash())
+
 	// Create instances of different services (Account, Security, Stock, Mutual Fund).
 	accountSrvIns := accountSrv.New(appLoggerIns, mysqlIns)
 	securitySrvIns := securitySrv.New(appLoggerIns, mysqlIns)
-	stockSrvIns := stockSrv.New(appLoggerIns, mysqlIns)
+	stockSrvIns := stockSrv.New(appLoggerIns, mysqlIns, marketerIns)
 	mutualFundIns := mutualFundSrv.New(appLoggerIns, mysqlIns)
 
 	// Create a service list that contains all the service instances for easy access.
@@ -291,6 +294,12 @@ func updateStockRouters(generalGr port.RouterGroup, accessTokenGr port.RouterGro
 	if apiConfigIns.GetStockDividendAddEnabled() {
 		apiMethod, apiRoute := apiConfigIns.GetStockDividendAddProperties()
 		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockDividendAdd)
+	}
+
+	// Register route for adding stock dividend list if enabled in the config.
+	if apiConfigIns.GetStockDividendsEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockDividendsProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockDividends)
 	}
 
 	// Register route for stock split if enabled in the config.

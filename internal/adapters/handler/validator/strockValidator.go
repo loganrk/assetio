@@ -6,7 +6,7 @@ import (
 )
 
 // StockBuy validates the fields in the ClientStockBuyRequest object before proceeding with a stock purchase.
-// It checks if the required fields (AccountId, UserId, StockId, Quantity, AveragePrice, FeeAmount) are valid (non-zero).
+// It checks if the required fields (AccountId, UserId, StockId, Quantity, AveragePrice) are valid (non-zero).
 func (v validation) StockBuy(request domain.ClientStockBuyRequest) error {
 	if request.AccountId == 0 {
 		return errors.New("invalid account id") // AccountId must be non-zero
@@ -26,15 +26,12 @@ func (v validation) StockBuy(request domain.ClientStockBuyRequest) error {
 	if request.AveragePrice == 0 {
 		return errors.New("invalid amount per quantity") // AveragePrice must be greater than 0
 	}
-	if request.FeeAmount == 0 {
-		return errors.New("invalid fee amount") // FeeAmount must be greater than 0
-	}
 
 	return nil // Return nil if all validations pass
 }
 
 // StockSell validates the fields in the ClientStockSellRequest object before proceeding with a stock sale.
-// It checks if the required fields (AccountId, UserId, StockId, Quantity, AveragePrice, FeeAmount) are valid (non-zero).
+// It checks if the required fields (AccountId, UserId, StockId, Quantity, AveragePrice) are valid (non-zero).
 func (v validation) StockSell(request domain.ClientStockSellRequest) error {
 	if request.AccountId == 0 {
 		return errors.New("invalid account id") // AccountId must be non-zero
@@ -54,15 +51,12 @@ func (v validation) StockSell(request domain.ClientStockSellRequest) error {
 	if request.AveragePrice == 0 {
 		return errors.New("invalid amount per quantity") // AveragePrice must be greater than 0
 	}
-	if request.FeeAmount == 0 {
-		return errors.New("invalid fee amount") // FeeAmount must be greater than 0
-	}
 
 	return nil // Return nil if all validations pass
 }
 
 // StockSplit validates the fields in the ClientStockSplitRequest object before proceeding with a stock split.
-// It checks if the required fields (AccountId, UserId, StockId, Quantity, FeeAmount) are valid (non-zero).
+// It checks if the required fields (AccountId, UserId, StockId, Quantity) are valid (non-zero).
 func (v validation) StockSplit(request domain.ClientStockSplitRequest) error {
 	if request.AccountId == 0 {
 		return errors.New("invalid account id") // AccountId must be non-zero
@@ -77,10 +71,6 @@ func (v validation) StockSplit(request domain.ClientStockSplitRequest) error {
 
 	if request.Quantity == 0 {
 		return errors.New("invalid quantity") // Quantity must be greater than 0
-	}
-
-	if request.FeeAmount == 0 {
-		return errors.New("invalid fee amount") // FeeAmount must be greater than 0
 	}
 
 	return nil // Return nil if all validations pass
@@ -98,10 +88,6 @@ func (v validation) StockDividendAdd(request domain.ClientStockDividendAddReques
 
 	if request.StockId == 0 {
 		return errors.New("invalid stock id") // StockId must be non-zero
-	}
-
-	if request.Quantity == 0 {
-		return errors.New("invalid quantity") // Quantity must be greater than 0
 	}
 
 	if request.AmountPerQuantity == 0 {
@@ -155,6 +141,23 @@ func (v validation) StockInventoryLedgers(request domain.ClientStockInventoryLed
 	}
 	if request.InventoryId == 0 {
 		return errors.New("invalid inventory id") // InventoryId must be non-zero
+	}
+
+	return nil // Return nil if all validations pass
+}
+
+// StockDividends validates the fields in the ClientStockDividendsRequest object before fetching stock dividend data.
+// It checks if the required fields (AccountId, UserId, StockId) are valid (non-zero).
+func (v validation) StockDividends(request domain.ClientStockDividendsRequest) error {
+	if request.AccountId == 0 {
+		return errors.New("invalid account id") // AccountId must be non-zero
+	}
+
+	if request.UserId == 0 {
+		return errors.New("invalid user id") // UserId must be non-zero
+	}
+	if request.StockId == 0 {
+		return errors.New("invalid stock id") // InventoryId must be non-zero
 	}
 
 	return nil // Return nil if all validations pass

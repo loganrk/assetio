@@ -27,6 +27,7 @@ type Inventories struct {
 	AvailableQuantity float64   `gorm:"type:decimal(12,4);column:available_quantity"`
 	AveragePrice      float64   `gorm:"type:decimal(12,4);column:average_price"`
 	TotalValue        float64   `gorm:"type:decimal(12,4);column:total_value"`
+	Date              time.Time `gorm:"column:date"`
 	State             int       `gorm:"column:state;size:11;"`
 	CreatedAt         time.Time `gorm:"autoCreateTime,column:created_at"`
 	UpdatedAt         time.Time `gorm:"autoUpdateTime,column:updated_at"`
@@ -49,6 +50,7 @@ type InventoryLedger struct {
 type Transactions struct {
 	Id           int             `gorm:"primarykey;size:16"`
 	AccountId    int             `gorm:"column:account_id;size:16"`
+	SecurityId   int             `gorm:"column:security_id;size:16"`
 	Type         TransactionType `gorm:"type:enum('BUY', 'SELL', 'DIVIDEND', 'SPLIT');column:type;size:16"`
 	Quantity     float64         `gorm:"type:decimal(12,4);column:quantity"`
 	AveragePrice float64         `gorm:"type:decimal(12,4);column:average_price"`
@@ -81,10 +83,11 @@ type InventorySummary struct {
 	TotalValue        float64 `gorm:"column:total_value"`
 }
 type InventoryDetails struct {
-	Id                int     `gorm:"column:id"`
-	AvailableQuantity float64 `gorm:"column:available_quantity"`
-	Price             float64 `gorm:"column:price"`
-	TotalValue        float64 `gorm:"column:total_value"`
+	Id                int       `gorm:"column:id"`
+	AvailableQuantity float64   `gorm:"column:available_quantity"`
+	Price             float64   `gorm:"column:price"`
+	TotalValue        float64   `gorm:"column:total_value"`
+	Date              time.Time `gorm:"column:date"`
 }
 
 type InventoryLedgers struct {
@@ -94,4 +97,11 @@ type InventoryLedgers struct {
 	Price      float64         `gorm:"column:average_price"`
 	TotalValue float64         `gorm:"column:total_value"`
 	Date       time.Time       `gorm:"column:date"`
+}
+
+type DividendTransaction struct {
+	Quantity   float64   `gorm:"column:quantity"`
+	Price      float64   `gorm:"column:average_price"`
+	TotalValue float64   `gorm:"column:total_value"`
+	Date       time.Time `gorm:"column:date"`
 }

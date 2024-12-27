@@ -88,6 +88,12 @@ type Api interface {
 	// Returns the HTTP method and route for adding dividends to stocks
 	GetStockDividendAddProperties() (string, string)
 
+	// Returns whether the stock dividend list feature is enabled
+	GetStockDividendsEnabled() bool
+
+	// Returns the HTTP method and route for dividends list
+	GetStockDividendsProperties() (string, string)
+
 	// Returns whether the stock split feature is enabled
 	GetStockSplitEnabled() bool
 
@@ -295,6 +301,17 @@ func (a api) GetStockDividendAddEnabled() bool {
 // GetStockDividendAddProperties returns the HTTP method and route for adding stock dividends.
 func (a api) GetStockDividendAddProperties() (string, string) {
 	apiData := a.StockDividendAdd
+	return apiData.Method, apiData.Route
+}
+
+// GetStockDividendsEnabled checks if list of dividends to stocks is enabled and returns a boolean.
+func (a api) GetStockDividendsEnabled() bool {
+	return a.StockDividends.Enabled
+}
+
+// GetStockDividendsProperties returns the HTTP method and route for list of stock dividends.
+func (a api) GetStockDividendsProperties() (string, string) {
+	apiData := a.StockDividends
 	return apiData.Method, apiData.Route
 }
 
