@@ -29,6 +29,7 @@ type Handler interface {
 	StockSell(w http.ResponseWriter, r *http.Request)             // Sells a stock for a user
 	StockSplit(w http.ResponseWriter, r *http.Request)            // Splits a stock (e.g., stock split action)
 	StockDividendAdd(w http.ResponseWriter, r *http.Request)      // Adds a dividend for a specific stock
+	StockDividends(w http.ResponseWriter, r *http.Request)        // list of dividend for a specific stock
 	StockSummary(w http.ResponseWriter, r *http.Request)          // Retrieves a summary of a user's stock holdings
 	StockInventories(w http.ResponseWriter, r *http.Request)      // Retrieves the stock inventory (holdings) for a user
 	StockInventoryLedgers(w http.ResponseWriter, r *http.Request) // Retrieves the inventory ledger for stock transactions
@@ -67,6 +68,7 @@ type Validator interface {
 	StockSummary(request domain.ClientStockSummaryRequest) error                   // Validates stock summary request
 	StockInventories(request domain.ClientStockInventoriesRequest) error           // Validates request for stock inventories
 	StockInventoryLedgers(request domain.ClientStockInventoryLedgersRequest) error // Validates request for stock inventory ledgers
+	StockDividends(request domain.ClientStockDividendsRequest) error
 
 	// Mutual fund-related validations
 	MutualFundBuy(request domain.ClientMutualFundBuyRequest) error                           // Validates mutual fund buy request
@@ -75,6 +77,7 @@ type Validator interface {
 	MutualFundSummary(request domain.ClientMutualFundSummaryRequest) error                   // Validates mutual fund summary request
 	MutualFundInventory(request domain.ClientMutualFundInventoryRequest) error               // Validates mutual fund inventory request
 	MutualFundInventoryLedgers(request domain.ClientMutualFundInventoryLedgersRequest) error // Validates mutual fund inventory ledgers request
+
 }
 
 // RepositoryStore defines the interface for interacting with the database to store and retrieve various entities like accounts, securities, transactions, etc.
@@ -112,6 +115,9 @@ type RepositoryStore interface {
 	UpdateAvailableQuanityToInventoryById(ctx context.Context, inventoryId int, quantity float64) error                              // Updates the available quantity of inventory by ID
 	GetActiveInventoriesByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.Inventories, error)       // Retrieves active inventories for an account and security
 	GetInventoryLedgersByInventoryIdAndAccountId(ctx context.Context, accountId, inventoryId int) ([]domain.InventoryLedgers, error) // Retrieves inventory ledgers by inventory and account ID
+	GetInventoryAvailableQuanitityBySecurityIdAndDate(ctx context.Context, accountId, securityId int, date time.Time) (float64, error)
+
+	GetDividendTransactionsByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.DividendTransaction, error)
 }
 
 // Router defines the interface for routing API requests and handling middleware

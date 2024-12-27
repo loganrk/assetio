@@ -46,7 +46,7 @@ type ClientStockDividendAddRequest struct {
 	UserId            int     `json:"uid" schema:"uid"`
 	AccountId         int     `json:"account_id" schema:"account_id"`
 	StockId           int     `json:"stock_id" schema:"stock_id"`
-	InventoryId       int     `json:"inventory_id" schema:"inventory_id"`
+	Date              string  `json:"date" schema:"date"`
 	AmountPerQuantity float64 `json:"amount_per_quantity" schema:"amount_per_quantity"`
 }
 
@@ -99,4 +99,15 @@ type ClientStockInventoryLedgersResponse struct {
 	Quantity        int     `json:"quantity" schema:"quantity"`
 	Amount          float64 `json:"amount" schema:"amount"`
 	Date            string  `json:"date" schema:"date"`
+}
+type ClientStockDividendsRequest struct {
+	UserId    int `json:"uid" schema:"uid"`
+	AccountId int `json:"account_id" schema:"account_id"`
+	StockId   int `json:"stock_id" schema:"stock_id"`
+}
+
+type ClientStockDividendsResponse struct {
+	Quantity int     `json:"quantity" schema:"quantity"`
+	Amount   float64 `json:"amount" schema:"amount"`
+	Date     string  `json:"date" schema:"date"`
 }

@@ -4,6 +4,7 @@ import (
 	"assetio/internal/domain"
 	"assetio/internal/port"
 	"context"
+	"time"
 
 	gormMysql "gorm.io/driver/mysql"
 
@@ -348,7 +349,7 @@ func (m *mysql) GetActiveInventoriesByAccountIdAndSecurityId(ctx context.Context
 	var InventoriesData []domain.Inventories
 
 	// Query to find active inventories based on account and security IDs with positive available quantity
-	result := m.dialer.WithContext(ctx).Model(&domain.Inventories{}).Select("id", "available_quantity").
+	result := m.dialer.WithContext(ctx).Model(&domain.Inventories{}).Select("id", "available_quantity", "date").
 		Where("account_id = ? and security_id = ? and available_quantity > 0", accountId, securityId).
 		Order("id"). // Fetch old data first by ordering by ID
 		Find(&InventoriesData)
@@ -370,7 +371,7 @@ func (m *mysql) GetInventoryLedgersByInventoryIdAndAccountId(ctx context.Context
 	result := m.dialer.WithContext(ctx).
 		Model(&domain.InventoryLedger{}).
 		Select("id", "type", "quantity", "average_price", "total_value", "date").
-		Where("inventory_id = ?", inventoryId).
+		Where("account_id =? and inventory_id = ?", accountId, inventoryId).
 		Order("date desc"). // Fetch the latest data first
 		Find(&inventoryLedgerData)
 
@@ -380,4 +381,49 @@ func (m *mysql) GetInventoryLedgersByInventoryIdAndAccountId(ctx context.Context
 	}
 
 	return inventoryLedgerData, result.Error
+}
+
+func (m *mysql) GetDividendTransactionsByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.DividendTransaction, error) {
+	var transactionsData []domain.DividendTransaction
+
+	// Query to find inventory ledger data based on inventory ID, ordered by date in descending order
+	result := m.dialer.WithContext(ctx).
+		Model(&domain.Transactions{}).
+		Select("quantity", "average_price", "total_value", "date").
+		Where("account_id =? and security_id = ? and type =?", accountId, securityId, domain.DIVIDEND).
+		Order("date desc"). // Fetch the latest data first
+		Find(&transactionsData)
+
+		// If no record found, set error to nil for empty results
+	if result.Error == gorm.ErrRecordNotFound {
+		result.Error = nil
+	}
+	return transactionsData, result.Error
+
+}
+
+func (m *mysql) GetInventoryAvailableQuanitityBySecurityIdAndDate(ctx context.Context, accountId, securityId int, date time.Time) (float64, error) {
+	var totalQuantity float64
+
+	// Query to calculate the total quantity
+
+	result := m.dialer.WithContext(ctx).
+		Model(&domain.Transactions{}).
+		Select(`SUM(
+        CASE 
+            WHEN type = ? AND date < ? THEN quantity   
+            WHEN type = ?  AND date <= ? THEN -quantity  
+            ELSE 0                            
+        END
+    ) as total_quantity`, domain.BUY, date, domain.SELL, date).
+		Where("account_id = ? AND security_id = ?", accountId, securityId).
+		Scan(&totalQuantity)
+
+		// If no record found, set error to nil for empty results
+	if result.Error == gorm.ErrRecordNotFound {
+		result.Error = nil
+	}
+
+	return totalQuantity, result.Error
+
 }

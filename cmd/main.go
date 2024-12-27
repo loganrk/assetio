@@ -296,6 +296,12 @@ func updateStockRouters(generalGr port.RouterGroup, accessTokenGr port.RouterGro
 		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockDividendAdd)
 	}
 
+	// Register route for adding stock dividend list if enabled in the config.
+	if apiConfigIns.GetStockDividendsEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockDividendsProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockDividends)
+	}
+
 	// Register route for stock split if enabled in the config.
 	if apiConfigIns.GetStockSplitEnabled() {
 		apiMethod, apiRoute := apiConfigIns.GetStockSplitProperties()

@@ -145,3 +145,20 @@ func (v validation) StockInventoryLedgers(request domain.ClientStockInventoryLed
 
 	return nil // Return nil if all validations pass
 }
+
+// StockDividends validates the fields in the ClientStockDividendsRequest object before fetching stock dividend data.
+// It checks if the required fields (AccountId, UserId, StockId) are valid (non-zero).
+func (v validation) StockDividends(request domain.ClientStockDividendsRequest) error {
+	if request.AccountId == 0 {
+		return errors.New("invalid account id") // AccountId must be non-zero
+	}
+
+	if request.UserId == 0 {
+		return errors.New("invalid user id") // UserId must be non-zero
+	}
+	if request.StockId == 0 {
+		return errors.New("invalid stock id") // InventoryId must be non-zero
+	}
+
+	return nil // Return nil if all validations pass
+}

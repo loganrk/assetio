@@ -84,6 +84,10 @@ api:
     enabled: true
     route: /stock/dividend/add
     method: GET
+  stockDividendsStock:
+    enabled: true
+    route: /stock/dividend/stock
+    method: GET
   stockSplit:
     enabled: true
     route: /stock/split

@@ -82,10 +82,11 @@ type api struct {
 	SecuritySearch apiData `mapstructure:"securitySearch"` // Search securities API.
 
 	// Stock-related API configurations.
-	StockBuy              apiData `mapstructure:"stockBuy"`              // Buy stock API.
-	StockSell             apiData `mapstructure:"stockSell"`             // Sell stock API.
-	StockSplit            apiData `mapstructure:"stockSplit"`            // Stock split API.
-	StockDividendAdd      apiData `mapstructure:"stockDividendAdd"`      // Add stock dividend API.
+	StockBuy              apiData `mapstructure:"stockBuy"`         // Buy stock API.
+	StockSell             apiData `mapstructure:"stockSell"`        // Sell stock API.
+	StockSplit            apiData `mapstructure:"stockSplit"`       // Stock split API.
+	StockDividendAdd      apiData `mapstructure:"stockDividendAdd"` // Add stock dividend API.
+	StockDividends        apiData `mapstructure:"stockDividends"`
 	StockSummary          apiData `mapstructure:"stockSummary"`          // Get stock summary API.
 	StockInventories      apiData `mapstructure:"stockInventories"`      // Get stock inventories API.
 	StockInventoryLedgers apiData `mapstructure:"stockInventiryLedgers"` // Get stock inventory ledgers API.
