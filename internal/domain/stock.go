@@ -79,7 +79,7 @@ type ClientStockInventoriesRequest struct {
 
 type ClientStockInventoriesResponse struct {
 	InventoryId         int     `json:"inventory_id" schema:"inventory_id"`
-	Quantity            int     `json:"quantity" schema:"quantity"`
+	Quantity            float64 `json:"quantity" schema:"quantity"`
 	Amount              float64 `json:"amount" schema:"amount"`
 	Date                string  `json:"date" schema:"date"`
 	MarketPrice         float64 `json:"market_price" schema:"market_price"`
@@ -94,11 +94,11 @@ type ClientStockInventoryLedgersRequest struct {
 }
 
 type ClientStockInventoryLedgersResponse struct {
-	TransactionId   int     `json:"transaction_id" schema:"transaction_id"`
-	TransactionType string  `json:"transaction_ype" schema:"transaction_ype"`
-	Quantity        int     `json:"quantity" schema:"quantity"`
-	Amount          float64 `json:"amount" schema:"amount"`
-	Date            string  `json:"date" schema:"date"`
+	LedgerId int     `json:"ledger_id" schema:"ledger_id"`
+	Type     string  `json:"type" schema:"type"`
+	Quantity float64 `json:"quantity" schema:"quantity"`
+	Amount   float64 `json:"amount" schema:"amount"`
+	Date     string  `json:"date" schema:"date"`
 }
 type ClientStockDividendsRequest struct {
 	UserId    int `json:"uid" schema:"uid"`

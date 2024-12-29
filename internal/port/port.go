@@ -109,12 +109,12 @@ type RepositoryStore interface {
 	GetInvertriesByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.InventoryDetails, error)            // Retrieves detailed inventory data by account and security ID
 
 	// Additional transaction and inventory management methods
-	InsertTransactionData(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error)                     // Inserts new transaction data
-	InsertInventoryData(ctx context.Context, inventoryData domain.Inventories) (domain.Inventories, error)                           // Inserts new inventory data
-	GetInventoryDataById(ctx context.Context, inventoryId int) (domain.Inventories, error)                                           // Retrieves inventory data by ID
-	UpdateAvailableQuanityToInventoryById(ctx context.Context, inventoryId int, quantity float64) error                              // Updates the available quantity of inventory by ID
-	GetActiveInventoriesByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.Inventories, error)       // Retrieves active inventories for an account and security
-	GetInventoryLedgersByInventoryIdAndAccountId(ctx context.Context, accountId, inventoryId int) ([]domain.InventoryLedgers, error) // Retrieves inventory ledgers by inventory and account ID
+	InsertTransactionData(ctx context.Context, transactionData domain.Transactions) (domain.Transactions, error)               // Inserts new transaction data
+	InsertInventoryData(ctx context.Context, inventoryData domain.Inventories) (domain.Inventories, error)                     // Inserts new inventory data
+	GetInventoryDataById(ctx context.Context, inventoryId int) (domain.Inventories, error)                                     // Retrieves inventory data by ID
+	UpdateAvailableQuanityToInventoryById(ctx context.Context, inventoryId int, quantity float64) error                        // Updates the available quantity of inventory by ID
+	GetActiveInventoriesByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.Inventories, error) // Retrieves active inventories for an account and security
+	GetInventoryLedgersByInventoryId(ctx context.Context, inventoryId int) ([]domain.InventoryLedgers, error)                  // Retrieves inventory ledgers by inventory and account ID
 	GetInventoryAvailableQuanitityBySecurityIdAndDate(ctx context.Context, accountId, securityId int, date time.Time) (float64, error)
 
 	GetDividendTransactionsByAccountIdAndSecurityId(ctx context.Context, accountId, securityId int) ([]domain.DividendTransaction, error)
