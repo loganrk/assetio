@@ -9,6 +9,9 @@ const (
 	SELL     TransactionType = "SELL"
 	DIVIDEND TransactionType = "DIVIDEND"
 	SPLIT    TransactionType = "SPLIT"
+	BONUS    TransactionType = "BONUS"
+	MERGER   TransactionType = "MERGER"
+	DEMERGER TransactionType = "DEMERGER"
 )
 
 type Accounts struct {

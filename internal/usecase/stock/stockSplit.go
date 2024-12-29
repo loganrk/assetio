@@ -46,81 +46,9 @@ func (s *stockUsecase) StockSplit(request domain.ClientStockSplitRequest) domain
 		return res
 	}
 
-	var inventory domain.Inventories
-	// If inventory ID is provided, fetch existing inventory; otherwise, create new.
-	if request.InventoryId != 0 {
-		inventory, err = s.mysql.GetInventoryDataById(ctx, request.InventoryId)
-		if err != nil {
-			s.logger.Errorw(ctx, "GetInventoryDataById failed",
-				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
-				constant.ERROR_MESSAGE, err.Error(),
-				constant.REQUEST, request,
-			)
-			res.SetStatus(http.StatusInternalServerError)
-			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
-			return res
-		}
-
-		// Validate account and stock match for inventory.
-		if request.AccountId != inventory.AccountId {
-			res.SetStatus(http.StatusBadRequest)
-			res.SetError(constant.ERROR_CODE_REQUEST_INVALID, "incorrect inventory")
-			return res
-		}
-		if secuirity.Id != inventory.SecurityId {
-			res.SetStatus(http.StatusBadRequest)
-			res.SetError(constant.ERROR_CODE_REQUEST_INVALID, "incorrect stock")
-			return res
-		}
-
-	} else {
-		// Insert new inventory if ID is not provided.
-		inventory, err = s.mysql.InsertInventoryData(ctx, domain.Inventories{
-			AccountId:  request.AccountId,
-			SecurityId: secuirity.Id,
-		})
-		if err != nil {
-			s.logger.Errorw(ctx, "InsertInventoryData failed",
-				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
-				constant.ERROR_MESSAGE, err.Error(),
-				constant.REQUEST, request,
-			)
-			// Set HTTP status to 500 and include an internal server error message in the response.
-			res.SetStatus(http.StatusInternalServerError)
-			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
-			return res
-		}
-	}
-
-	// Record ledger entry for split transaction.
-	inventoryLedgerData, err := s.mysql.InsertInventoryLedger(ctx, domain.InventoryLedger{
-		InventoryId: inventory.Id,
-		Type:        domain.SPLIT,
-		Quantity:    request.Quantity,
-		Fee:         request.FeeAmount,
-		Date:        time.Now(),
-	})
-
+	inventories, err := s.mysql.GetActiveInventoriesByAccountIdAndSecurityId(ctx, request.AccountId, request.StockId)
 	if err != nil {
-		s.logger.Errorw(ctx, "InsertInventoryLedger failed",
-			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
-			constant.ERROR_MESSAGE, err.Error(),
-			constant.REQUEST, request,
-		)
-		res.SetStatus(http.StatusInternalServerError)
-		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
-		return res
-	}
-
-	// Update inventory with new quantity, value, and average price.
-	inventory.AvailableQuantity += inventoryLedgerData.Quantity
-	inventory.TotalValue += inventoryLedgerData.TotalValue
-	inventory.AveragePrice = inventory.TotalValue / inventory.AvailableQuantity
-
-	// Update inventory data in database.
-	err = s.mysql.UpdateInventoryDetailsById(ctx, inventory.Id, inventory.AvailableQuantity, inventory.AveragePrice, inventory.TotalValue)
-	if err != nil {
-		s.logger.Errorw(ctx, "UpdateInventoryDataById failed",
+		s.logger.Errorw(ctx, "GetActiveInventoriesByAccountIdAndSecurityId failed",
 			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
 			constant.ERROR_MESSAGE, err.Error(),
 			constant.REQUEST, request,
@@ -151,17 +79,51 @@ func (s *stockUsecase) StockSplit(request domain.ClientStockSplitRequest) domain
 		return res
 	}
 
-	// Link ledger entry to transaction by updating ledger with transaction ID.
-	err = s.mysql.UpdateInventoryLedgerTransactionIdById(ctx, inventoryLedgerData.Id, transactionData.Id)
-	if err != nil {
-		s.logger.Errorw(ctx, "UpdateInventoryLedgerTransactionIdById failed",
-			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
-			constant.ERROR_MESSAGE, err.Error(),
-			constant.REQUEST, request,
-		)
-		res.SetStatus(http.StatusInternalServerError)
-		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
-		return res
+	var availableQuantities float64
+	for _, inventory := range inventories {
+		availableQuantities += inventory.AvailableQuantity
+	}
+
+	newlyAddedRatio := float64(request.Quantity) / availableQuantities
+
+	for _, inventory := range inventories {
+		newStockForInv := newlyAddedRatio * inventory.AvailableQuantity
+		inventoryLedgerData, err := s.mysql.InsertInventoryLedger(ctx, domain.InventoryLedger{
+			InventoryId:   inventory.Id,
+			TransactionId: transactionData.Id,
+			Type:          domain.SPLIT,
+			Quantity:      newStockForInv,
+			Fee:           request.FeeAmount,
+			Date:          time.Now(),
+		})
+
+		if err != nil {
+			s.logger.Errorw(ctx, "InsertInventoryLedger failed",
+				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+				constant.ERROR_MESSAGE, err.Error(),
+				constant.REQUEST, request,
+			)
+			res.SetStatus(http.StatusInternalServerError)
+			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
+			return res
+		}
+
+		inventory.AvailableQuantity += inventoryLedgerData.Quantity
+		inventory.TotalValue += inventoryLedgerData.TotalValue
+		inventory.AveragePrice = inventory.TotalValue / inventory.AvailableQuantity
+
+		// Update inventory data in database.
+		err = s.mysql.UpdateInventoryDetailsById(ctx, inventory.Id, inventory.AvailableQuantity, inventory.AveragePrice, inventory.TotalValue)
+		if err != nil {
+			s.logger.Errorw(ctx, "UpdateInventoryDataById failed",
+				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+				constant.ERROR_MESSAGE, err.Error(),
+				constant.REQUEST, request,
+			)
+			res.SetStatus(http.StatusInternalServerError)
+			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
+			return res
+		}
 	}
 
 	// Set success response message.

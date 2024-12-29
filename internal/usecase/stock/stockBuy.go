@@ -55,51 +55,22 @@ func (s *stockUsecase) StockBuy(request domain.ClientStockBuyRequest) domain.Res
 		}
 	}
 
-	var inventory domain.Inventories
-	// If inventory ID is provided, fetch existing inventory; otherwise, create new.
-	if request.InventoryId != 0 {
-		inventory, err = s.mysql.GetInventoryDataById(ctx, request.InventoryId)
-		if err != nil {
-			s.logger.Errorw(ctx, "GetInventoryDataById failed",
-				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
-				constant.ERROR_MESSAGE, err.Error(),
-				constant.REQUEST, request,
-			)
-			res.SetStatus(http.StatusInternalServerError)
-			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
-			return res
-		}
-
-		// Validate account and stock match for inventory.
-		if request.AccountId != inventory.AccountId {
-			res.SetStatus(http.StatusBadRequest)
-			res.SetError(constant.ERROR_CODE_REQUEST_INVALID, "incorrect inventory")
-			return res
-		}
-		if secuirity.Id != inventory.SecurityId {
-			res.SetStatus(http.StatusBadRequest)
-			res.SetError(constant.ERROR_CODE_REQUEST_INVALID, "incorrect stock")
-			return res
-		}
-
-	} else {
-		// Insert new inventory if ID is not provided.
-		inventory, err = s.mysql.InsertInventoryData(ctx, domain.Inventories{
-			AccountId:  request.AccountId,
-			SecurityId: secuirity.Id,
-			Date:       date,
-		})
-		if err != nil {
-			s.logger.Errorw(ctx, "InsertInventoryData failed",
-				constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
-				constant.ERROR_MESSAGE, err.Error(),
-				constant.REQUEST, request,
-			)
-			// Set HTTP status to 500 and include an internal server error message in the response.
-			res.SetStatus(http.StatusInternalServerError)
-			res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
-			return res
-		}
+	// Insert new inventory .
+	inventory, err := s.mysql.InsertInventoryData(ctx, domain.Inventories{
+		AccountId:  request.AccountId,
+		SecurityId: secuirity.Id,
+		Date:       date,
+	})
+	if err != nil {
+		s.logger.Errorw(ctx, "InsertInventoryData failed",
+			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
+			constant.ERROR_MESSAGE, err.Error(),
+			constant.REQUEST, request,
+		)
+		// Set HTTP status to 500 and include an internal server error message in the response.
+		res.SetStatus(http.StatusInternalServerError)
+		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
+		return res
 	}
 
 	// Record ledger entry for buy transaction.

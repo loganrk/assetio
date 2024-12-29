@@ -150,7 +150,7 @@ func (s *stockUsecase) StockInventories(request domain.ClientStockInventoriesReq
 		resData = append(resData, domain.ClientStockInventoriesResponse{
 			InventoryId:         inventoryData.Id,
 			Amount:              (inventoryData.TotalValue / inventoryData.AvailableQuantity),
-			Quantity:            int(inventoryData.AvailableQuantity),
+			Quantity:            inventoryData.AvailableQuantity,
 			MarketPrice:         marketPrice,
 			MarketChange:        marketChange,
 			MarketChangePercent: marketChangePercent,
@@ -173,6 +173,7 @@ func (s *stockUsecase) StockInventories(request domain.ClientStockInventoriesReq
 //   - domain.Response - includes a list of ledger details such as transaction ID, type, amount, fee, quantity, and date.
 //     Returns an error message if any issue is encountered during data retrieval.
 func (s *stockUsecase) StockInventoryLedgers(request domain.ClientStockInventoryLedgersRequest) domain.Response {
+
 	// Create a new background context to manage the request lifecycle.
 	ctx := context.Background()
 
@@ -192,6 +193,12 @@ func (s *stockUsecase) StockInventoryLedgers(request domain.ClientStockInventory
 		// Set HTTP status to 500 and include an internal server error message in the response.
 		res.SetStatus(http.StatusInternalServerError)
 		res.SetError(constant.ERROR_CODE_INTERNAL_SERVER, "internal server error")
+		return res
+	}
+
+	if inventoryData.Id == 0 {
+		res.SetStatus(http.StatusBadRequest)
+		res.SetError(constant.ERROR_CODE_REQUEST_INVALID, "incorrect inventory")
 		return res
 	}
 
@@ -218,11 +225,11 @@ func (s *stockUsecase) StockInventoryLedgers(request domain.ClientStockInventory
 		return res
 	}
 
-	// Retrieve the inventory ledger data for the specified inventory and account IDs.
-	transactionsData, err := s.mysql.GetInventoryLedgersByInventoryIdAndAccountId(ctx, request.AccountId, inventoryData.Id)
+	// Retrieve the inventory ledger data for the specified inventory Id
+	ledgersData, err := s.mysql.GetInventoryLedgersByInventoryId(ctx, inventoryData.Id)
 	if err != nil {
 		// Log an error if the ledger data retrieval fails.
-		s.logger.Errorw(ctx, "GetInventoryLedgersByIdAndAccountId failed",
+		s.logger.Errorw(ctx, "GetInventoryLedgersByInventoryIdAndAccountId failed",
 			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,
 			constant.ERROR_MESSAGE, err.Error(),
 			constant.REQUEST, request,
@@ -234,17 +241,17 @@ func (s *stockUsecase) StockInventoryLedgers(request domain.ClientStockInventory
 		return res
 	}
 
-	// Initialize a slice to store the transaction ledger details for the response.
+	// Initialize a slice to store the ledger details for the response.
 	var resData []domain.ClientStockInventoryLedgersResponse
 
 	// Process each transaction ledger record and format it for the response.
-	for _, transactionData := range transactionsData {
+	for _, ledgerData := range ledgersData {
 		resData = append(resData, domain.ClientStockInventoryLedgersResponse{
-			TransactionId:   transactionData.Id,
-			TransactionType: string(transactionData.Type),
-			Amount:          (transactionData.TotalValue / transactionData.Quantity),
-			Quantity:        int(transactionData.Quantity),
-			Date:            transactionData.Date.Format("02-01-2006"),
+			LedgerId: ledgerData.Id,
+			Type:     string(ledgerData.Type),
+			Amount:   (ledgerData.TotalValue / ledgerData.Quantity),
+			Quantity: ledgerData.Quantity,
+			Date:     ledgerData.Date.Format("02-01-2006"),
 		})
 	}
 

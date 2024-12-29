@@ -349,7 +349,7 @@ func (m *mysql) GetActiveInventoriesByAccountIdAndSecurityId(ctx context.Context
 	var InventoriesData []domain.Inventories
 
 	// Query to find active inventories based on account and security IDs with positive available quantity
-	result := m.dialer.WithContext(ctx).Model(&domain.Inventories{}).Select("id", "available_quantity", "date").
+	result := m.dialer.WithContext(ctx).Model(&domain.Inventories{}).Select("id", "available_quantity", "total_value", "average_price", "date").
 		Where("account_id = ? and security_id = ? and available_quantity > 0", accountId, securityId).
 		Order("id"). // Fetch old data first by ordering by ID
 		Find(&InventoriesData)
@@ -364,15 +364,16 @@ func (m *mysql) GetActiveInventoriesByAccountIdAndSecurityId(ctx context.Context
 
 // GetInventoryLedgersByInventoryIdAndAccountId retrieves ledger entries associated with a specific inventory ID, ordered by date.
 // Each ledger entry includes ID, type, quantity, average price, total value, and date fields.
-func (m *mysql) GetInventoryLedgersByInventoryIdAndAccountId(ctx context.Context, accountId, inventoryId int) ([]domain.InventoryLedgers, error) {
+func (m *mysql) GetInventoryLedgersByInventoryId(ctx context.Context, inventoryId int) ([]domain.InventoryLedgers, error) {
 	var inventoryLedgerData []domain.InventoryLedgers
 
 	// Query to find inventory ledger data based on inventory ID, ordered by date in descending order
 	result := m.dialer.WithContext(ctx).
 		Model(&domain.InventoryLedger{}).
 		Select("id", "type", "quantity", "average_price", "total_value", "date").
-		Where("account_id =? and inventory_id = ?", accountId, inventoryId).
-		Order("date desc"). // Fetch the latest data first
+		Where("inventory_id = ?", inventoryId).
+		Order("date asc, id desc"). // Fetch the latest data first
+		Debug().                    // Logs the SQL query
 		Find(&inventoryLedgerData)
 
 	// If no record found, set error to nil for empty results
