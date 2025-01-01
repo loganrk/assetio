@@ -9,17 +9,17 @@ import (
 	"time"
 )
 
-// StockSplit processes a stock split for a client by validating security information,
+// StockBonus processes a stock bonus for a client by validating security information,
 // managing inventory records, recording ledger entries, and updating transaction details.
 //
 // Parameters:
-//   - request: domain.ClientStockSplitRequest - contains details of the stock purchase request,
+//   - request: domain.ClientStockBonusRequest - contains details of the stock purchase request,
 //     including stock ID, account ID, quantity, price, and fees.
 //
 // Returns:
 //   - domain.Response - contains the outcome of the stock purchase request,
 //     either confirming success or detailing any encountered error.
-func (s *stockUsecase) StockSplit(request domain.ClientStockSplitRequest) domain.Response {
+func (s *stockUsecase) StockBonus(request domain.ClientStockBonusRequest) domain.Response {
 	// Create a new background context to manage the request lifecycle.
 	ctx := context.Background()
 
@@ -62,7 +62,7 @@ func (s *stockUsecase) StockSplit(request domain.ClientStockSplitRequest) domain
 	transactionData, err := s.mysql.InsertTransaction(ctx, domain.Transactions{
 		AccountId:  request.AccountId,
 		SecurityId: secuirity.Id,
-		Type:       domain.SPLIT,
+		Type:       domain.BONUS,
 		Quantity:   request.Quantity,
 		Fee:        request.FeeAmount,
 		Date:       time.Now(),
@@ -91,7 +91,7 @@ func (s *stockUsecase) StockSplit(request domain.ClientStockSplitRequest) domain
 		inventoryLedgerData, err := s.mysql.InsertInventoryLedger(ctx, domain.InventoryLedger{
 			InventoryId:   inventory.Id,
 			TransactionId: transactionData.Id,
-			Type:          domain.SPLIT,
+			Type:          domain.BONUS,
 			Quantity:      newStockForInv,
 			Fee:           request.FeeAmount,
 			Date:          time.Now(),
@@ -127,8 +127,8 @@ func (s *stockUsecase) StockSplit(request domain.ClientStockSplitRequest) domain
 	}
 
 	// Set success response message.
-	resData := domain.ClientStockSplitResponse{
-		Message: "stock split successfully",
+	resData := domain.ClientStockBonusResponse{
+		Message: "stock bonus added successfully",
 	}
 
 	res.SetData(resData)

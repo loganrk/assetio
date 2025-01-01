@@ -85,6 +85,7 @@ type api struct {
 	StockBuy              apiData `mapstructure:"stockBuy"`         // Buy stock API.
 	StockSell             apiData `mapstructure:"stockSell"`        // Sell stock API.
 	StockSplit            apiData `mapstructure:"stockSplit"`       // Stock split API.
+	StockBonus            apiData `mapstructure:"stockBonus"`       // Stock bonus API.
 	StockDividendAdd      apiData `mapstructure:"stockDividendAdd"` // Add stock dividend API.
 	StockDividends        apiData `mapstructure:"stockDividends"`
 	StockSummary          apiData `mapstructure:"stockSummary"`          // Get stock summary API.

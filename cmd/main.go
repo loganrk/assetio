@@ -307,6 +307,11 @@ func updateStockRouters(generalGr port.RouterGroup, accessTokenGr port.RouterGro
 		apiMethod, apiRoute := apiConfigIns.GetStockSplitProperties()
 		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockSplit)
 	}
+	// Register route for stock bonus if enabled in the config.
+	if apiConfigIns.GetStockBonusEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockBonusProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockBonus)
+	}
 
 	// Register route for fetching stock summary if enabled in the config.
 	if apiConfigIns.GetStockSummarylEnabled() {
