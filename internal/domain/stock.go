@@ -30,15 +30,26 @@ type ClientStockSellResponse struct {
 }
 
 type ClientStockSplitRequest struct {
-	UserId      int     `json:"uid" schema:"uid"`
-	AccountId   int     `json:"account_id" schema:"account_id"`
-	StockId     int     `json:"stock_id" schema:"stock_id"`
-	InventoryId int     `json:"inventory_id" schema:"inventory_id"`
-	Quantity    float64 `json:"quantity" schema:"quantity"`
-	FeeAmount   float64 `json:"fee_amount" schema:"fee_amount"`
+	UserId    int     `json:"uid" schema:"uid"`
+	AccountId int     `json:"account_id" schema:"account_id"`
+	StockId   int     `json:"stock_id" schema:"stock_id"`
+	Quantity  float64 `json:"quantity" schema:"quantity"`
+	FeeAmount float64 `json:"fee_amount" schema:"fee_amount"`
 }
 
 type ClientStockSplitResponse struct {
+	Message string `json:"message" schema:"message"`
+}
+
+type ClientStockBonusRequest struct {
+	UserId    int     `json:"uid" schema:"uid"`
+	AccountId int     `json:"account_id" schema:"account_id"`
+	StockId   int     `json:"stock_id" schema:"stock_id"`
+	Quantity  float64 `json:"quantity" schema:"quantity"`
+	FeeAmount float64 `json:"fee_amount" schema:"fee_amount"`
+}
+
+type ClientStockBonusResponse struct {
 	Message string `json:"message" schema:"message"`
 }
 

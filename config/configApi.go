@@ -100,6 +100,12 @@ type Api interface {
 	// Returns the HTTP method and route for splitting stocks
 	GetStockSplitProperties() (string, string)
 
+	// Returns whether the bonus stock feature is enabled
+	GetStockBonusEnabled() bool
+
+	// Returns the HTTP method and route for add bonus for the stocks
+	GetStockBonusProperties() (string, string)
+
 	// Returns whether the stock summary feature is enabled
 	GetStockSummarylEnabled() bool
 
@@ -323,6 +329,17 @@ func (a api) GetStockSplitEnabled() bool {
 // GetStockSplitProperties returns the HTTP method and route for splitting stocks.
 func (a api) GetStockSplitProperties() (string, string) {
 	apiData := a.StockSplit
+	return apiData.Method, apiData.Route
+}
+
+// GetStockSplitEnabled checks if stock bonus is enabled and returns a boolean.
+func (a api) GetStockBonusEnabled() bool {
+	return a.StockBonus.Enabled
+}
+
+// GetStockSplitProperties returns the HTTP method and route for bonus for the stocks.
+func (a api) GetStockBonusProperties() (string, string) {
+	apiData := a.StockBonus
 	return apiData.Method, apiData.Route
 }
 

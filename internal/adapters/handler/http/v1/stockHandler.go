@@ -186,6 +186,50 @@ func (h *handler) StockSplit(w http.ResponseWriter, r *http.Request) {
 	resData.Send(w)
 }
 
+// StockBonus handles the request to perform a stock split
+func (h *handler) StockBonus(w http.ResponseWriter, r *http.Request) {
+	var request domain.ClientStockBonusRequest
+	res := response.New()
+
+	// Decode request based on HTTP method (POST or GET)
+	if r.Method == http.MethodPost {
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&request)
+		if err != nil {
+			res.SetStatus(http.StatusBadRequest)
+			res.SetError(ERROR_CODE_REQUEST_INVALID, err.Error())
+			res.Send(w)
+			return
+		}
+	} else {
+		var decoder = schema.NewDecoder()
+		decoder.IgnoreUnknownKeys(true)
+		if err := decoder.Decode(&request, r.URL.Query()); err != nil {
+			res.SetStatus(http.StatusBadRequest)
+			res.SetError(ERROR_CODE_REQUEST_INVALID, err.Error())
+			res.Send(w)
+			return
+		}
+	}
+
+	// Assign user ID from URL query to the request
+	userid, _ := strconv.Atoi(r.URL.Query().Get("uid"))
+	request.UserId = userid
+
+	// Validate the stock bonus request
+	err := h.validator.StockBonus(request)
+	if err != nil {
+		res.SetStatus(http.StatusBadRequest)
+		res.SetError(ERROR_CODE_REQUEST_INVALID, err.Error())
+		res.Send(w)
+		return
+	}
+
+	// Call the usecase to perform the stock bonus action
+	resData := h.usecases.Stock.StockBonus(request)
+	resData.Send(w)
+}
+
 // StockSummary handles the request to get a summary of a user's stock holdings
 func (h *handler) StockSummary(w http.ResponseWriter, r *http.Request) {
 	var request domain.ClientStockSummaryRequest

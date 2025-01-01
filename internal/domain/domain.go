@@ -69,6 +69,9 @@ type StockSvr interface {
 	// StockSplit performs a stock split for the given stock data.
 	StockSplit(request ClientStockSplitRequest) Response
 
+	// StockSplit performs a stock bonus for the given stock data.
+	StockBonus(request ClientStockBonusRequest) Response
+
 	// StockSummary retrieves a summary of stock-related information.
 	StockSummary(request ClientStockSummaryRequest) Response
 

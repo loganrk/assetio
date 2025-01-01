@@ -92,6 +92,10 @@ api:
     enabled: true
     route: /stock/split
     method: GET
+  stockBonus:
+    enabled: true
+    route: /stock/bonus
+    method: GET
   stockSummary:
     enabled: true
     route: /stock/summary
