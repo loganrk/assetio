@@ -28,6 +28,7 @@ type Handler interface {
 	StockBuy(w http.ResponseWriter, r *http.Request)              // Buys a stock for a user
 	StockSell(w http.ResponseWriter, r *http.Request)             // Sells a stock for a user
 	StockSplit(w http.ResponseWriter, r *http.Request)            // Splits a stock (e.g., stock split action)
+	StockBonus(w http.ResponseWriter, r *http.Request)            // Bonus for the  a stock
 	StockDividendAdd(w http.ResponseWriter, r *http.Request)      // Adds a dividend for a specific stock
 	StockDividends(w http.ResponseWriter, r *http.Request)        // list of dividend for a specific stock
 	StockSummary(w http.ResponseWriter, r *http.Request)          // Retrieves a summary of a user's stock holdings
@@ -64,6 +65,7 @@ type Validator interface {
 	StockBuy(request domain.ClientStockBuyRequest) error                           // Validates stock buy request
 	StockSell(request domain.ClientStockSellRequest) error                         // Validates stock sell request
 	StockSplit(request domain.ClientStockSplitRequest) error                       // Validates stock split request
+	StockBonus(request domain.ClientStockBonusRequest) error                       // Validates stock bonus request
 	StockDividendAdd(request domain.ClientStockDividendAddRequest) error           // Validates stock dividend add request
 	StockSummary(request domain.ClientStockSummaryRequest) error                   // Validates stock summary request
 	StockInventories(request domain.ClientStockInventoriesRequest) error           // Validates request for stock inventories

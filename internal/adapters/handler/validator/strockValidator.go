@@ -76,6 +76,27 @@ func (v validation) StockSplit(request domain.ClientStockSplitRequest) error {
 	return nil // Return nil if all validations pass
 }
 
+// StockBonus validates the fields in the ClientStockBonusRequest object before proceeding with a stock bonus.
+// It checks if the required fields (AccountId, UserId, StockId, Quantity) are valid (non-zero).
+func (v validation) StockBonus(request domain.ClientStockBonusRequest) error {
+	if request.AccountId == 0 {
+		return errors.New("invalid account id") // AccountId must be non-zero
+	}
+	if request.UserId == 0 {
+		return errors.New("invalid user id") // UserId must be non-zero
+	}
+
+	if request.StockId == 0 {
+		return errors.New("invalid stock id") // StockId must be non-zero
+	}
+
+	if request.Quantity == 0 {
+		return errors.New("invalid quantity") // Quantity must be greater than 0
+	}
+
+	return nil // Return nil if all validations pass
+}
+
 // StockDividendAdd validates the fields in the ClientStockDividendAddRequest object before adding a stock dividend.
 // It checks if the required fields (AccountId, UserId, StockId, Quantity, AmountPerQuantity) are valid (non-zero).
 func (v validation) StockDividendAdd(request domain.ClientStockDividendAddRequest) error {

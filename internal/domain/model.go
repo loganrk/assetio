@@ -40,7 +40,7 @@ type InventoryLedger struct {
 	Id            int             `gorm:"primarykey;size:16"`
 	InventoryId   int             `gorm:"column:inventory_id;size:16"`
 	TransactionId int             `gorm:"column:transaction_id;size:16"`
-	Type          TransactionType `gorm:"type:enum('BUY', 'SELL', 'DIVIDEND', 'SPLIT');column:type;size:16"`
+	Type          TransactionType `gorm:"type:enum('BUY', 'SELL', 'DIVIDEND', 'SPLIT', 'BONUS');column:type;size:16"`
 	Quantity      float64         `gorm:"type:decimal(12,4);column:quantity"`
 	AveragePrice  float64         `gorm:"type:decimal(12,4);column:average_price"`
 	TotalValue    float64         `gorm:"type:decimal(12,4);column:total_value"`
@@ -54,7 +54,7 @@ type Transactions struct {
 	Id           int             `gorm:"primarykey;size:16"`
 	AccountId    int             `gorm:"column:account_id;size:16"`
 	SecurityId   int             `gorm:"column:security_id;size:16"`
-	Type         TransactionType `gorm:"type:enum('BUY', 'SELL', 'DIVIDEND', 'SPLIT');column:type;size:16"`
+	Type         TransactionType `gorm:"type:enum('BUY', 'SELL', 'DIVIDEND', 'SPLIT','BONUS');column:type;size:16"`
 	Quantity     float64         `gorm:"type:decimal(12,4);column:quantity"`
 	AveragePrice float64         `gorm:"type:decimal(12,4);column:average_price"`
 	TotalValue   float64         `gorm:"type:decimal(12,4);column:total_value"`
