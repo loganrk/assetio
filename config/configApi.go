@@ -135,37 +135,6 @@ type Api interface {
 
 	// Returns the HTTP method and route for fetching stock inventory ledgers
 	GetStockInventoryLedgersProperties() (string, string)
-
-	// Mutual Fund API Methods
-	// Returns whether the mutual fund buy feature is enabled
-	GetMutualFundBuyEnabled() bool
-
-	// Returns the HTTP method and route for buying mutual funds
-	GetMutualFundBuyProperties() (string, string)
-
-	// Returns whether the mutual fund sell feature is enabled
-	GetMutualFundSellEnabled() bool
-
-	// Returns the HTTP method and route for selling mutual funds
-	GetMutualFundSellProperties() (string, string)
-
-	// Returns whether the mutual fund summary feature is enabled
-	GetMutualFundSummarylEnabled() bool
-
-	// Returns the HTTP method and route for fetching mutual fund summaries
-	GetMutualFundSummaryProperties() (string, string)
-
-	// Returns whether the mutual fund inventory feature is enabled
-	GetMutualFundInventorylEnabled() bool
-
-	// Returns the HTTP method and route for fetching mutual fund inventories
-	GetMutualFundInventoryProperties() (string, string)
-
-	// Returns whether the mutual fund transaction feature is enabled
-	GetMutualFundTransactionlEnabled() bool
-
-	// Returns the HTTP method and route for fetching mutual fund transactions
-	GetMutualFundTransactionProperties() (string, string)
 }
 
 // GetAccountCreateEnabled checks if account creation is enabled and returns a boolean.
@@ -407,60 +376,5 @@ func (a api) GetStockInventoryLedgerslEnabled() bool {
 // GetStockInventoryLedgersProperties returns the HTTP method and route for fetching stock inventory ledgers.
 func (a api) GetStockInventoryLedgersProperties() (string, string) {
 	apiData := a.StockInventoryLedgers
-	return apiData.Method, apiData.Route
-}
-
-// GetMutualFundBuyEnabled checks if mutual fund buying is enabled and returns a boolean.
-func (a api) GetMutualFundBuyEnabled() bool {
-	return a.MutualFundBuy.Enabled
-}
-
-// GetMutualFundBuyProperties returns the HTTP method and route for buying mutual funds.
-func (a api) GetMutualFundBuyProperties() (string, string) {
-	apiData := a.MutualFundBuy
-	return apiData.Method, apiData.Route
-}
-
-// GetMutualFundSellEnabled checks if the mutual fund selling feature is enabled.
-func (a api) GetMutualFundSellEnabled() bool {
-	return a.MutualFundSell.Enabled
-}
-
-// GetMutualFundSellProperties returns the HTTP method and route for the mutual fund sell API.
-func (a api) GetMutualFundSellProperties() (string, string) {
-	apiData := a.MutualFundSell
-	return apiData.Method, apiData.Route
-}
-
-// GetMutualFundSummarylEnabled checks if the mutual fund summary feature is enabled.
-func (a api) GetMutualFundSummarylEnabled() bool {
-	return a.MutualFundSummary.Enabled
-}
-
-// GetMutualFundSummaryProperties returns the HTTP method and route for fetching mutual fund summaries.
-func (a api) GetMutualFundSummaryProperties() (string, string) {
-	apiData := a.MutualFundSummary
-	return apiData.Method, apiData.Route
-}
-
-// GetMutualFundInventorylEnabled checks if the mutual fund inventory feature is enabled.
-func (a api) GetMutualFundInventorylEnabled() bool {
-	return a.MutualFundInventory.Enabled
-}
-
-// GetMutualFundInventoryProperties returns the HTTP method and route for fetching mutual fund inventories.
-func (a api) GetMutualFundInventoryProperties() (string, string) {
-	apiData := a.MutualFundInventory
-	return apiData.Method, apiData.Route
-}
-
-// GetMutualFundTransactionlEnabled checks if the mutual fund transaction feature is enabled.
-func (a api) GetMutualFundTransactionlEnabled() bool {
-	return a.MutualFundTransaction.Enabled
-}
-
-// GetMutualFundTransactionProperties returns the HTTP method and route for fetching mutual fund transactions.
-func (a api) GetMutualFundTransactionProperties() (string, string) {
-	apiData := a.MutualFundTransaction
 	return apiData.Method, apiData.Route
 }

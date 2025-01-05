@@ -1,6 +1,6 @@
 # ASSETIO
 ## Overview
-This project provides a comprehensive platform to manage accounts, stocks, securities, and mutual funds with a modular, maintainable, and scalable structure. We have implemented a hexagonal architecture to ensure a clean separation of concerns, making the platform adaptable to various input/output channels.
+This project provides a comprehensive platform to manage accounts, stocks, securities with a modular, maintainable, and scalable structure. We have implemented a hexagonal architecture to ensure a clean separation of concerns, making the platform adaptable to various input/output channels.
 
 ## Project Structure
 The project is structured in line with the principles of hexagonal architecture (also known as ports and adapters). This approach allows the core business logic to remain independent from external technologies and frameworks.
@@ -13,4 +13,3 @@ The project is structured in line with the principles of hexagonal architecture 
 - **Account Management**: Creation, retrieval, updating, activation, and deactivation of accounts.
 - **Security Management**: Creating, retrieving, updating, and searching securities.
 - **Stock Management**: Buying, selling, dividend processing, splitting, and summaries of stocks.
-- **Mutual Fund Managemen**t: Buying, selling, and managing summaries and transactions of mutual funds.
