@@ -5,6 +5,7 @@ import (
 	"assetio/internal/constant"
 	"assetio/internal/domain"
 	"context"
+	"fmt"
 	"net/http"
 	"sync"
 )
@@ -244,15 +245,28 @@ func (s *stockUsecase) StockInventoryLedgers(request domain.ClientStockInventory
 	// Initialize a slice to store the ledger details for the response.
 	var resData []domain.ClientStockInventoryLedgersResponse
 
+	fmt.Println("ledgersData", ledgersData)
 	// Process each transaction ledger record and format it for the response.
 	for _, ledgerData := range ledgersData {
-		resData = append(resData, domain.ClientStockInventoryLedgersResponse{
-			LedgerId: ledgerData.Id,
-			Type:     string(ledgerData.Type),
-			Amount:   (ledgerData.TotalValue / ledgerData.Quantity),
-			Quantity: ledgerData.Quantity,
-			Date:     ledgerData.Date.Format("02-01-2006"),
-		})
+		if ledgerData.Quantity > 0 {
+			resData = append(resData, domain.ClientStockInventoryLedgersResponse{
+
+				LedgerId: ledgerData.Id,
+				Type:     string(ledgerData.Type),
+				Amount:   (ledgerData.TotalValue / ledgerData.Quantity),
+				Quantity: ledgerData.Quantity,
+				Date:     ledgerData.Date.Format("02-01-2006"),
+			})
+		} else {
+			resData = append(resData, domain.ClientStockInventoryLedgersResponse{
+
+				LedgerId:    ledgerData.Id,
+				Type:        string(ledgerData.Type),
+				TotalAmount: ledgerData.TotalValue,
+				Date:        ledgerData.Date.Format("02-01-2006"),
+			})
+		}
+
 	}
 
 	// Set the formatted transaction ledger data in the response.
