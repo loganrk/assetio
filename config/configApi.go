@@ -106,6 +106,18 @@ type Api interface {
 	// Returns the HTTP method and route for add bonus for the stocks
 	GetStockBonusProperties() (string, string)
 
+	// Returns whether the stock merge feature is enabled
+	GetStockMergeEnabled() bool
+
+	// Returns the HTTP method and route for merging stocks
+	GetStockMergeProperties() (string, string)
+
+	// Returns whether the stock demerge feature is enabled
+	GetStockDemergeEnabled() bool
+
+	// Returns the HTTP method and route for demerging stocks
+	GetStockDemergeProperties() (string, string)
+
 	// Returns whether the stock summary feature is enabled
 	GetStockSummarylEnabled() bool
 
@@ -340,6 +352,28 @@ func (a api) GetStockBonusEnabled() bool {
 // GetStockSplitProperties returns the HTTP method and route for bonus for the stocks.
 func (a api) GetStockBonusProperties() (string, string) {
 	apiData := a.StockBonus
+	return apiData.Method, apiData.Route
+}
+
+// GetStockMergeEnabled checks if stock merging is enabled and returns a boolean.
+func (a api) GetStockMergeEnabled() bool {
+	return a.StockMerge.Enabled
+}
+
+// GetStockMergeProperties returns the HTTP method and route for merging stocks.
+func (a api) GetStockMergeProperties() (string, string) {
+	apiData := a.StockMerge
+	return apiData.Method, apiData.Route
+}
+
+// GetStockDemergeEnabled checks if stock demerging is enabled and returns a boolean.
+func (a api) GetStockDemergeEnabled() bool {
+	return a.StockDemerge.Enabled
+}
+
+// GetStockDemergeProperties returns the HTTP method and route for demerging stocks.
+func (a api) GetStockDemergeProperties() (string, string) {
+	apiData := a.StockDemerge
 	return apiData.Method, apiData.Route
 }
 

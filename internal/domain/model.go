@@ -5,13 +5,14 @@ import "time"
 type TransactionType string
 
 const (
-	BUY      TransactionType = "BUY"
-	SELL     TransactionType = "SELL"
-	DIVIDEND TransactionType = "DIVIDEND"
-	SPLIT    TransactionType = "SPLIT"
-	BONUS    TransactionType = "BONUS"
-	MERGER   TransactionType = "MERGER"
-	DEMERGER TransactionType = "DEMERGER"
+	BUY               TransactionType = "BUY"
+	SELL              TransactionType = "SELL"
+	DIVIDEND          TransactionType = "DIVIDEND"
+	SPLIT             TransactionType = "SPLIT"
+	BONUS             TransactionType = "BONUS"
+	MERGER            TransactionType = "MERGER"
+	DEMERGER          TransactionType = "DEMERGER"
+	DEMERGER_TRANSFER TransactionType = "DEMERGER_TRANSFER"
 )
 
 type Accounts struct {
@@ -40,7 +41,7 @@ type InventoryLedger struct {
 	Id            int             `gorm:"primarykey;size:16"`
 	InventoryId   int             `gorm:"column:inventory_id;size:16"`
 	TransactionId int             `gorm:"column:transaction_id;size:16"`
-	Type          TransactionType `gorm:"type:enum('BUY', 'SELL', 'DIVIDEND', 'SPLIT', 'BONUS');column:type;size:16"`
+	Type          TransactionType `gorm:"type:enum('BUY', 'SELL', 'DIVIDEND', 'SPLIT', 'BONUS' , 'DEMERGER', 'DEMERGER_TRANSFER');column:type;size:16"`
 	Quantity      float64         `gorm:"type:decimal(12,4);column:quantity"`
 	AveragePrice  float64         `gorm:"type:decimal(12,4);column:average_price"`
 	TotalValue    float64         `gorm:"type:decimal(12,4);column:total_value"`
@@ -54,7 +55,7 @@ type Transactions struct {
 	Id           int             `gorm:"primarykey;size:16"`
 	AccountId    int             `gorm:"column:account_id;size:16"`
 	SecurityId   int             `gorm:"column:security_id;size:16"`
-	Type         TransactionType `gorm:"type:enum('BUY', 'SELL', 'DIVIDEND', 'SPLIT','BONUS');column:type;size:16"`
+	Type         TransactionType `gorm:"type:enum('BUY', 'SELL', 'DIVIDEND', 'SPLIT','BONUS','DEMERGER', 'DEMERGER_TRANSFER');column:type;size:16"`
 	Quantity     float64         `gorm:"type:decimal(12,4);column:quantity"`
 	AveragePrice float64         `gorm:"type:decimal(12,4);column:average_price"`
 	TotalValue   float64         `gorm:"type:decimal(12,4);column:total_value"`

@@ -96,6 +96,14 @@ api:
     enabled: true
     route: /stock/bonus
     method: GET
+  stockMerge:
+    enabled: true
+    route: /stock/merge
+    method: GET
+  stockDemerge:
+    enabled: true
+    route: /stock/demerge
+    method: GET
   stockSummary:
     enabled: true
     route: /stock/summary
