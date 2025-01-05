@@ -4,13 +4,12 @@ import (
 	"net/http"
 )
 
-// List holds the different services available for managing accounts, securities, stocks, and mutual funds.
+// List holds the different services available for managing accounts, securities, stocks.
 // It serves as a container for these services, each implementing its own interface for specific operations.
 type List struct {
-	Account    AccountSvr    // Service for account-related operations
-	Security   SecuritySvr   // Service for security-related operations
-	Stock      StockSvr      // Service for stock-related operations
-	MutualFund MutualFundSvr // Service for mutual fund-related operations
+	Account  AccountSvr  // Service for account-related operations
+	Security SecuritySvr // Service for security-related operations
+	Stock    StockSvr    // Service for stock-related operations
 }
 
 // AccountSvr defines the interface for account-related service operations.
@@ -85,28 +84,6 @@ type StockSvr interface {
 	StockInventoryLedgers(request ClientStockInventoryLedgersRequest) Response
 
 	StockDividends(request ClientStockDividendsRequest) Response
-}
-
-// MutualFundSvr defines the interface for mutual fund-related service operations.
-// It includes methods to buy, add, sell, and retrieve summaries, inventories, and inventory ledgers for mutual funds.
-type MutualFundSvr interface {
-	// MutualFundBuy facilitates the purchase of mutual funds based on the provided request data.
-	MutualFundBuy(request ClientMutualFundBuyRequest) Response
-
-	// MutualFundAdd adds a new mutual fund to the portfolio.
-	MutualFundAdd(request ClientMutualFundAddRequest) Response
-
-	// MutualFundSell facilitates the sale of mutual funds.
-	MutualFundSell(request ClientMutualFundSellRequest) Response
-
-	// MutualFundSummary retrieves a summary of mutual fund-related information.
-	MutualFundSummary(request ClientMutualFundSummaryRequest) Response
-
-	// MutualFundInventory retrieves the inventory of mutual funds held.
-	MutualFundInventory(request ClientMutualFundInventoryRequest) Response
-
-	// MutualFundInventoryLedgers retrieves the ledger information of mutual fund inventories.
-	MutualFundInventoryLedgers(request ClientMutualFundInventoryLedgersRequest) Response
 }
 
 // Response defines the interface for a service response.

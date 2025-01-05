@@ -36,17 +36,9 @@ type Handler interface {
 	StockSummary(w http.ResponseWriter, r *http.Request)          // Retrieves a summary of a user's stock holdings
 	StockInventories(w http.ResponseWriter, r *http.Request)      // Retrieves the stock inventory (holdings) for a user
 	StockInventoryLedgers(w http.ResponseWriter, r *http.Request) // Retrieves the inventory ledger for stock transactions
-
-	// Mutual fund-related methods
-	MutualFundBuy(w http.ResponseWriter, r *http.Request)         // Buys a mutual fund for a user
-	MutualFundAdd(w http.ResponseWriter, r *http.Request)         // Adds a new mutual fund
-	MutualFundSell(w http.ResponseWriter, r *http.Request)        // Sells a mutual fund for a user
-	MutualFundSummary(w http.ResponseWriter, r *http.Request)     // Retrieves a summary of a user's mutual fund holdings
-	MutualFundInventory(w http.ResponseWriter, r *http.Request)   // Retrieves mutual fund inventory for a user
-	MutualFundTransaction(w http.ResponseWriter, r *http.Request) // Handles mutual fund transactions like buys/sells
 }
 
-// Validator defines the interface for validating the different requests for account, security, stock, and mutual funds
+// Validator defines the interface for validating the different requests for account, security, stock
 type Validator interface {
 	// Account-related validations
 	AccountCreate(request domain.ClientAccountCreateRequest) error         // Validates account creation request
@@ -74,15 +66,6 @@ type Validator interface {
 	StockInventories(request domain.ClientStockInventoriesRequest) error           // Validates request for stock inventories
 	StockInventoryLedgers(request domain.ClientStockInventoryLedgersRequest) error // Validates request for stock inventory ledgers
 	StockDividends(request domain.ClientStockDividendsRequest) error
-
-	// Mutual fund-related validations
-	MutualFundBuy(request domain.ClientMutualFundBuyRequest) error                           // Validates mutual fund buy request
-	MutualFundAdd(request domain.ClientMutualFundAddRequest) error                           // Validates mutual fund add request
-	MutualFundSell(request domain.ClientMutualFundSellRequest) error                         // Validates mutual fund sell request
-	MutualFundSummary(request domain.ClientMutualFundSummaryRequest) error                   // Validates mutual fund summary request
-	MutualFundInventory(request domain.ClientMutualFundInventoryRequest) error               // Validates mutual fund inventory request
-	MutualFundInventoryLedgers(request domain.ClientMutualFundInventoryLedgersRequest) error // Validates mutual fund inventory ledgers request
-
 }
 
 // RepositoryStore defines the interface for interacting with the database to store and retrieve various entities like accounts, securities, transactions, etc.

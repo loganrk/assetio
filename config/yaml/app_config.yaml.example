@@ -116,30 +116,6 @@ api:
     enabled: true
     route: /stock/inventory/ledgers
     method: GET
-  mutualFundBuy:
-    enabled: true
-    route: /mf/buy
-    method: GET
-  mutualFundSell:
-    enabled: true
-    route: /mf/sell
-    method: GET
-  mutualFundAdd:
-    enabled: true
-    route: /mf/add
-    method: GET
-  mutualFundSummary:
-    enabled: true
-    route: /mf/summary
-    method: GET
-  mutualFundInventory:
-    enabled: true
-    route: /mf/inventory
-    method: GET
-  mutualFundTransaction:
-    enabled: true
-    route: /mf/transaction
-    method: GET
 
 store:
   database:

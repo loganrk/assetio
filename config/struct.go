@@ -64,7 +64,7 @@ type logger struct {
 }
 
 // api struct contains the configuration for various API endpoints for different actions
-// related to accounts, securities, stocks, and mutual funds.
+// related to accounts, securities, stocks.
 type api struct {
 	// Account-related API configurations.
 	AccountCreate     apiData `mapstructure:"accountCreate"`     // Account creation API.
@@ -93,13 +93,6 @@ type api struct {
 	StockSummary          apiData `mapstructure:"stockSummary"`          // Get stock summary API.
 	StockInventories      apiData `mapstructure:"stockInventories"`      // Get stock inventories API.
 	StockInventoryLedgers apiData `mapstructure:"stockInventiryLedgers"` // Get stock inventory ledgers API.
-
-	// Mutual fund-related API configurations.
-	MutualFundBuy         apiData `mapstructure:"mutualFundBuy"`         // Buy mutual fund API.
-	MutualFundSell        apiData `mapstructure:"mutualFundSell"`        // Sell mutual fund API.
-	MutualFundSummary     apiData `mapstructure:"mutualFundSummary"`     // Get mutual fund summary API.
-	MutualFundInventory   apiData `mapstructure:"mutualFundInventory"`   // Get mutual fund inventory API.
-	MutualFundTransaction apiData `mapstructure:"mutualFundTransaction"` // Mutual fund transaction API.
 }
 
 // apiData struct defines the configuration for a single API endpoint, including whether

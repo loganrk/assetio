@@ -19,7 +19,6 @@ import (
 	tokenEngineJwt "assetio/internal/adapters/tokenEngine/jwt"
 
 	accountSrv "assetio/internal/usecase/account"
-	mutualFundSrv "assetio/internal/usecase/mutualFund"
 	securitySrv "assetio/internal/usecase/security"
 	stockSrv "assetio/internal/usecase/stock"
 )
@@ -74,18 +73,16 @@ func main() {
 
 	marketerIns := yahoo.New(appConfigIns.GetYahooExchangeHash())
 
-	// Create instances of different services (Account, Security, Stock, Mutual Fund).
+	// Create instances of different services (Account, Security, Stock).
 	accountSrvIns := accountSrv.New(appLoggerIns, mysqlIns)
 	securitySrvIns := securitySrv.New(appLoggerIns, mysqlIns)
 	stockSrvIns := stockSrv.New(appLoggerIns, mysqlIns, marketerIns)
-	mutualFundIns := mutualFundSrv.New(appLoggerIns, mysqlIns)
 
 	// Create a service list that contains all the service instances for easy access.
 	svcList := domain.List{
-		Account:    accountSrvIns,
-		Security:   securitySrvIns,
-		Stock:      stockSrvIns,
-		MutualFund: mutualFundIns,
+		Account:  accountSrvIns,
+		Security: securitySrvIns,
+		Stock:    stockSrvIns,
 	}
 
 	// Get a router instance configured with middleware, validation, and logging.
@@ -196,9 +193,6 @@ func getRouter(appConfigIns config.App, validatorIns port.Validator, appLoggerIn
 
 	// Register routes related to stock management.
 	updateStockRouters(generalGr, accessTokenGr, apiConfigIns, handlerIns)
-
-	// Register routes related to mutual fund management.
-	updateMutualFundRouters(generalGr, accessTokenGr, apiConfigIns, handlerIns)
 
 	// Return the configured router instance.
 	return routerIns
@@ -341,38 +335,5 @@ func updateStockRouters(generalGr port.RouterGroup, accessTokenGr port.RouterGro
 	if apiConfigIns.GetStockInventoryLedgerslEnabled() {
 		apiMethod, apiRoute := apiConfigIns.GetStockInventoryLedgersProperties()
 		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockInventoryLedgers)
-	}
-}
-
-// Function to update routes for mutual fund management.
-func updateMutualFundRouters(generalGr port.RouterGroup, accessTokenGr port.RouterGroup, apiConfigIns config.Api, handlerIns port.Handler) {
-	// Register route for mutual fund purchase if enabled in the config.
-	if apiConfigIns.GetMutualFundBuyEnabled() {
-		apiMethod, apiRoute := apiConfigIns.GetMutualFundBuyProperties()
-		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundBuy)
-	}
-
-	// Register route for mutual fund sale if enabled in the config.
-	if apiConfigIns.GetMutualFundSellEnabled() {
-		apiMethod, apiRoute := apiConfigIns.GetMutualFundSellProperties()
-		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundSell)
-	}
-
-	// Register route for fetching mutual fund summary if enabled in the config.
-	if apiConfigIns.GetMutualFundSummarylEnabled() {
-		apiMethod, apiRoute := apiConfigIns.GetMutualFundSummaryProperties()
-		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundSummary)
-	}
-
-	// Register route for fetching mutual fund inventory if enabled in the config.
-	if apiConfigIns.GetMutualFundInventorylEnabled() {
-		apiMethod, apiRoute := apiConfigIns.GetMutualFundInventoryProperties()
-		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundInventory)
-	}
-
-	// Register route for mutual fund transactions if enabled in the config.
-	if apiConfigIns.GetMutualFundTransactionlEnabled() {
-		apiMethod, apiRoute := apiConfigIns.GetMutualFundTransactionProperties()
-		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.MutualFundTransaction)
 	}
 }
