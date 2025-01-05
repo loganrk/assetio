@@ -65,6 +65,21 @@ type ClientStockDividendResponse struct {
 	Message string `json:"message" schema:"message"`
 }
 
+type ClientStockDemergeRequest struct {
+	UserId           int     `json:"uid" schema:"uid"`
+	AccountId        int     `json:"account_id" schema:"account_id"`
+	ParentStockId    int     `json:"parent_stock_id" schema:"parent_stock_id"`
+	NewStockId       int     `json:"new_stock_id" schema:"new_stock_id"`
+	Quantity         float64 `json:"quantity" schema:"quantity"`
+	Date             string  `json:"date" schema:"date"`
+	ListingPrice     float64 `json:"listing_price" schema:"listing_price"`
+	ParentStockPrice float64 `json:"parent_stock_price" schema:"parent_stock_price"`
+}
+
+type ClientStockDemergeResponse struct {
+	Message string `json:"message" schema:"message"`
+}
+
 type ClientStockSummaryRequest struct {
 	UserId    int `json:"uid" schema:"uid"`
 	AccountId int `json:"account_id" schema:"account_id"`
@@ -105,11 +120,12 @@ type ClientStockInventoryLedgersRequest struct {
 }
 
 type ClientStockInventoryLedgersResponse struct {
-	LedgerId int     `json:"ledger_id" schema:"ledger_id"`
-	Type     string  `json:"type" schema:"type"`
-	Quantity float64 `json:"quantity" schema:"quantity"`
-	Amount   float64 `json:"amount" schema:"amount"`
-	Date     string  `json:"date" schema:"date"`
+	LedgerId    int     `json:"ledger_id" schema:"ledger_id"`
+	Type        string  `json:"type" schema:"type"`
+	TotalAmount float64 `json:"total_amount,omitempty" schema:"total_amount"`
+	Quantity    float64 `json:"quantity,omitempty" schema:"quantity"`
+	Amount      float64 `json:"amount,omitempty" schema:"amount"`
+	Date        string  `json:"date" schema:"date"`
 }
 type ClientStockDividendsRequest struct {
 	UserId    int `json:"uid" schema:"uid"`

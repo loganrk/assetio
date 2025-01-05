@@ -61,6 +61,7 @@ func (s *stockUsecase) StockBuy(request domain.ClientStockBuyRequest) domain.Res
 		SecurityId: secuirity.Id,
 		Date:       date,
 	})
+
 	if err != nil {
 		s.logger.Errorw(ctx, "InsertInventoryData failed",
 			constant.ERROR_TYPE, constant.ERROR_TYPE_DBEXECUTION,

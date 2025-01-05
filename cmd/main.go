@@ -313,6 +313,18 @@ func updateStockRouters(generalGr port.RouterGroup, accessTokenGr port.RouterGro
 		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockBonus)
 	}
 
+	// Register route for stock demerge if enabled in the config.
+	if apiConfigIns.GetStockMergeEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockMergeProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockMerge)
+	}
+
+	// Register route for stock demerge if enabled in the config.
+	if apiConfigIns.GetStockDemergeEnabled() {
+		apiMethod, apiRoute := apiConfigIns.GetStockDemergeProperties()
+		accessTokenGr.RegisterRoute(apiMethod, apiRoute, handlerIns.StockDemerge)
+	}
+
 	// Register route for fetching stock summary if enabled in the config.
 	if apiConfigIns.GetStockSummarylEnabled() {
 		apiMethod, apiRoute := apiConfigIns.GetStockSummaryProperties()
