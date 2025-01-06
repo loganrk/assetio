@@ -184,7 +184,7 @@ func (v validation) StockDividends(request domain.ClientStockDividendsRequest) e
 	return nil // Return nil if all validations pass
 }
 
-// StockInventories validates the fields in the ClientStockDemergeRequest
+// StockDemerge validates the fields in the ClientStockDemergeRequest
 // It checks if the required fields (AccountId, UserId, ParentStockId, NewStockId, Quantity, ListingPrice, ParentStockPrice) are valid (non-zero).
 func (v validation) StockDemerge(request domain.ClientStockDemergeRequest) error {
 
@@ -213,6 +213,32 @@ func (v validation) StockDemerge(request domain.ClientStockDemergeRequest) error
 
 	if request.ParentStockPrice == 0 {
 		return errors.New("invalid parent stock price") //  listing parent stock price must be greater than 0
+	}
+
+	return nil // Return nil if all validations pass
+}
+
+// StockMerge validates the fields in the ClientStockMergeRequest
+// It checks if the required fields (AccountId, UserId, ParentStockId, NewStockId, Quantity) are valid (non-zero).
+func (v validation) StockMerge(request domain.ClientStockMergeRequest) error {
+
+	if request.AccountId == 0 {
+		return errors.New("invalid account id") // AccountId must be non-zero
+	}
+
+	if request.UserId == 0 {
+		return errors.New("invalid user id") // UserId must be non-zero
+	}
+	if request.ParentStockId == 0 {
+		return errors.New("invalid parrent stock id") // ParentStockId must be non-zero
+	}
+
+	if request.NewStockId == 0 {
+		return errors.New("invalid new stock id") // ParentStockId must be non-zero
+	}
+
+	if request.Quantity == 0 {
+		return errors.New("invalid quantity") // Quantity must be greater than 0
 	}
 
 	return nil // Return nil if all validations pass
