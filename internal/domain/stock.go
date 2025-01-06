@@ -80,6 +80,19 @@ type ClientStockDemergeResponse struct {
 	Message string `json:"message" schema:"message"`
 }
 
+type ClientStockMergeRequest struct {
+	UserId        int     `json:"uid" schema:"uid"`
+	AccountId     int     `json:"account_id" schema:"account_id"`
+	ParentStockId int     `json:"parent_stock_id" schema:"parent_stock_id"`
+	NewStockId    int     `json:"new_stock_id" schema:"new_stock_id"`
+	Quantity      float64 `json:"quantity" schema:"quantity"`
+	Date          string  `json:"date" schema:"date"`
+}
+
+type ClientStockMergeResponse struct {
+	Message string `json:"message" schema:"message"`
+}
+
 type ClientStockSummaryRequest struct {
 	UserId    int `json:"uid" schema:"uid"`
 	AccountId int `json:"account_id" schema:"account_id"`

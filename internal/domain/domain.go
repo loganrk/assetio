@@ -71,7 +71,10 @@ type StockSvr interface {
 	// StockSplit performs a stock bonus for the given stock data.
 	StockBonus(request ClientStockBonusRequest) Response
 
-	// StockSplit performs a stock demerge for the given stock data.
+	// StockMerge performs a stock merge for the given stock data.
+	StockMerge(request ClientStockMergeRequest) Response
+
+	// StockDemerge performs a stock demerge for the given stock data.
 	StockDemerge(request ClientStockDemergeRequest) Response
 
 	// StockSummary retrieves a summary of stock-related information.

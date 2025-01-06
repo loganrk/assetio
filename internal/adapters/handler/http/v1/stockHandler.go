@@ -232,6 +232,46 @@ func (h *handler) StockBonus(w http.ResponseWriter, r *http.Request) {
 
 // StockMerge handles the request to perform a stock merge
 func (h *handler) StockMerge(w http.ResponseWriter, r *http.Request) {
+	var request domain.ClientStockMergeRequest
+	res := response.New()
+
+	// Decode request based on HTTP method (POST or GET)
+	if r.Method == http.MethodPost {
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&request)
+		if err != nil {
+			res.SetStatus(http.StatusBadRequest)
+			res.SetError(ERROR_CODE_REQUEST_INVALID, err.Error())
+			res.Send(w)
+			return
+		}
+	} else {
+		var decoder = schema.NewDecoder()
+		decoder.IgnoreUnknownKeys(true)
+		if err := decoder.Decode(&request, r.URL.Query()); err != nil {
+			res.SetStatus(http.StatusBadRequest)
+			res.SetError(ERROR_CODE_REQUEST_INVALID, err.Error())
+			res.Send(w)
+			return
+		}
+	}
+
+	// Assign user ID from URL query to the request
+	userid, _ := strconv.Atoi(r.URL.Query().Get("uid"))
+	request.UserId = userid
+
+	// Validate the stock demerge request
+	err := h.validator.StockMerge(request)
+	if err != nil {
+		res.SetStatus(http.StatusBadRequest)
+		res.SetError(ERROR_CODE_REQUEST_INVALID, err.Error())
+		res.Send(w)
+		return
+	}
+
+	// Call the usecase to get the stock demerge
+	resData := h.usecases.Stock.StockMerge(request)
+	resData.Send(w)
 
 }
 
