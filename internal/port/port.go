@@ -61,7 +61,8 @@ type Validator interface {
 	StockSplit(request domain.ClientStockSplitRequest) error                       // Validates stock split request
 	StockBonus(request domain.ClientStockBonusRequest) error                       // Validates stock bonus request
 	StockDividendAdd(request domain.ClientStockDividendAddRequest) error           // Validates stock dividend add request
-	StockDemerge(request domain.ClientStockDemergeRequest) error                   // Validates stock dividend add request
+	StockMerge(request domain.ClientStockMergeRequest) error                       // Validates stock merge request
+	StockDemerge(request domain.ClientStockDemergeRequest) error                   // Validates stock demerge request
 	StockSummary(request domain.ClientStockSummaryRequest) error                   // Validates stock summary request
 	StockInventories(request domain.ClientStockInventoriesRequest) error           // Validates request for stock inventories
 	StockInventoryLedgers(request domain.ClientStockInventoryLedgersRequest) error // Validates request for stock inventory ledgers
